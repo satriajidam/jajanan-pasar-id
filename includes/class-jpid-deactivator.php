@@ -27,6 +27,8 @@ class JPID_Deactivator {
 		check_admin_referer( "deactivate-plugin_{$plugin}" );
 
 		self::remove_custom_roles();
+
+		flush_rewrite_rules();
 	}
 
 	/**

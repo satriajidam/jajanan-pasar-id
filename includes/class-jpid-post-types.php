@@ -63,19 +63,25 @@ class JPID_Post_Types {
             'items_list' => __( 'Product Categories list', 'jpid' )
           ),
           'public' => false,
-          'hierarchical' => false,
+          'hierarchical' => true,
           'show_ui' => true,
-          'query_var' => true,
+          'query_var' => 'product-category',
           'rewrite' => array(
             'slug' => 'product-category',
             'with_front' => false,
-            'hierarchical' => true
+            'hierarchical' => false
           ),
           'show_admin_column' => true,
           'show_in_rest' => false,
           'rest_base' => '',
-          'show_in_quick_edit' => true,
-          'show_in_nav_menus' => false
+          'show_in_quick_edit' => false,
+          'show_in_nav_menus' => false,
+          'capabilities' => array(
+        		'manage_terms' => 'manage_categories',
+        		'edit_terms'   => 'manage_categories',
+        		'delete_terms' => 'manage_categories',
+        		'assign_terms' => 'edit_posts',
+        	)
         )
       );
     }
@@ -124,7 +130,7 @@ class JPID_Post_Types {
           'rest_base' => '',
           'has_archive' => true,
           'show_in_menu' => true,
-          'exclude_from_search' => false,
+          'exclude_from_search' => true,
           'capability_type' => 'post',
           'map_meta_cap' => true,
           'hierarchical' => false,
@@ -148,7 +154,7 @@ class JPID_Post_Types {
    * @since    1.0.0
    */
   public function register_post_statuses() {
-
+    // Do something...
   }
 
 }

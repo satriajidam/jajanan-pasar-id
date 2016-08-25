@@ -30,3 +30,14 @@ function jpid_default_product_types() {
 			'Drink' => 'drink'
 	);
 }
+
+/**
+ * Format an integer into IDR-based currency number.
+ *
+ * @since    1.0.0
+ * @param    float         $price  Price to format.
+ * @return   string                The new price format with IDR prefix.
+ */
+function jpid_to_rupiah( $price ) {
+  return 'Rp' . number_format( $price, 2, ',', '.' );
+}

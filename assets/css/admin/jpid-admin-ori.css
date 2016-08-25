@@ -3,50 +3,57 @@
  * included in this file.
  */
 
-
 /* --------------------------------------------------------------------------------
   Meta Box Styles
 --------------------------------------------------------------------------------- */
 
 .jpid-field-container {
-  display: table;
-  width: 100%;
+  position: relative;
+  clear: both;
+  padding-right: 240px;
 }
 
 .jpid-label-wrapper {
-  display: table-cell;
-  width: 30%;
-  padding: 15px 10px 20px 0;
+  float: left;
+  width: 200px;
+  padding: 20px 10px 20px 0;
 }
 
 .jpid-label-wrapper__label {
-  position: absolute;
+  vertical-align: top;
   font-weight: 600;
   line-height: 1.4em;
 }
 
 .jpid-field-wrapper {
-  display: table-cell;
-  width: 70%;
+  float: right;
+  width: 100%;
+  margin: 0 -230px 0 auto;
   padding: 10px 10px 10px 10px;
+}
+
+.postbox .jpid-field-wrapper {
+  margin-right: -240px;
+  padding-right: 0px;
 }
 
 .jpid-field-wrapper__field {
   width: 100%;
 }
 
-.jpid-field-wrapper__field-short {
-  width: 50%;
+.jpid-field-container::after {
+  clear: both;
 }
 
+.jpid-field-container::after,
+.jpid-field-container::before {
+  display: table;
+  content: "";
+}
 
 /* --------------------------------------------------------------------------------
   Independent Styles
 --------------------------------------------------------------------------------- */
-
-.hidden {
-  display: none;
-}
 
 .jpid-field-input,
 .jpid-field-select {
@@ -62,12 +69,6 @@
   width: 15%;
 }
 
-
 /* --------------------------------------------------------------------------------
   Specific Page Styles
---------------------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------------------
-  WP Default Styles Modifier
 --------------------------------------------------------------------------------- */

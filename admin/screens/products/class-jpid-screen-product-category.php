@@ -8,7 +8,7 @@
  * @subpackage jajanan-pasar-id/admin/screens/products
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
-class JPID_Screen_Products_Category {
+class JPID_Screen_Product_Category {
 
   /**
 	 * The ID of this plugin.
@@ -84,11 +84,7 @@ class JPID_Screen_Products_Category {
       return;
     }
 
-    if ( ! current_user_can( 'edit_posts' ) ) {
-      return;
-    }
-
-    if ( ! isset( $_POST[ self::NONCE_NAME ] ) || ! wp_verify_nonce( $_POST[ self::NONCE_NAME ], self::NONCE_ACTION ) ) {
+    if ( ! $this->can_save_term() ) {
       return;
     }
 
@@ -116,10 +112,24 @@ class JPID_Screen_Products_Category {
   }
 
   /**
+	 * Check if current edited term can be saved.
+	 *
+	 * @since     1.0.0
+	 * @return    boolean    Whether the edited term can be saved or not.
+	 */
+  private function can_save_term() {
+    $is_valid_nonce = isset( $_POST[ self::NONCE_NAME ] ) && wp_verify_nonce( $_POST[ self::NONCE_NAME ], self::NONCE_ACTION );
+    $is_user_can = current_user_can( 'manage_categories' );
+
+    return $is_valid_nonce && $is_user_can;
+  }
+
+  /**
    * Add columns for term meta data.
    *
-   * @since    1.0.0
-   * @param    array    $existing_columns    WP default columns.
+   * @since     1.0.0
+   * @param     array    $existing_columns    Default columns collection.
+   * @return    array                         Modified columns collection.
    */
   public function add_term_meta_columns( $existing_columns ) {
     if ( empty( $existing_columns ) || ! is_array( $existing_columns ) ) {
@@ -127,6 +137,7 @@ class JPID_Screen_Products_Category {
     }
 
     $new_columns                = array();
+    $new_columns['cb']          = $existing_columns['cb'];
     $new_columns['name']        = $existing_columns['name'];
     $new_columns['description'] = $existing_columns['description'];
     $new_columns['slug']        = $existing_columns['slug'];
@@ -139,10 +150,11 @@ class JPID_Screen_Products_Category {
   /**
    * Add term meta data content to term meta data column.
    *
-   * @since    1.0.0
-   * @param    string    $content        Blank content.
-   * @param    string    $column_name    Column name.
-   * @param    int       $term_id        The term ID.
+   * @since     1.0.0
+   * @param     string    $content        Blank content.
+   * @param     string    $column_name    Column name.
+   * @param     int       $term_id        The term ID.
+   * @return    string                    The content to display.
    */
   public function add_term_meta_columns_content( $content, $column_name, $term_id ) {
     if ( empty( $column_name ) || empty( $term_id ) ) {
@@ -170,8 +182,9 @@ class JPID_Screen_Products_Category {
   /**
    * Set sortable columns for term meta data column.
    *
-   * @since    1.0.0
-   * @param    array    $sortable_columns    WP default sortable columns.
+   * @since     1.0.0
+   * @param     array      $sortable_columns    Default collection of sortable columns.
+   * @return    array                           Modified collection of sortable columns.
    */
   public function set_term_meta_sortable_columns( $sortable_columns ) {
     if ( empty( $sortable_columns ) || ! is_array( $sortable_columns ) ) {
@@ -184,7 +197,12 @@ class JPID_Screen_Products_Category {
   }
 
   /**
-   * Add term meta field to term quick edit.
+   * Set custom column sorting.
+   *
+   * NOTE:
+   * This function only works in WordPress version 4.6 and above. It depends on hooking
+   * to 'pre_get_terms' action and modifying the query arguments of WP_Term_Query object
+   * that recently introduced in WordPress version 4.6.0.
    *
    * @since    1.0.0
    * @param    WP_Term_Query    $term_query    The term query object.
@@ -226,24 +244,59 @@ class JPID_Screen_Products_Category {
       return;
     }
 
-    switch ( $column_name ) {
-      case 'type':
-        include_once JPID_PLUGIN_DIR . 'admin/screens/products/views/html-jpid-quick-edit-product-category.php';
-        break;
+    if ( $column_name !== 'type' ) {
+      return;
     }
+
+    include_once JPID_PLUGIN_DIR . 'admin/screens/products/views/html-jpid-quick-edit-product-category.php';
   }
 
   /**
    * Check if current active screen is the right screen.
    *
-   * @since    1.0.0
+   * @since     1.0.0
+   * @return    boolean    True if active screen is the right screen, otherwise false.
    */
   private function valid_screen() {
+    if ( ! function_exists( 'get_current_screen' ) ) {
+      return false;
+    }
+
     $current_screen = get_current_screen();
 
+    if ( is_null( $current_screen ) ) {
+      return false;
+    }
+
     return $current_screen->id === 'edit-jpid_product_category'
-      && $current_screen->base === 'edit-tags'
+      && ( $current_screen->base === 'edit-tags' || $current_screen->base === 'term' )
       && $current_screen->taxonomy === 'jpid_product_category';
+  }
+
+  /**
+   * Remove default term fields.
+   *
+   * @since     1.0.0
+   */
+  public function remove_fields() {
+    if ( ! $this->valid_screen() ) {
+      return;
+    }
+
+    ?>
+    <!-- Remove fields by hiding their displays with CSS. -->
+    <style>
+      /* Parent selector   on add new term screen. */
+      #addtag > div.form-field.term-parent-wrap {
+        display: none !important;
+      }
+
+      /* Parent selector field on edit term screen. */
+      #edittag > table > tbody > tr.form-field.term-parent-wrap {
+        display: none !important;
+      }
+    </style>
+    <?php
   }
 
 }

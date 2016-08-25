@@ -99,13 +99,22 @@ class JPID {
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-scripts.php';
 
 		/**
+		 * The class responsible for defining data models of the plugin.
+		 */
+		require_once JPID_PLUGIN_DIR . 'includes/models/class-jpid-product.php';
+		require_once JPID_PLUGIN_DIR . 'includes/models/class-jpid-order.php';
+		require_once JPID_PLUGIN_DIR . 'includes/models/class-jpid-customer.php';
+		require_once JPID_PLUGIN_DIR . 'includes/models/class-jpid-payment.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once JPID_PLUGIN_DIR . 'admin/screens/products/class-jpid-screen-products-category.php';
-		require_once JPID_PLUGIN_DIR . 'admin/screens/products/class-jpid-screen-products-list.php';
-		require_once JPID_PLUGIN_DIR . 'admin/screens/products/class-jpid-screen-products-edit.php';
+		require_once JPID_PLUGIN_DIR . 'admin/screens/products/class-jpid-screen-product-category.php';
+		require_once JPID_PLUGIN_DIR . 'admin/screens/products/class-jpid-screen-product-list.php';
+		require_once JPID_PLUGIN_DIR . 'admin/screens/products/class-jpid-screen-product-edit.php';
 
 		require_once JPID_PLUGIN_DIR . 'admin/class-jpid-admin.php';
+		require_once JPID_PLUGIN_DIR . 'admin/class-jpid-admin-ajax.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -154,26 +163,46 @@ class JPID {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_filter( 'post_updated_messages', $plugin_admin, 'post_updated_messages' );
+		$this->loader->add_filter( 'bulk_post_updated_messages', $plugin_admin, 'bulk_post_updated_messages', 10, 2 );
 		$this->loader->add_action( 'current_screen', $plugin_admin, 'add_screen_help' );
 		$this->loader->add_action( 'current_screen', $plugin_admin, 'check_product_types' );
 
-		$products_category_edit = new JPID_Screen_Products_Category( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin_ajax = new JPID_Admin_Ajax( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'jpid_product_category_add_form_fields', $products_category_edit, 'add_term_meta_fields' );
-		$this->loader->add_action( 'jpid_product_category_edit_form_fields', $products_category_edit, 'edit_term_meta_fields', 10, 2 );
-		$this->loader->add_action( 'created_jpid_product_category', $products_category_edit, 'save_term_meta_fields', 10, 2 );
-		$this->loader->add_action( 'edited_jpid_product_category', $products_category_edit, 'save_term_meta_fields', 10, 2 );
-		$this->loader->add_action( 'manage_edit-jpid_product_category_columns', $products_category_edit, 'add_term_meta_columns' );
-		$this->loader->add_action( 'manage_jpid_product_category_custom_column', $products_category_edit, 'add_term_meta_columns_content', 10, 3 );
-		$this->loader->add_action( 'manage_edit-jpid_product_category_sortable_columns', $products_category_edit, 'set_term_meta_sortable_columns' );
-		$this->loader->add_action( 'pre_get_terms', $products_category_edit, 'set_term_meta_custom_sorting' );
-		$this->loader->add_action( 'quick_edit_custom_box', $products_category_edit, 'add_term_meta_quick_edit' );
+		$this->loader->add_action( 'wp_ajax_load_product_categories', $plugin_admin_ajax, 'load_product_categories' );
 
-		$products_edit = new JPID_Screen_Products_Edit( $this->get_plugin_name(), $this->get_version() );
+		$product_category_edit = new JPID_Screen_Product_Category( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'add_meta_boxes_jpid_product', $products_edit, 'remove_meta_boxes' );
-		$this->loader->add_action( 'add_meta_boxes_jpid_product', $products_edit, 'add_meta_boxes' );
-		$this->loader->add_action( 'save_post_jpid_product', $products_edit, 'add_meta_boxes', 10, 3 );
+		$this->loader->add_action( 'jpid_product_category_add_form_fields', $product_category_edit, 'add_term_meta_fields' );
+		$this->loader->add_action( 'jpid_product_category_edit_form_fields', $product_category_edit, 'edit_term_meta_fields', 10, 2 );
+		$this->loader->add_action( 'created_jpid_product_category', $product_category_edit, 'save_term_meta_fields', 10, 2 );
+		$this->loader->add_action( 'edited_jpid_product_category', $product_category_edit, 'save_term_meta_fields', 10, 2 );
+		$this->loader->add_action( 'manage_edit-jpid_product_category_columns', $product_category_edit, 'add_term_meta_columns' );
+		$this->loader->add_action( 'manage_jpid_product_category_custom_column', $product_category_edit, 'add_term_meta_columns_content', 10, 3 );
+		$this->loader->add_action( 'manage_edit-jpid_product_category_sortable_columns', $product_category_edit, 'set_term_meta_sortable_columns' );
+		$this->loader->add_action( 'pre_get_terms', $product_category_edit, 'set_term_meta_custom_sorting' );
+		$this->loader->add_action( 'quick_edit_custom_box', $product_category_edit, 'add_term_meta_quick_edit' );
+		$this->loader->add_action( 'admin_head-edit-tags.php', $product_category_edit, 'remove_fields' );
+		$this->loader->add_action( 'admin_head-term.php', $product_category_edit, 'remove_fields' );
+
+		$product_edit = new JPID_Screen_Product_Edit( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'add_meta_boxes_jpid_product', $product_edit, 'remove_meta_boxes' );
+		$this->loader->add_action( 'add_meta_boxes_jpid_product', $product_edit, 'add_meta_boxes' );
+		$this->loader->add_action( 'save_post_jpid_product', $product_edit, 'save_meta_boxes', 10, 3 );
+		$this->loader->add_action( 'enter_title_here', $product_edit, 'enter_title_here', 10, 2 );
+
+		$product_list = new JPID_Admin_Product_List( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'manage_jpid_product_posts_columns', $product_list, 'set_column_headers' );
+		$this->loader->add_action( 'manage_jpid_product_posts_custom_column', $product_list, 'display_column_data' );
+		$this->loader->add_action( 'manage_edit-jpid_product_sortable_columns', $product_list, 'set_sortable_column' );
+		$this->loader->add_action( 'pre_get_posts', $product_list, 'set_custom_sorting' );
+		$this->loader->add_action( 'restrict_manage_posts', $product_list, 'set_filter_options' );
+		$this->loader->add_action( 'pre_get_posts', $product_list, 'set_custom_filters' );
+		$this->loader->add_action( 'quick_edit_custom_box', $product_list, 'set_quick_edit' );
+		$this->loader->add_action( 'save_post_jpid_product', $product_list, 'save_quick_edit' );
 	}
 
 	/**

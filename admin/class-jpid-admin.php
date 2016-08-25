@@ -47,6 +47,7 @@ class JPID_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
+		$current_post   = get_post();
 		$current_screen = get_current_screen();
 
 		wp_enqueue_style( 'jpid-admin' );
@@ -58,19 +59,91 @@ class JPID_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
+		$current_post   = get_post();
 		$current_screen = get_current_screen();
-		$current_post = get_post();
-
-		wp_enqueue_script( 'jpid-admin' );
-		wp_localize_script( 'jpid-admin', 'jpid_admin', array (
-			'screen_id' => isset( $current_screen ) ? $current_screen->id : '',
-			'post_id' => isset( $current_post ) ? $current_post->ID : ''
-		)	);
 
 		wp_enqueue_script( 'accounting' );
 		wp_enqueue_script( 'select2' );
+
+		/**
+		 * The core admin script responsible for handling all JavaScript tasks in the admin
+		 * area of this plugin.
+		 */
+		wp_enqueue_script( 'jpid-admin' );
+
+		$jpid_admin_args = array(
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'screen_id' => isset( $current_screen ) ? $current_screen->id : '',
+			'post_id' => isset( $current_post ) ? $current_post->ID : 0,
+			'load_product_categories_nonce' => wp_create_nonce( 'load_product_categories' )
+		);
+
+		if ( $current_screen->id === 'edit-jpid_product' ) {
+			$snack_type = get_term_by( 'slug', 'snack', 'jpid_product_type' );
+			$jpid_admin_args['snack_term_id'] = ! is_null( $snack_type ) ? (int) $snack_type->term_id : 0;
+
+			$drink_type = get_term_by( 'slug', 'drink', 'jpid_product_type' );
+			$jpid_admin_args['drink_term_id'] = ! is_null( $drink_type ) ? (int) $drink_type->term_id : 0;
+		}
+
+		wp_localize_script( 'jpid-admin', 'jpid_admin', $jpid_admin_args );
 	}
 
+	/**
+	 * Add custom post updated messages.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $messages    Default collection of post updated messages.
+	 * @return   array                 Modified collection of post updated messages.
+	 */
+	public function post_updated_messages( $messages ) {
+		$post = get_post();
+
+		$messages['jpid_product'] = array(
+			0 => '',
+			1 => sprintf( __( 'Product updated. <a href="%s">View Product</a>', 'jpid' ), esc_url( get_permalink( $post->ID ) ) ),
+			2 => __( 'Custom field updated.', 'jpid' ),
+			3 => __( 'Custom field deleted.', 'jpid' ),
+			4 => __( 'Product updated.', 'jpid' ),
+			5 => isset( $_GET['revision'] ) ? sprintf( __( 'Product restored to revision from %s', 'jpid' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6 => sprintf( __( 'Product published. <a href="%s">View Product</a>', 'jpid' ), esc_url( get_permalink( $post->ID ) ) ),
+			7 => __( 'Product saved.', 'jpid' ),
+			8 => sprintf( __( 'Product submitted. <a target="_blank" href="%s">Preview Product</a>', 'jpid' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post->ID ) ) ) ),
+			9 => sprintf( __( 'Product scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview Product</a>'), date_i18n( __( 'M j, Y @ G:i', 'textdomain' ), strtotime( $post->post_date ) ), esc_url( get_permalink( $post->ID ) ) ),
+			10 => sprintf( __( 'Product draft updated. <a target="_blank" href="%s">Preview Product</a>', 'jpid' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post->ID ) ) ) )
+		);
+
+		return $messages;
+	}
+
+	/**
+	 * Add custom bulk post updated messages.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $bulk_messages    Default collection of bulk post updated messages.
+	 * @param    int      $bulk_counts      Number of posts being updated.
+	 * @return   array                      Modified collection of bulk post updated messages.
+	 */
+	public function bulk_post_updated_messages( $bulk_messages, $bulk_counts ) {
+		$bulk_messages['jpid_product'] = array(
+			'updated'   => _n( '%s product updated.', '%s products updated.', $bulk_counts['updated'], 'jpid' ),
+			'locked'    => _n( '%s product not updated, somebody is editing it.', '%s products not updated, somebody is editing them.', $bulk_counts['locked'], 'jpid' ),
+			'deleted'   => _n( '%s product permanently deleted.', '%s products permanently deleted.', $bulk_counts['deleted'], 'jpid' ),
+			'trashed'   => _n( '%s product moved to the Trash.', '%s products moved to the Trash.', $bulk_counts['trashed'], 'jpid' ),
+			'untrashed' => _n( '%s product restored from the Trash.', '%s products restored from the Trash.', $bulk_counts['untrashed'], 'jpid' ),
+		);
+
+		return $bulk_messages;
+	}
+
+	/**
+   * Add screen information to admin help tabs.
+   *
+   * The screen information will be shown only if WordPress debug mode is set to true in
+   * the wp-config.php file.
+   *
+   * @since    1.0.0
+   */
 	public function add_screen_help() {
 		global $hook_suffix;
 

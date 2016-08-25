@@ -18,7 +18,7 @@
           <?php
             $product_types = get_terms( array(
               'taxonomy' => 'jpid_product_type',
-              'hide_empty' => 0,
+              'hide_empty' => false,
               'orderby' => 'id',
               'order' => 'ASC'
             ) );

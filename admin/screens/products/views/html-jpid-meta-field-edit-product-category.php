@@ -14,11 +14,11 @@
     <label for="jpid_product_type"><?php esc_html_e( 'Type', 'jpid' ); ?></label>
   </th>
   <td>
-    <select id="jpid_product_type" name="jpid_product_type" class="postform jpid-field-select_short">
+    <select id="jpid_product_type" name="jpid_product_type" class="jpid-field-select-short">
       <?php
         $product_types = get_terms( array(
           'taxonomy' => 'jpid_product_type',
-          'hide_empty' => 0,
+          'hide_empty' => false,
           'orderby' => 'id',
           'order' => 'ASC'
         ) );

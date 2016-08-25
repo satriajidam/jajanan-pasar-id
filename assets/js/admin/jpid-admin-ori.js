@@ -37,41 +37,39 @@
 			let productCategory = JPIDInlineData.find('.jpid_product_category').text();
 
 			$('input[name="jpid_product_price"]').val(productPrice);
-
 			$('select[name="jpid_product_type"] option:selected').attr('selected', false).change();
 			$('select[name="jpid_product_type"] option[value="' + productType + '"]').attr('selected', 'selected').change();
 
-			activateCategorySelector(productType, productCategory);
+			$('.input-product-category').empty();
+
+			let data = {
+				action: 'load_product_categories',
+				security: jpid_admin.load_product_categories_nonce,
+				current_screen: jpid_admin.screen_id,
+				current_type: productType
+			};
+
+			let loadCategoriesSelector = function (data, productCategory) {
+				$.post(jpid_admin.ajax_url, data, function (response) {
+					$('.input-product-category').html(response);
+
+					$('select[name="jpid_product_category"] option:selected').attr('selected', false).change();
+					$('select[name="jpid_product_category"] option[value="' + productCategory + '"]').attr('selected', 'selected').change();
+				});
+			}
+
+			loadCategoriesSelector(data, productCategory);
 
 			$('#jpid_product_type').on('change', function (event) {
-				let currentType = $(this).val();
+				data.current_type = $(this).val();
 
-				activateCategorySelector(currentType, productCategory);
+				loadCategoriesSelector(data, productCategory);
 			});
 
 			$('.inline-edit-save .cancel').on('click', function (event) {
 				$('#jpid_product_type').off('change');
 			});
 		});
-
-		function switchCategorySelector(displaySelector, hideSelector, productCategory) {
-			$('#' + displaySelector).removeClass('hidden');
-			$('#' + hideSelector).addClass('hidden');
-
-			$('select[name="' + displaySelector + '"] option:selected').attr('selected', false).change();
-			$('select[name="' + displaySelector + '"] option[value="' + productCategory + '"]').attr('selected', 'selected').change();
-		}
-
-		function activateCategorySelector(productType, productCategory) {
-			switch (productType) {
-				case jpid_admin.snack_term_id:
-					switchCategorySelector('jpid_product_category_snack', 'jpid_product_category_drink', productCategory);
-					break;
-				case jpid_admin.drink_term_id:
-					switchCategorySelector('jpid_product_category_drink', 'jpid_product_category_snack', productCategory);
-					break;
-			}
-		}
 	};
 
 	/**
@@ -82,6 +80,7 @@
 		let data = {
 			action: 'load_product_categories',
 			security: jpid_admin.load_product_categories_nonce,
+			current_screen: jpid_admin.screen_id,
 			current_post: jpid_admin.post_id
 		};
 
@@ -99,8 +98,6 @@
 	 * Run when document has been fully loaded.
 	 */
 	$(function () {
-		console.log(jpid_admin);
-
 		switch (jpid_admin.screen_id) {
 			case 'edit-jpid_product_category':
 				productCategoryQuickEdit();
