@@ -11,36 +11,29 @@
  * @subpackage jajanan-pasar-id/includes
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class JPID_Scripts {
 
   /**
-	 * The ID of this plugin.
+	 * Class constructor.
 	 *
 	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
-	private $plugin_name;
+	public function __construct() {
+		$this->setup_hooks();
+	}
 
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
-
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param    string    $plugin_name    The name of this plugin.
-	 * @param    string    $version        The version of this plugin.
-	 */
-	public function __construct( $plugin_name, $version ) {
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+  /**
+   * Setup class hooks.
+   *
+   * @since    1.0.0
+   */
+	private function setup_hooks() {
+    add_action( 'init', array( $this, 'register_scripts' ) );
+    add_action( 'init', array( $this, 'register_styles' ) );
 	}
 
   /**
@@ -49,9 +42,9 @@ class JPID_Scripts {
    * @since    1.0.0
    */
   public function register_scripts() {
-    $this->register_vendor_scripts();
+    self::register_vendor_scripts();
 
-    is_admin() ? $this->register_admin_scripts() : $this->register_public_scripts();
+    is_admin() ? self::register_admin_scripts() : self::register_public_scripts();
   }
 
   /**
@@ -109,7 +102,7 @@ class JPID_Scripts {
       'jpid-admin',
       JPID_JS_URL . 'admin/jpid-admin' . JPID_SCRIPT_SUFFIX . '.js',
       array( 'jquery' ),
-      $this->version
+      JPID_VERSION
     );
   }
 
@@ -119,7 +112,7 @@ class JPID_Scripts {
    * @since    1.0.0
    */
   private function register_public_scripts() {
-
+    // TODO: Register public scripts.
   }
 
   /**
@@ -128,9 +121,9 @@ class JPID_Scripts {
    * @since    1.0.0
    */
   public function register_styles() {
-    $this->register_vendor_styles();
+    self::register_vendor_styles();
 
-    is_admin() ? $this->register_admin_styles() : $this->register_public_styles();
+    is_admin() ? self::register_admin_styles() : self::register_public_styles();
   }
 
   /**
@@ -143,7 +136,7 @@ class JPID_Scripts {
   private function register_vendor_styles() {
     wp_register_style(
       'jquery-ui-timepicker',
-      JPID_CSS_URL . 'vendor/jquery-ui-timepicker/jquery-ui-timepicker-addon' . JPID_SCRIPT_SUFFIX . '.css',
+      JPID_CSS_URL . 'vendor/jquery-ui-timepicker/jquery-ui-timepicker-addon-modified' . JPID_SCRIPT_SUFFIX . '.css',
       array(),
       '1.6.3'
     );
@@ -165,7 +158,7 @@ class JPID_Scripts {
       'jpid-admin',
       JPID_CSS_URL . 'admin/jpid-admin' . JPID_SCRIPT_SUFFIX . '.css',
       array(),
-      $this->version
+      JPID_VERSION
     );
   }
 
@@ -175,7 +168,7 @@ class JPID_Scripts {
    * @since    1.0.0
    */
   private function register_public_styles() {
-
+    // TODO: Register public styles.
   }
 
 }

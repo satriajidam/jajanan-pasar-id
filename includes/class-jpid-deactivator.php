@@ -10,9 +10,13 @@
  * @subpackage jajanan-pasar-id/includes
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class JPID_Deactivator {
 
-	/**
+  /**
 	 * Run plugin deactivation functions.
 	 *
 	 * @since    1.0.0

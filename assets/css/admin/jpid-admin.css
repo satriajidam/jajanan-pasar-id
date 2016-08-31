@@ -48,6 +48,10 @@
   display: none;
 }
 
+.jpid-inline-paragraph {
+  display: inline-block;
+}
+
 .jpid-field-input,
 .jpid-field-select {
   width: 100%;
@@ -61,7 +65,6 @@
 .column-type {
   width: 15%;
 }
-
 
 /* --------------------------------------------------------------------------------
   Specific Page Styles
