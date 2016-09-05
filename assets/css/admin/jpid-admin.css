@@ -130,17 +130,16 @@
 }
 
 #jpid_accounts_table th {
-  width: 100%;
   padding: 20px 10px;
-}
-
-#jpid_accounts_table th:not(.sort) {
-  width: 33%;
 }
 
 #jpid_accounts_table th.sort {
   width: 20px;
   padding: 0 4px;
+}
+
+#jpid_accounts_table th:not(.sort) {
+  width: 33%;
 }
 
 #jpid_accounts_table td {
@@ -149,10 +148,6 @@
   border-bottom: 1px solid #DFDFDF;
   border-top: 0;
   background: #fff;
-}
-
-#jpid_accounts_table td:not(.sort) {
-  width: 33%;
 }
 
 #jpid_accounts_table td.sort {
@@ -179,6 +174,10 @@
 
 #jpid_accounts_table td.sort:hover:before {
   color: #555;
+}
+
+#jpid_accounts_table td:not(.sort) {
+  width: 33%;
 }
 
 #jpid_accounts_table td input[type="text"] {

@@ -265,30 +265,26 @@
 				});
 			}
 
-			function resetLocationsOrder() {
-				let container = $('#jpid_locations_container');
-				let tables    = container.find('table');
+			function resetSortableItemsOrder(containerSelector, itemSelector, fieldSelectorArr) {
+				let container = $(containerSelector);
+				let items     = container.find(itemSelector);
+				let fields    = fieldSelectorArr.join(',');
 
-				tables.each(function (tableIndex) {
-					$(this).find('select, textarea').each(function (fieldIndex) {
+				items.each(function (itemIndex) {
+					$(this).find(fields).each(function (fieldIndex) {
 						let name = $(this).attr('name');
-						name = name.replace(/\[(\d+)\]/, '[' + tableIndex + ']');
+						name = name.replace(/\[(\d+)\]/, '[' + itemIndex + ']');
 						$(this).attr('name', name);
 					});
 				});
 			}
 
-			function resetAccountsOrder() {
-				let body = $('#jpid_accounts_table tbody');
-				let rows = body.find('tr');
+			function resetLocationsOrder() {
+				resetSortableItemsOrder('#jpid_locations_container', 'table', ['select', 'textarea']);
+			}
 
-				rows.each(function (rowIndex) {
-					$(this).find('input').each(function (fieldIndex) {
-						let name = $(this).attr('name');
-						name = name.replace(/\[(\d+)\]/, '[' + rowIndex + ']');
-						$(this).attr('name', name);
-					})
-				})
+			function resetAccountsOrder() {
+				resetSortableItemsOrder('#jpid_accounts_table tbody', 'tr', ['input']);
 			}
 		},
 
