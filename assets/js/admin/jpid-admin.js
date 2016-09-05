@@ -114,20 +114,26 @@
 
 			if (activeTab === 'general') {
 				let orderFullStatus       = $('#jpid_order_full_status');
+				let orderFullNotice       = $('#jpid_order_full_notice');
+				let orderFullNoticeRow    = orderFullNotice.closest('tr');
 				let orderAvailableDate    = $('#jpid_order_available_date');
 				let orderAvailableDateRow = orderAvailableDate.closest('tr');
 
 		    if (orderFullStatus.is(':checked')) {
 		      orderAvailableDateRow.removeClass('hidden').change();
+					orderFullNoticeRow.removeClass('hidden').change();
 		    } else {
 		      orderAvailableDateRow.addClass('hidden').change();
+					orderFullNoticeRow.addClass('hidden').change();
 		    }
 
 		    orderFullStatus.on('change', function (evt) {
 		      orderAvailableDateRow.toggleClass('hidden');
+					orderFullNoticeRow.toggleClass('hidden');
 
 		      if (!$(this).is(':checked')) {
-		        orderAvailableDate.val('');
+		        // TODO: orderAvailableDate.val('');
+						// TODO: orderFullNotice.val('');
 		      }
 		    });
 
@@ -138,16 +144,151 @@
 		    });
 
 		    orderAvailableDate.on('keypress', function (evt) {
-		        evt.preventDefault();
+		      evt.preventDefault();
 		    });
 			}
 
 			if (activeTab === 'delivery') {
-				// TODO: do something...
+				// Time picker
+				$('#jpid_delivery_hours_start, #jpid_delivery_hours_end').datetimepicker({
+					controlType: 'select',
+					oneLine: true,
+					timeFormat: $(this).data('timeformat') ? $(this).data('timeformat') : 'HH:mm',
+					timeOnly: true,
+					timeText: 'Hour : Minutes'
+				});
+
+				$('#jpid_delivery_hours_start, #jpid_delivery_hours_end').on('keypress', function (evt) {
+					evt.preventDefault();
+				});
+
+				// Sortable location table
+				$('#jpid_locations_container').sortable({
+					items: 'table',
+					cursor: 'move',
+					axis: 'y',
+					scrollSensitivity: 40,
+					forcePlaceholderSize: true,
+					placeholder: 'jpid-location-table-placeholder',
+					start: function (evt, ui) {
+						ui.item.css('background-color', '#f6f6f6');
+					},
+					stop: function (evt, ui) {
+						ui.item.removeAttr('style');
+						resetLocationsOrder();
+					}
+				});
+
+				// Insert new location table
+				$('#jpid_add_location').on('click', function (evt) {
+					let table = $('#jpid_locations_container table:last');
+					let clone = table.clone();
+
+					clone.find('td select').val('');
+					clone.find('td textarea').val('');
+
+					clone.insertAfter(table);
+
+					resetLocationsOrder();
+				});
+
+				// Remove new location table
+				$('#jpid_locations_container').on('click', '.jpid-remove-location', function (evet) {
+					if (confirm(jpid_admin.remove_location)) {
+						let locations = $('#jpid_locations_container table');
+						let count     = locations.length;
+
+						if (count <= 1) {
+							$('#jpid_locations_container select').val('');
+							$('#jpid_locations_container textarea').val('');
+						} else {
+							$(this).closest('table').remove();
+						}
+
+						resetLocationsOrder();
+					}
+				});
 			}
 
 			if (activeTab === 'payment') {
-				// TODO: do something...
+				// Sortable account
+				$('#jpid_accounts_table tbody').sortable({
+					items: 'tr',
+					cursor: 'move',
+					axis: 'y',
+					scrollSensitivity: 40,
+					stop: function (evt, ui) {
+						resetAccountsOrder();
+					}
+				});
+
+				// Selected account
+				$('#jpid_accounts_table tbody').on('focus', 'input', function (evt) {
+					$('tr.ui-sortable-handle').removeClass('current');
+
+					$(this).closest('tr.ui-sortable-handle').addClass('current');
+				});
+
+				// Add new account
+				$('#jpid_add_account').on('click', function (evt) {
+					let row   = $('#jpid_accounts_table tbody tr:last');
+					let clone = row.clone();
+
+					clone.find('td input').val('');
+					clone.removeClass('current');
+
+					clone.insertAfter(row);
+
+					resetAccountsOrder();
+				});
+
+				// Remove selected account
+				$('#jpid_remove_account').on('click', function (evt) {
+					let selected = $('#jpid_accounts_table tbody').find('tr.current');
+
+					if (selected.length <= 0) {
+						return;
+					}
+
+					if (confirm(jpid_admin.remove_account)) {
+						let accounts = $('#jpid_accounts_table tbody tr');
+						let count    = accounts.length;
+
+						if (count <= 1) {
+							$('#jpid_accounts_table tbody').find('td input').val('');
+						} else {
+							selected.remove();
+						}
+
+						resetAccountsOrder();
+					}
+				});
+			}
+
+			function resetLocationsOrder() {
+				let container = $('#jpid_locations_container');
+				let tables    = container.find('table');
+
+				tables.each(function (tableIndex) {
+					$(this).find('select, textarea').each(function (fieldIndex) {
+						let name = $(this).attr('name');
+						name = name.replace(/\[(\d+)\]/, '[' + tableIndex + ']');
+						$(this).attr('name', name);
+					});
+				});
+			}
+
+			function resetAccountsOrder() {
+				let body = $('#jpid_accounts_table tbody');
+				let rows = body.find('tr');
+
+				rows.each(function (rowIndex) {
+					$(this).find('input').each(function (fieldIndex) {
+						let name = $(this).attr('name');
+						name = name.replace(/\[(\d+)\]/, '[' + rowIndex + ']');
+						$(this).attr('name', name);
+					})
+				})
 			}
 		},
 
@@ -161,7 +302,7 @@
 
 			name = name.replace(/[\[\]]/g, "\\$&");
 
-			let regex   = new RegExp("[?&]" + name + "( =([^&#]*)|&|#|$)");
+			let regex   = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
 			let results = regex.exec(url);
 
 			if (!results) {

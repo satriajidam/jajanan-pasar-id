@@ -15,17 +15,17 @@ class JPID_Admin_About {
 
   /**
    * @since    1.0.0
-   * @var      string    Settings page slug.
+   * @var      string    About page slug.
    */
-  private $page_slug;
+  private $about_page_slug;
 
   /**
    * Class constructor.
    *
    * @since    1.0.0
    */
-  public function __construct( $page_slug ) {
-    $this->page_slug = $page_slug;
+  public function __construct( $about_page_slug ) {
+    $this->about_page_slug = $about_page_slug;
   }
 
   /**

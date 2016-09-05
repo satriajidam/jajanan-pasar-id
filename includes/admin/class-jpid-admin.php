@@ -136,6 +136,9 @@ class JPID_Admin {
     wp_enqueue_script( 'stupidtable' );
     wp_enqueue_script( 'jquery-ui-timepicker' );
     wp_enqueue_script( 'jquery-blockUI' );
+    wp_enqueue_script( 'jquery-ui-draggable' );
+    wp_enqueue_script( 'jquery-ui-droppable' );
+    wp_enqueue_script( 'jquery-ui-sortable' );
 
     // Plugin scripts:
     wp_enqueue_script( 'jpid-admin' );
@@ -156,6 +159,11 @@ class JPID_Admin {
 
     if ( $current_screen->id === 'jpid_product' ) {
       $jpid_admin_args['load_product_categories_display_nonce'] = wp_create_nonce( 'load_product_categories_display' );
+    }
+
+    if ( $current_screen->id === 'jajanan-pasar_page_jpid-settings' ) {
+      $jpid_admin_args['remove_location'] = __( 'Are you sure you want to remove this location?', 'jpid' );
+      $jpid_admin_args['remove_account'] = __( 'Are you sure you want to remove this account?', 'jpid' );
     }
 
     wp_localize_script( 'jpid-admin', 'jpid_admin', $jpid_admin_args );

@@ -158,8 +158,11 @@ final class JPID {
 		register_deactivation_hook( __FILE__, array( 'JPID_Deactivator', 'deactivate' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
-
+		
 		add_action( 'init', array( $this, 'init' ), 0 );
+
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 	}
 
 	/**
@@ -184,6 +187,34 @@ final class JPID {
 			$this->admin = new JPID_Admin();
 		}
 	}
+
+	/**
+	 * Load JavaScript for the public area.
+	 *
+	 * @since    1.0.0
+	 */
+  public function enqueue_scripts() {
+    $current_post   = get_post();
+    $current_screen = get_current_screen();
+
+    // Vendor scripts:
+
+    // Plugin scripts:
+  }
+
+  /**
+	 * Load CSS for the public area.
+	 *
+	 * @since    1.0.0
+	 */
+  public function enqueue_styles() {
+    $current_post   = get_post();
+    $current_screen = get_current_screen();
+
+    // Vendor styles:
+
+    // Plugin styles:
+  }
 
 }
 

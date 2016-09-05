@@ -87,6 +87,8 @@ class JPID_Admin_Settings {
   private function setup_settings() {
     $this->settings   = array();
     $this->settings[] = new JPID_Settings_General( $this->tabs['general']['page'] );
+    $this->settings[] = new JPID_Settings_Delivery( $this->tabs['delivery']['page'] );
+    $this->settings[] = new JPID_Settings_Payment( $this->tabs['payment']['page'] );
   }
 
   /**

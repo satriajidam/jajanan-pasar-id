@@ -63,9 +63,14 @@ class JPID_Settings_General extends JPID_Settings {
             'description'       => __( 'Prevent customer from placing order and show order full notice on the customer facing area of the website.', 'jpid' ),
             'sanitize_callback' => 'intval'
           ),
+          'jpid_order_full_notice' => array(
+            'title'             => __( 'Order Full Notice', 'jpid' ),
+            'description'       => __( 'The notice that the customer will see on the order form.', 'jpid' ),
+            'sanitize_callback' => 'sanitize_text_field'
+          ),
           'jpid_order_available_date' => array(
             'title'             => __( 'Accepting Order Date', 'jpid' ),
-            'description'       => __( 'Show the date when the order will be available again on the customer facing area of the website.', 'jpid' ),
+            'description'       => __( 'Show the date when the order will be available again on the order form.', 'jpid' ),
             'sanitize_callback' => 'sanitize_text_field'
           )
         )
@@ -88,7 +93,7 @@ class JPID_Settings_General extends JPID_Settings {
         $section_desc = __( 'Setup pages that will be used to handle snack ordering process on the customer facing area.', 'jpid' );
         break;
       case 'jpid_order_section':
-        $section_desc = __( 'The following options are used to enable/disable snack ordering on the customer facing area.', 'jpid' );
+        $section_desc = __( 'The following settings are used to enable/disable snack ordering on the customer facing area.', 'jpid' );
         break;
     }
 
@@ -110,40 +115,53 @@ class JPID_Settings_General extends JPID_Settings {
       case 'jpid_checkout_page':
       case 'jpid_payment_confirmation_page':
       case 'jpid_customer_page':
+        $selected_page = absint( get_option( $field_id ) );
+
         $pages = get_pages( array(
           'sort_order'  => 'asc',
           'sort_column' => 'post_title',
           'post_type'   => 'page',
           'post_status' => array( 'publish', 'draft' )
         ) );
+        ?>
+        <select id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="">
+          <option value="0">-<?php esc_html_e( __( 'Select Page', 'jpid' ) ); ?>-</option>
+          <?php if ( ! is_null( $pages ) ) : ?>
+            <?php foreach ( $pages as $page ) : ?>
+              <option value="<?php esc_attr_e( $page->ID ); ?>" <?php selected( $selected_page, $page->ID, true ); ?>><?php esc_html_e( $page->post_title ); ?></option>
+            <?php endforeach ?>
+          <?php endif; ?>
+        </select>
 
-        echo '<select id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_id ) . '" class="">';
-
-        echo '<option value="0">- ' . __( 'Select Page', 'jajanan-pasar-id' ) . ' -</option>';
-
-        if ( ! is_null( $pages ) ) {
-          $selected_page = absint( get_option( $field_id ) );
-
-          foreach ( $pages as $page ) {
-            echo '<option value="' . esc_attr( $page->ID ) . '" ' . selected( $selected_page, $page->ID, false ) . '>' . esc_html( $page->post_title ) . '</option>';
-          }
-        }
-
-        echo '</select>';
-
-        echo '<p class="description">' . $args['description'] . '</p>';
+        <p class="description"><?php esc_html_e( $args['description'] ); ?></p>
+        <?php
         break;
+
       case 'jpid_order_full_status':
         $order_full_status = (int) get_option( $field_id );
+        ?>
+        <input type="checkbox" id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="" value="1" <?php checked( $order_full_status, 1, true ); ?> />
 
-        echo '<input type="checkbox" id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_id ) . '" class="" value="1" ' . checked( $order_full_status, 1, false ) . ' />&nbsp;<p class="description jpid-inline-paragraph">' . esc_html( $args['description'] ) . '</p>';
+        <p class="description jpid-inline-paragraph"><?php esc_html_e( $args['description'] ); ?></p>
+        <?php
         break;
+
+      case 'jpid_order_full_notice':
+        $order_full_notice = (string) get_option( $field_id );
+        ?>
+        <textarea id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="large-text"><?php esc_html_e( $order_full_notice ); ?></textarea>
+
+        <p class="description"><?php esc_html_e( $args['description'] ); ?></p>
+        <?php
+        break;
+
       case 'jpid_order_available_date':
         $order_available_date = (string) get_option( $field_id );
+        ?>
+        <input type="text" id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="" data-dateformat="dd-mm-yy" value="<?php esc_attr_e( $order_available_date ); ?>" />
 
-        echo '<input type="text" id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_id ) . '" class="" data-dateformat="dd-mm-yy" value="' . esc_attr( $order_available_date ) . '" />';
-
-        echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
+        <p class="description"><?php esc_html_e( $args['description'] ); ?></p>
+        <?php
         break;
     }
   }

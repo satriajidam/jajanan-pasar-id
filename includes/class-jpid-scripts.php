@@ -102,7 +102,8 @@ class JPID_Scripts {
       'jpid-admin',
       JPID_JS_URL . 'admin/jpid-admin' . JPID_SCRIPT_SUFFIX . '.js',
       array( 'jquery' ),
-      JPID_VERSION
+      JPID_VERSION,
+      true
     );
   }
 
@@ -136,7 +137,7 @@ class JPID_Scripts {
   private function register_vendor_styles() {
     wp_register_style(
       'jquery-ui-timepicker',
-      JPID_CSS_URL . 'vendor/jquery-ui-timepicker/jquery-ui-timepicker-addon-modified' . JPID_SCRIPT_SUFFIX . '.css',
+      JPID_CSS_URL . 'vendor/jquery-ui-timepicker/jquery-ui-timepicker-addon' . JPID_SCRIPT_SUFFIX . '.css',
       array(),
       '1.6.3'
     );

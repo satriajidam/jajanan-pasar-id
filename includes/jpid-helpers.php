@@ -27,3 +27,59 @@
 function jpid_to_rupiah( $price ) {
   return 'Rp' . number_format( $price, 2, ',', '.' );
 }
+
+/**
+ * Get a list of provinces in Indonesia.
+ *
+ * @since    1.0.0
+ * @return   array    A list of available provinces.
+ */
+function jpid_get_province_list() {
+  return array(
+    // Sumatera
+    'Aceh',
+    'Sumatera Utara',
+    'Sumatera Barat',
+    'Riau',
+    'Kepulauan Riau',
+    'Jambi',
+    'Sumatera Selatan',
+    'Bangka Belitung',
+    'Bengkulu',
+    'Lampung',
+
+    // Jawa
+    'DKI Jakarta',
+    'Jawa Barat',
+    'Banten',
+    'Jawa Tengah',
+    'DI Yogyakarta',
+    'Jawa Timur',
+
+    // Bali & Nusa Tenggara
+    'Bali',
+    'Nusa Tenggara Barat',
+    'Nusa Tenggara Timur',
+
+    // Kalimantan
+    'Kalimantan Barat',
+    'Kalimantan Tengah',
+    'Kalimantan Selatan',
+    'Kalimantan Timur',
+    'Kalimantan Utara',
+
+    // Sulawesi
+    'Sulawesi Utara',
+    'Sulawesi Barat',
+    'Sulawesi Tengah',
+    'Sulawesi Tenggara',
+    'Sulawesi Selatan',
+    'Gorontalo',
+
+    // Maluku & Papua
+    'Maluku',
+    'Maluku Utara',
+    'Papua',
+    'Papua Barat'
+  );
+}
