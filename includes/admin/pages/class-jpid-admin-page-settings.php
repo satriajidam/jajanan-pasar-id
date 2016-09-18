@@ -11,19 +11,7 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class JPID_Admin_Settings {
-
-  /**
-   * @since    1.0.0
-   * @var      string    Settings page slug.
-   */
-  private $settings_page_slug;
-
-  /**
-   * @since    1.0.0
-   * @var      array    Collection of settings tabs.
-   */
-  private $tabs;
+class JPID_Admin_Page_Settings extends JPID_Admin_Page {
 
   /**
    * @since    1.0.0
@@ -36,11 +24,10 @@ class JPID_Admin_Settings {
 	 *
 	 * @since    1.0.0
 	 */
-  public function __construct( $settings_page_slug ) {
-    $this->settings_page_slug = $settings_page_slug;
+  public function __construct() {
+    $this->slug = 'jpid-settings';
 
     $this->includes();
-    $this->setup_tabs();
     $this->setup_settings();
     $this->setup_hooks();
   }
@@ -58,23 +45,23 @@ class JPID_Admin_Settings {
   }
 
   /**
-   * Setup settings page tabs.
+   * Get settings page tabs.
    *
    * @since    1.0.0
    */
-  private function setup_tabs() {
-    $this->tabs = array(
+  private function get_tabs() {
+    return array(
       'general' => array(
-        'name' => __( 'General', 'jpid' ),
-        'page' => 'jpid_general_settings'
+        'title' => __( 'General', 'jpid' ),
+        'group'  => 'jpid_general_settings'
       ),
       'delivery' => array(
-        'name' => __( 'Delivery', 'jpid' ),
-        'page' => 'jpid_delivery_settings'
+        'title' => __( 'Delivery', 'jpid' ),
+        'group'  => 'jpid_delivery_settings'
       ),
       'payment' => array(
-        'name' => __( 'Payment', 'jpid' ),
-        'page' => 'jpid_payment_settings'
+        'title' => __( 'Payment', 'jpid' ),
+        'group'  => 'jpid_payment_settings'
       )
     );
   }
@@ -85,10 +72,13 @@ class JPID_Admin_Settings {
 	 * @since    1.0.0
 	 */
   private function setup_settings() {
+    $tabs = $this->get_tabs();
+
+    // Setup settings
     $this->settings   = array();
-    $this->settings[] = new JPID_Settings_General( $this->tabs['general']['page'] );
-    $this->settings[] = new JPID_Settings_Delivery( $this->tabs['delivery']['page'] );
-    $this->settings[] = new JPID_Settings_Payment( $this->tabs['payment']['page'] );
+    $this->settings[] = new JPID_Settings_General( $tabs['general']['group'] );
+    $this->settings[] = new JPID_Settings_Delivery( $tabs['delivery']['group'] );
+    $this->settings[] = new JPID_Settings_Payment( $tabs['payment']['group'] );
   }
 
   /**
@@ -120,8 +110,8 @@ class JPID_Admin_Settings {
    *
    * @since    1.0.0
    */
-  public function display_settings_page() {
-    include_once JPID_PLUGIN_DIR . 'includes/admin/views/html-jpid-admin-settings-page.php';
+  public function display_page() {
+    include_once JPID_PLUGIN_DIR . 'includes/admin/pages/views/html-jpid-admin-settings-page.php';
   }
 
 }

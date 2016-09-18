@@ -150,6 +150,130 @@ class JPID_Activator {
   	$wpdb->hide_errors();
 
   	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+    dbdelta( self::get_schema() );
+  }
+
+  /**
+   * Get schema for custom database tables.
+   *
+   * @since     1.0.0
+   * @return    string    Table scheme.
+   */
+  private static function get_schema() {
+    global $wpdb;
+
+    $charset_collate = '';
+
+    if ( $wpdb->has_cap( 'collation' ) ) {
+			$charset_collate = $wpdb->get_charset_collate();
+		}
+
+    // Orders table
+    $tables = "CREATE TABLE {$wpdb->prefix}jpid_orders (
+      order_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+      order_invoice varchar(100) NOT NULL,
+      order_date datetime NOT NULL,
+      order_status varchar(40) NOT NULL,
+      customer_id bigint(20) UNSIGNED NOT NULL,
+      recipient_name varchar(200) NOT NULL,
+      recipient_phone varchar(200) NOT NULL,
+      delivery_date datetime NOT NULL,
+      delivery_address varchar(200) NOT NULL,
+      delivery_province varchar(200) NOT NULL,
+      delivery_city varchar(200) NOT NULL,
+      delivery_note text,
+      delivery_cost float NOT NULL,
+      snack_box_qty int(20) NOT NULL,
+      snack_box_price float NOT NULL,
+      order_modified datetime,
+      PRIMARY KEY  (order_id),
+      KEY order_invoice (order_invoice),
+      KEY customer_id (customer_id),
+      UNIQUE (order_invoice)
+    ) {$charset_collate};";
+
+    // Order items table
+    $tables .= "CREATE TABLE {$wpdb->prefix}jpid_order_items (
+      item_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+      order_id bigint(20) UNSIGNED NOT NULL,
+      product_id bigint(20) UNSIGNED NOT NULL,
+      item_qty int(20) NOT NULL,
+      PRIMARY KEY  (item_id)
+      KEY order_id (order_id)
+    ) {$charset_collate};";
+
+    // EXPERIMENTAL TABLES: not intended for production use.
+    //
+    // $tables .= "CREATE TABLE {$wpdb->prefix}jpid_snack_box (
+    //   snack_box_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    //   order_id bigint(20) UNSIGNED NOT NULL,
+    //   snack_box_price float NOT NULL,
+    //   snack_box_qty int(20) NOT NULL,
+    //   PRIMARY KEY  (snack_box_id),
+    //   KEY order_id (order_id)
+    // ) {$charset_collate};";
+    //
+    // $tables .= "CREATE TABLE {$wpdb->prefix}jpid_snack_box_items (
+    //   item_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    //   snack_box_id bigint(20) UNSIGNED NOT NULL,
+    //   product_id bigint(20) UNSIGNED NOT NULL,
+    //   item_qty int(20) NOT NULL,
+    //   PRIMARY KEY  (item_id),
+    //   KEY snack_box_id (snack_box_id)
+    // ) {$charset_collate};";
+
+    // Order logs table
+    $tables .= "CREATE TABLE {$wpdb->prefix}jpid_order_logs (
+      log_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+      order_id bigint(20) UNSIGNED NOT NULL,
+      user_id bigint(20) UNSIGNED,
+      log_date datetime NOT NULL,
+      log_author varchar(200) NOT NULL,
+      log_type varchar(40) NOT NULL,
+      log_message text NOT NULL,
+      PRIMARY KEY  (log_id),
+      KEY order_id (order_id)
+    ) {$charset_collate};";
+
+    // Customers table
+    $tables .= "CREATE TABLE {$wpdb->prefix}jpid_customers (
+      customer_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+      user_id bigint(20) UNSIGNED,
+      customer_status varchar(40) NOT NULL,
+      customer_name varchar(200) NOT NULL,
+      customer_email varchar(200) NOT NULL,
+      customer_phone varchar(200),
+      customer_address varchar(200),
+      customer_province varchar(200),
+      customer_city varchar(200),
+      total_orders int(20) NOT NULL,
+      total_spendings float NOT NULL,
+      date_created datetime NOT NULL,
+      PRIMARY KEY  (customer_id),
+      KEY customer_email (customer_email)
+    ) {$charset_collate};";
+
+    // Payments table
+    $tables .= "CREATE TABLE {$wpdb->prefix}jpid_payments (
+      payment_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+      order_invoice varchar(100) NOT NULL,
+      date_submitted datetime NOT NULL,
+      receipt_id bigint(20) UNSIGNED,
+      payment_bank varchar(200) NOT NULL,
+      payment_account_name varchar(200) NOT NULL,
+      payment_account_number varchar(200) NOT NULL,
+      transfer_bank varchar(200) NOT NULL,
+      transfer_account_name varchar(200) NOT NULL,
+      transfer_account_number varchar(200) NOT NULL,
+      transfer_amount float NOT NULL,
+      transfer_note text,
+      transfer_date datetime NOT NULL,
+      PRIMARY KEY  (payment_id),
+      KEY order_invoice (order_invoice)
+    ) {$charset_collate};";
+
+    return $tables;
   }
 
   /**

@@ -173,7 +173,7 @@ class JPID_Product {
     return get_edit_post_link( $this->get_id() );
   }
 
-  public function has_image() {
+  private function has_image() {
     return has_post_thumbnail( $this->get_id() );
   }
 

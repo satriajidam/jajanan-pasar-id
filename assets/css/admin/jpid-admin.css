@@ -113,15 +113,15 @@
   vertical-align: top;
 }
 
-.jpid-location-table th.jpid-location-table__province-data {
+.jpid-location-table td.jpid-location-table__province-data {
   width: 25%;
 }
 
-.jpid-location-table th.jpid-location-table__cities-data {
+.jpid-location-table td.jpid-location-table__cities-data {
   width: 40%;
 }
 
-.jpid-location-table th.jpid-location-table__remove-data {
+.jpid-location-table td.jpid-location-table__remove-data {
   width: 25%;
 }
 

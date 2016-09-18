@@ -79,7 +79,7 @@ function jpid_get_product( $product = null ) {
 	$return_product = null;
 
 	if ( empty( $product ) ) {
-		$return_product = get_theproduct();
+		$return_product = jpid_get_theproduct();
 	} else {
 		if ( jpid_is_product( $theproduct ) ) {
 			$id_is_equal      = is_numeric( $product ) && ( $product == $theproduct->get_id() );
@@ -88,11 +88,10 @@ function jpid_get_product( $product = null ) {
 
 			if ( $id_is_equal || $product_is_equal || $post_is_equal ) {
 				$return_product = $theproduct;
-			} else {
-				$theproduct     = new JPID_Product( $product );
-				$return_product = $theproduct;
 			}
-		} else {
+		}
+
+		if ( is_null( $return_product ) ) {
 			$theproduct     = new JPID_Product( $product );
 			$return_product = $theproduct;
 		}

@@ -29,8 +29,6 @@
 		 */
 		productListQuickEdit: function () {
 			$('#the-list').on('click', '.editinline', function() {
-				inlineEditPost.revert();
-
 				let postID          = $(this).closest('tr').attr('id').replace('post-', '');
 				let JPIDInlineData  = $('#jpid_inline_' + postID);
 				let productPrice    = JPIDInlineData.find('.jpid_product_price').text();
@@ -86,22 +84,13 @@
 				current_post: jpid_admin.post_id
 			};
 
-			// Send ajax when product type selector is changed.
+			// Change product category selector when product type selector is changed.
 			$('#jpid_product_type').on('change', function (evt) {
 				data.current_type = $(this).val();
 
 				$.post(jpid_admin.ajax_url, data, function (response) {
 					$('#jpid_product_category').parent().html(response);
 				});
-			});
-
-			$('#post').submit(function (evt) {
-				$('.jpid-required-field').each(function () {
-					if ($(this).val() === '') {
-						evt.preventDefault();
-						$(this).addClass('jpid-field-error');
-					}
-				})
 			});
 		},
 
@@ -318,6 +307,7 @@
 	 * Run when document has been fully loaded.
 	 */
 	$(function () {
+		console.log(jpid_admin.screen_id);
 		switch (jpid_admin.screen_id) {
 			case 'edit-jpid_product_category':
 				JPIDAdmin.productCategoryQuickEdit();

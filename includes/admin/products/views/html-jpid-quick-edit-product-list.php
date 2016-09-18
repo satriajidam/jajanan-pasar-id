@@ -45,7 +45,7 @@
             <option><?php esc_html_e( 'No category found', 'jpid' ); ?></option>
           <?php endif; ?>
         </select>
-        <select id="jpid_product_category_drink"  name="jpid_product_category_drink" class="jpid-field-select-short">
+        <select id="jpid_product_category_drink"  name="jpid_product_category_drink" class="jpid-field-select-short hidden">
           <?php
             $drink_categories = jpid_get_product_category_terms( $product_types[1]->term_id );
           ?>

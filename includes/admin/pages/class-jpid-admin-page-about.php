@@ -11,21 +11,15 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class JPID_Admin_About {
-
-  /**
-   * @since    1.0.0
-   * @var      string    About page slug.
-   */
-  private $about_page_slug;
+class JPID_Admin_Page_About extends JPID_Admin_Page {
 
   /**
    * Class constructor.
    *
    * @since    1.0.0
    */
-  public function __construct( $about_page_slug ) {
-    $this->about_page_slug = $about_page_slug;
+  public function __construct() {
+    $this->slug = 'jpid-about';
   }
 
   /**
@@ -33,8 +27,8 @@ class JPID_Admin_About {
    *
    * @since    1.0.0
    */
-  public function display_about_page() {
-    include_once JPID_PLUGIN_DIR . 'includes/admin/views/html-jpid-admin-about-page.php';
+  public function display_page() {
+    include_once JPID_PLUGIN_DIR . 'includes/admin/pages/views/html-jpid-admin-about-page.php';
   }
 
 }

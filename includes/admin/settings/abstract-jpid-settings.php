@@ -18,17 +18,17 @@ abstract class JPID_Settings {
 
   /**
    * @since    1.0.0
-   * @var      string    Settings page tab slug.
+   * @var      string    Option group.
    */
-  protected $settings_page_tab;
+  protected $option_group;
 
   /**
    * Class constructor.
    *
    * @since    1.0.0
    */
-  public function __construct( $settings_page_tab ) {
-    $this->settings_page_tab = $settings_page_tab;
+  public function __construct( $option_group ) {
+    $this->option_group = $option_group;
   }
 
   /**
@@ -44,7 +44,7 @@ abstract class JPID_Settings {
         $section_id,
         $section_args['title'],
         array( $this, 'display_sections' ),
-        $this->settings_page_tab
+        $this->option_group
       );
 
       foreach ( $section_args['fields'] as $field_id => $field_args ) {
@@ -52,7 +52,7 @@ abstract class JPID_Settings {
           $field_id,
           $field_args['title'],
           array( $this, 'display_fields' ),
-          $this->settings_page_tab,
+          $this->option_group,
           $section_id,
           array(
             'label_for'   => $field_id,
@@ -60,7 +60,7 @@ abstract class JPID_Settings {
           )
         );
 
-        register_setting( $this->settings_page_tab, $field_id, $field_args['sanitize_callback'] );
+        register_setting( $this->option_group, $field_id, $field_args['sanitize_callback'] );
       }
     }
   }

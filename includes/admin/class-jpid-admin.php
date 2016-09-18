@@ -18,19 +18,13 @@ if ( ! class_exists( 'JPID_Admin' ) ) :
 class JPID_Admin {
 
   /**
-   * @since    1.0.0
-   * @var      array    Collection of admin page objects.
-   */
-  private $pages;
-
-  /**
 	 * Class constructor.
 	 *
 	 * @since    1.0.0
 	 */
   public function __construct() {
     $this->includes();
-    $this->setup_pages();
+    $this->setup_admin();
     $this->setup_hooks();
   }
 
@@ -40,34 +34,38 @@ class JPID_Admin {
 	 * @since    1.0.0
 	 */
   private function includes() {
-    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-about.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-settings.php';
+    // Custom Pages
+    require_once JPID_PLUGIN_DIR . 'includes/admin/pages/abstract-jpid-admin-page.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-about.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-settings.php';
 
-    // Products
+    // Post Types
+    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
+
+    // Post Types - Product
     require_once JPID_PLUGIN_DIR . 'includes/admin/products/class-jpid-admin-product-category.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/products/class-jpid-admin-product-list.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/products/class-jpid-admin-product-edit.php';
-
-    require_once JPID_PLUGIN_DIR . 'includes/admin/jpid-admin-ajax.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/products/jpid-admin-product-ajax.php';
   }
 
   /**
-   * Setup page slugs and prepare the page objects.
+   * Setup admin objects when WordPress admin initialises.
    *
    * @since    1.0.0
    */
-  private function setup_pages() {
-    $this->pages = array(
-      'about' => array(
-        'slug' => 'jpid-about',
-        'page' => new JPID_Admin_About( 'jpid-about' )
-      ),
-      'settings' => array(
-        'slug' => 'jpid-settings',
-        'page' => new JPID_Admin_Settings( 'jpid-settings' )
-      )
-    );
+  private function setup_admin() {
+    // Custom Pages
+    $this->about_page       = new JPID_Admin_Page_About();
+    $this->settings_page    = new JPID_Admin_Page_Settings();
+
+    // Post Types
+    $this->post_types       = new JPID_Admin_Post_Types();
+
+    // Post Types - Product
+    $this->product_category = new JPID_Admin_Product_Category();
+    $this->product_list     = new JPID_Admin_Product_List();
+    $this->product_edit     = new JPID_Admin_Product_Edit();
   }
 
   /**
@@ -77,7 +75,6 @@ class JPID_Admin {
    */
   private function setup_hooks() {
     add_action( 'admin_menu', array( $this, 'admin_menus' ) );
-    add_action( 'admin_init', array( $this, 'admin_init' ) );
 
     add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
     add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );
@@ -94,31 +91,17 @@ class JPID_Admin {
   public function admin_menus() {
     add_menu_page(
       __( 'Jajanan Pasar', 'jpid' ), __( 'Jajanan Pasar', 'jpid' ), 'manage_options',
-      $this->pages['about']['slug'], null, 'dashicons-store', 50
+      $this->about_page->get_slug(), null, 'dashicons-store', 50
     );
 
     add_submenu_page(
-      $this->pages['about']['slug'], __( 'About', 'jpid' ), __( 'About', 'jpid' ), 'manage_options',
-      $this->pages['about']['slug'], array( $this->pages['about']['page'], 'display_about_page' )
+      $this->about_page->get_slug(), __( 'About', 'jpid' ), __( 'About', 'jpid' ), 'manage_options',
+      $this->about_page->get_slug(), array( $this->about_page, 'display_page' )
     );
     add_submenu_page(
-      $this->pages['about']['slug'], __( 'Settings', 'jpid' ), __( 'Settings', 'jpid' ), 'manage_options',
-      $this->pages['settings']['slug'], array( $this->pages['settings']['page'], 'display_settings_page' )
+      $this->about_page->get_slug(), __( 'Settings', 'jpid' ), __( 'Settings', 'jpid' ), 'manage_options',
+      $this->settings_page->get_slug(), array( $this->settings_page, 'display_page' )
     );
-  }
-
-  /**
-	 * Init JPID admin when WordPress admin initialises.
-	 *
-	 * @since    1.0.0
-	 */
-  public function admin_init() {
-    $this->post_types       = new JPID_Admin_Post_Types();
-
-    // Products
-    $this->product_category = new JPID_Admin_Product_Category();
-    $this->product_list     = new JPID_Admin_Product_List();
-    $this->product_edit     = new JPID_Admin_Product_Edit();
   }
 
   /**

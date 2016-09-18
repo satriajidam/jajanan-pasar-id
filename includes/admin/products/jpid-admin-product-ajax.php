@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Handle ajax request in the admin area.
+ * Handle ajax request for product administration.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/admin
+ * @subpackage jajanan-pasar-id/admin/products
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 

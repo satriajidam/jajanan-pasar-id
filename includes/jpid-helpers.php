@@ -49,11 +49,11 @@ function jpid_get_province_list() {
     'Lampung',
 
     // Jawa
-    'DKI Jakarta',
+    'Jakarta',
     'Jawa Barat',
     'Banten',
     'Jawa Tengah',
-    'DI Yogyakarta',
+    'Yogyakarta',
     'Jawa Timur',
 
     // Bali & Nusa Tenggara

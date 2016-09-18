@@ -130,7 +130,7 @@ class JPID_Admin_Product_List {
         }
         break;
       case 'image':
-        $image = $current_product->has_image() ? $current_product->get_image( array( 50, 50) ) : '-';
+        $image = $current_product->get_image( array( 50, 50) );
         $link  = $current_product->get_editlink();
 
         echo '<a class="row-title" href="' . esc_url( $link ) . '">' . $image . '</a>';
