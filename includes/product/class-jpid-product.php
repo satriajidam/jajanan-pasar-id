@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Manage product data.
+ * Product object.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/models
+ * @subpackage jajanan-pasar-id/includes/product
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 

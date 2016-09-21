@@ -25,7 +25,7 @@ class JPID_Admin_Page_Settings extends JPID_Admin_Page {
 	 * @since    1.0.0
 	 */
   public function __construct() {
-    $this->slug = 'jpid-settings';
+    $this->set_slug( 'jpid-settings' );
 
     $this->includes();
     $this->setup_settings();

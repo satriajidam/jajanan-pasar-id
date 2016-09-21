@@ -53,12 +53,12 @@
 				});
 			});
 
-			function switchCategorySelector(displaySelector, hideSelector, productCategory) {
-				$('#' + displaySelector).removeClass('hidden');
-				$('#' + hideSelector).addClass('hidden');
+			function switchCategorySelector(displaySelectorID, hideSelectorID, productCategory) {
+				$('#' + displaySelectorID).removeClass('hidden');
+				$('#' + hideSelectorID).addClass('hidden');
 
-				$('select[name="' + displaySelector + '"] option:selected').attr('selected', false).change();
-				$('select[name="' + displaySelector + '"] option[value="' + productCategory + '"]').attr('selected', 'selected').change();
+				$('select[name="' + displaySelectorID + '"] option:selected').attr('selected', false).change();
+				$('select[name="' + displaySelectorID + '"] option[value="' + productCategory + '"]').attr('selected', 'selected').change();
 			}
 
 			function activateCategorySelector(productType, productCategory) {
@@ -102,39 +102,21 @@
 			let activeTab  = this.getQueryStringByName('tab') ? this.getQueryStringByName('tab') : 'general';
 
 			if (activeTab === 'general') {
-				let orderFullStatus       = $('#jpid_order_full_status');
-				let orderFullNotice       = $('#jpid_order_full_notice');
-				let orderFullNoticeRow    = orderFullNotice.closest('tr');
-				let orderAvailableDate    = $('#jpid_order_available_date');
-				let orderAvailableDateRow = orderAvailableDate.closest('tr');
-
-		    if (orderFullStatus.is(':checked')) {
-		      orderAvailableDateRow.removeClass('hidden').change();
-					orderFullNoticeRow.removeClass('hidden').change();
-		    } else {
-		      orderAvailableDateRow.addClass('hidden').change();
-					orderFullNoticeRow.addClass('hidden').change();
-		    }
-
-		    orderFullStatus.on('change', function (evt) {
-		      orderAvailableDateRow.toggleClass('hidden');
-					orderFullNoticeRow.toggleClass('hidden');
-
-		      if (!$(this).is(':checked')) {
-		        // TODO: orderAvailableDate.val('');
-						// TODO: orderFullNotice.val('');
-		      }
-		    });
-
-		    orderAvailableDate.datepicker({
+		    $('#jpid_order_available_date').datepicker({
 		      showButtonPanel: true,
 		      dateFormat: $(this).data('dateformat') ? $(this).data('dateformat') : 'dd-mm-yy',
 		      minDate: new Date()
 		    });
 
-		    orderAvailableDate.on('keypress', function (evt) {
+		    $('#jpid_order_available_date').on('keypress', function (evt) {
 		      evt.preventDefault();
 		    });
+
+				$('#jpid_clear_date').on('click', function (evt) {
+					$('#jpid_order_available_date').val('');
+
+					evt.preventDefault();
+				})
 			}
 
 			if (activeTab === 'delivery') {
@@ -307,7 +289,6 @@
 	 * Run when document has been fully loaded.
 	 */
 	$(function () {
-		console.log(jpid_admin.screen_id);
 		switch (jpid_admin.screen_id) {
 			case 'edit-jpid_product_category':
 				JPIDAdmin.productCategoryQuickEdit();

@@ -39,14 +39,14 @@ class JPID_Admin {
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-about.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-settings.php';
 
-    // Post Types
+    // Core
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
 
-    // Post Types - Product
-    require_once JPID_PLUGIN_DIR . 'includes/admin/products/class-jpid-admin-product-category.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/products/class-jpid-admin-product-list.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/products/class-jpid-admin-product-edit.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/products/jpid-admin-product-ajax.php';
+    // Product Post Type
+    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-category.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-list.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-edit.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-ajax.php';
   }
 
   /**
@@ -62,10 +62,11 @@ class JPID_Admin {
     // Post Types
     $this->post_types       = new JPID_Admin_Post_Types();
 
-    // Post Types - Product
+    // Post Type - Product
     $this->product_category = new JPID_Admin_Product_Category();
     $this->product_list     = new JPID_Admin_Product_List();
     $this->product_edit     = new JPID_Admin_Product_Edit();
+    $this->product_ajax     = new JPID_Admin_Product_Ajax();
   }
 
   /**
@@ -75,6 +76,7 @@ class JPID_Admin {
    */
   private function setup_hooks() {
     add_action( 'admin_menu', array( $this, 'admin_menus' ) );
+    add_action( 'admin_init', array( $this, 'admin_init' ) );
 
     add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
     add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );
@@ -105,6 +107,15 @@ class JPID_Admin {
   }
 
   /**
+   * Initialises admin core functionalities.
+   *
+   * @since    1.0.0
+   */
+  public function admin_init() {
+    // TODO: do something...
+  }
+
+  /**
 	 * Load JavaScript for the admin area.
 	 *
 	 * @since    1.0.0
@@ -129,7 +140,8 @@ class JPID_Admin {
     $jpid_admin_args = array(
       'ajax_url'  => admin_url( 'admin-ajax.php' ),
       'screen_id' => isset( $current_screen ) ? $current_screen->id : '',
-      'post_id'   => isset( $current_post ) ? $current_post->ID : 0
+      'post_id'   => isset( $current_post ) ? $current_post->ID : 0,
+      'load_product_categories_nonce' => wp_create_nonce( 'load_product_categories' )
     );
 
     if ( $current_screen->id === 'edit-jpid_product' ) {

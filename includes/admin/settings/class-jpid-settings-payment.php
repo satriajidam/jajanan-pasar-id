@@ -81,7 +81,7 @@ class JPID_Settings_Payment extends JPID_Settings {
 
     switch ( $field_id ) {
       case 'jpid_bank_payment_title':
-        $bank_payment_title = (string) get_option( $field_id );
+        $bank_payment_title = (string) jpid_get_option( $field_id );
         ?>
         <input type="text" id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="regular-text" value="<?php esc_attr_e(  $bank_payment_title ); ?>" />
 
@@ -90,7 +90,7 @@ class JPID_Settings_Payment extends JPID_Settings {
         break;
       case 'jpid_bank_payment_description':
       case 'jpid_bank_payment_instructions':
-        $payment_text = (string) get_option( $field_id );
+        $payment_text = (string) jpid_get_option( $field_id );
         ?>
         <textarea id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="large-text"><?php esc_html_e( $payment_text ); ?></textarea>
 
@@ -98,7 +98,7 @@ class JPID_Settings_Payment extends JPID_Settings {
         <?php
         break;
       case 'jpid_bank_payment_accounts':
-        $payment_accounts = get_option( $field_id );
+        $payment_accounts = jpid_get_option( $field_id );
         $accounts_count   = ! empty( $payment_accounts ) ? count( $payment_accounts ) : 1;
         ?>
         <p><?php esc_html_e( $args['description'] ); ?></p>

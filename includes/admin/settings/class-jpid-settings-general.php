@@ -115,7 +115,7 @@ class JPID_Settings_General extends JPID_Settings {
       case 'jpid_checkout_page':
       case 'jpid_payment_confirmation_page':
       case 'jpid_customer_page':
-        $selected_page = absint( get_option( $field_id ) );
+        $selected_page = absint( jpid_get_option( $field_id ) );
 
         $pages = get_pages( array(
           'sort_order'  => 'asc',
@@ -138,7 +138,7 @@ class JPID_Settings_General extends JPID_Settings {
         break;
 
       case 'jpid_order_full_status':
-        $order_full_status = (int) get_option( $field_id );
+        $order_full_status = (int) jpid_get_option( $field_id );
         ?>
         <input type="checkbox" id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="" value="1" <?php checked( $order_full_status, 1, true ); ?> />
 
@@ -147,7 +147,7 @@ class JPID_Settings_General extends JPID_Settings {
         break;
 
       case 'jpid_order_full_notice':
-        $order_full_notice = (string) get_option( $field_id );
+        $order_full_notice = (string) jpid_get_option( $field_id );
         ?>
         <textarea id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="large-text"><?php esc_html_e( $order_full_notice ); ?></textarea>
 
@@ -156,9 +156,11 @@ class JPID_Settings_General extends JPID_Settings {
         break;
 
       case 'jpid_order_available_date':
-        $order_available_date = (string) get_option( $field_id );
+        $order_available_date = (string) jpid_get_option( $field_id );
         ?>
         <input type="text" id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="" data-dateformat="dd-mm-yy" value="<?php esc_attr_e( $order_available_date ); ?>" />
+
+        <button id="jpid_clear_date" class="button button-secondary"><?php esc_html_e( 'Clear', 'jpid' ); ?></button>
 
         <p class="description"><?php esc_html_e( $args['description'] ); ?></p>
         <?php

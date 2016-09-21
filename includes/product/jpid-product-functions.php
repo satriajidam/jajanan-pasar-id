@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Collection of functoins to manage product object.
+ * Collection of functions to manage product object.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes
+ * @subpackage jajanan-pasar-id/includes/product
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 

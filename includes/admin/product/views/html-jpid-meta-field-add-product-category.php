@@ -4,7 +4,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/products/views
+ * @subpackage jajanan-pasar-id/includes/admin/product/views
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 ?>

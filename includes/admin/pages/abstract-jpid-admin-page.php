@@ -22,6 +22,16 @@ abstract class JPID_Admin_Page {
   protected $slug;
 
   /**
+   * Set page slug.
+   *
+   * @since    1.0.0
+   * @param    string    Page slug.
+   */
+  protected function set_slug( $slug ) {
+    $this->slug = $slug;
+  }
+
+  /**
    * Get page slug.
    *
    * @since     1.0.0

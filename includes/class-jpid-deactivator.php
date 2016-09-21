@@ -41,18 +41,9 @@ class JPID_Deactivator {
 	 * @since    1.0.0
 	 */
 	private static function remove_custom_roles() {
-		global $wp_roles;
+		$plugin_roles = new JPID_Roles();
 
-    if ( ! class_exists( 'WP_Roles' ) ) {
-      return;
-    }
-
-    if ( ! isset( $wp_roles ) ) {
-      $wp_roles = new WP_Roles();
-    }
-
-    remove_role( 'customer' );
-    remove_role( 'shop_manager' );
+    $plugin_roles->remove_roles();
 	}
 
 }

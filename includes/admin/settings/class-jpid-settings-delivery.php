@@ -65,7 +65,7 @@ class JPID_Settings_Delivery extends JPID_Settings {
    */
   private function get_delivery_cost_methods() {
     return array(
-      'fixed' => __( 'Fixed', 'jpid' )
+      'flat' => __( 'Flat', 'jpid' )
     );
   }
 
@@ -98,7 +98,7 @@ class JPID_Settings_Delivery extends JPID_Settings {
 
     switch ( $field_id ) {
       case 'jpid_delivery_days_range':
-        $delivery_days = (int) get_option( $field_id );
+        $delivery_days = (int) jpid_get_option( $field_id );
         ?>
         <input type="number" id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" value="<?php esc_attr_e( $delivery_days ); ?>" class="small-text" />
 
@@ -109,7 +109,7 @@ class JPID_Settings_Delivery extends JPID_Settings {
         break;
 
       case 'jpid_delivery_hours':
-        $delivery_hours = get_option( $field_id );
+        $delivery_hours = jpid_get_option( $field_id );
 
         if ( empty( $delivery_hours ) ) {
           $delivery_hours['start'] = '';
@@ -129,7 +129,7 @@ class JPID_Settings_Delivery extends JPID_Settings {
         break;
 
       case 'jpid_delivery_cost_method':
-        $selected_method = (string) get_option( $field_id );
+        $selected_method = (string) jpid_get_option( $field_id );
         $cost_methods    = $this->get_delivery_cost_methods();
         ?>
         <select id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" class="">
@@ -143,7 +143,7 @@ class JPID_Settings_Delivery extends JPID_Settings {
         break;
 
       case 'jpid_delivery_cost_amount':
-        $delivery_cost_amount = (float) get_option( $field_id );
+        $delivery_cost_amount = (float) jpid_get_option( $field_id );
         ?>
         <input type="number" id="<?php esc_attr_e( $field_id ); ?>" name="<?php esc_attr_e( $field_id ); ?>" value="<?php esc_attr_e( $delivery_cost_amount ); ?>" class="" />&nbsp;<?php esc_html_e( __( 'IDR', 'jpid' ) ); ?>
 
@@ -152,7 +152,7 @@ class JPID_Settings_Delivery extends JPID_Settings {
         break;
 
       case 'jpid_delivery_locations':
-        $delivery_locations = get_option( $field_id );
+        $delivery_locations = jpid_get_option( $field_id );
         $locations_count    = ! empty( $delivery_locations ) ? count( $delivery_locations ) : 1;
         ?>
         <p><?php esc_html_e( $args['description'] ); ?></p>

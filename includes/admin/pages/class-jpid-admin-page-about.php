@@ -19,7 +19,7 @@ class JPID_Admin_Page_About extends JPID_Admin_Page {
    * @since    1.0.0
    */
   public function __construct() {
-    $this->slug = 'jpid-about';
+    $this->set_slug( 'jpid-about' );
   }
 
   /**

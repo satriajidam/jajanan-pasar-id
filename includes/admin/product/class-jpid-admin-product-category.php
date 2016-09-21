@@ -5,7 +5,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/products
+ * @subpackage jajanan-pasar-id/includes/admin/product
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -60,7 +60,7 @@ class JPID_Admin_Product_Category {
    * @since    1.0.0
    */
   public function add_term_meta_fields() {
-    include_once JPID_PLUGIN_DIR . 'includes/admin/products/views/html-jpid-meta-field-add-product-category.php';
+    include_once JPID_PLUGIN_DIR . 'includes/admin/product/views/html-jpid-meta-field-add-product-category.php';
   }
 
   /**
@@ -70,7 +70,7 @@ class JPID_Admin_Product_Category {
    * @param    int    $term        The term object.
    */
   public function edit_term_meta_fields( $term ) {
-    include_once JPID_PLUGIN_DIR . 'includes/admin/products/views/html-jpid-meta-field-edit-product-category.php';
+    include_once JPID_PLUGIN_DIR . 'includes/admin/product/views/html-jpid-meta-field-edit-product-category.php';
   }
 
   /**

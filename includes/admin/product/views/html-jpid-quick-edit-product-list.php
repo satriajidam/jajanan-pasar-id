@@ -4,7 +4,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/products/views
+ * @subpackage jajanan-pasar-id/includes/admin/product/views
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 ?>
@@ -33,30 +33,21 @@
     <label>
       <span class="title"><?php esc_html_e( 'Category', 'jpid' ) ?></span>
       <span class="input-product-data input-product-category">
-        <select id="jpid_product_category_snack"  name="jpid_product_category_snack" class="jpid-field-select-short">
+        <?php foreach ( $product_types as $product_type ) : ?>
           <?php
-            $snack_categories = jpid_get_product_category_terms( $product_types[0]->term_id );
+            $type_name  = strtolower( $product_type->name );
+            $categories = jpid_get_product_category_terms( $product_type->term_id );
           ?>
-          <?php if ( ! empty( $snack_categories ) ) : ?>
-            <?php foreach ( $snack_categories as $snack_category ) : ?>
-              <option value="<?php esc_attr_e( $snack_category->term_id );  ?>"><?php esc_html_e( $snack_category->name ); ?></option>
-            <?php endforeach; ?>
-          <?php else : ?>
-            <option><?php esc_html_e( 'No category found', 'jpid' ); ?></option>
-          <?php endif; ?>
-        </select>
-        <select id="jpid_product_category_drink"  name="jpid_product_category_drink" class="jpid-field-select-short hidden">
-          <?php
-            $drink_categories = jpid_get_product_category_terms( $product_types[1]->term_id );
-          ?>
-          <?php if ( ! empty( $drink_categories ) ) : ?>
-            <?php foreach ( $drink_categories as $drink_category ) : ?>
-              <option value="<?php esc_attr_e( $drink_category->term_id );  ?>"><?php esc_html_e( $drink_category->name ); ?></option>
-            <?php endforeach; ?>
-          <?php else : ?>
-            <option><?php esc_html_e( 'No category found', 'jpid' ); ?></option>
-          <?php endif; ?>
-        </select>
+          <select id="jpid_product_category_<?php esc_attr_e( $type_name ); ?>" name="jpid_product_category_<?php esc_attr_e( $type_name ); ?>" class="jpid-field-select-short">
+            <?php if ( ! empty( $categories ) ) : ?>
+              <?php foreach ( $categories as $category ) : ?>
+                <option value="<?php esc_attr_e( $category->term_id );  ?>"><?php esc_html_e( $category->name ); ?></option>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <option><?php esc_html_e( 'No category found', 'jpid' ); ?></option>
+            <?php endif; ?>
+          </select>
+        <?php endforeach; ?>
       </span>
     </label>
   </div>

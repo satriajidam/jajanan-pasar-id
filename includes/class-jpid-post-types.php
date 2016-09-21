@@ -32,8 +32,6 @@ class JPID_Post_Types {
     add_action( 'init', array( $this, 'register_taxonomies' ) );
     add_action( 'init', array( $this, 'register_post_types' ) );
     add_action( 'init', array( $this, 'register_post_statuses' ) );
-
-
   }
 
   /**

@@ -96,6 +96,7 @@ final class JPID {
 	 */
 	private function define_constants() {
 		$this->define( 'JPID_VERSION', '1.0.0' );
+		$this->define( 'JPID_DB_VERSION', '1.0.0' );
 		$this->define( 'JPID_SLUG', 'jajanan-pasar-id' );
 		$this->define( 'JPID_PLUGIN_FILE', __FILE__ );
 		$this->define( 'JPID_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -129,23 +130,26 @@ final class JPID {
 	 */
 	private function includes() {
 		// Core files:
-		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-activator.php';
-		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-deactivator.php';
+		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-options.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-post-types.php';
+		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-roles.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-scripts.php';
 
 		// Product files:
-		require_once JPID_PLUGIN_DIR . 'includes/products/class-jpid-product.php';
-		require_once JPID_PLUGIN_DIR . 'includes/products/jpid-products.php';
+		require_once JPID_PLUGIN_DIR . 'includes/product/class-jpid-product.php';
+		require_once JPID_PLUGIN_DIR . 'includes/product/jpid-product-functions.php';
 
 		// Helper files:
-		require_once JPID_PLUGIN_DIR . 'includes/jpid-helpers.php';
-		require_once JPID_PLUGIN_DIR . 'includes/jpid-options.php';
-		require_once JPID_PLUGIN_DIR . 'includes/jpid-ajax.php';
+		require_once JPID_PLUGIN_DIR . 'includes/jpid-helper-functions.php';
+		require_once JPID_PLUGIN_DIR . 'includes/jpid-ajax-functions.php';
 
 		if ( is_admin() ) {
 			require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin.php';
 		}
+
+		// Activation files:
+		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-activator.php';
+		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-deactivator.php';
 	}
 
 	/**
@@ -180,11 +184,12 @@ final class JPID {
 	 * @since    1.0.0
 	 */
 	public function init() {
-		$this->post_types = new JPID_Post_Types();
-		$this->scripts    = new JPID_Scripts();
+		$this->plugin_options    = new JPID_Options();
+		$this->plugin_post_types = new JPID_Post_Types();
+		$this->plugin_scripts    = new JPID_Scripts();
 
 		if ( is_admin() ) {
-			$this->admin = new JPID_Admin();
+			$this->plugin_admin = new JPID_Admin();
 		}
 	}
 
