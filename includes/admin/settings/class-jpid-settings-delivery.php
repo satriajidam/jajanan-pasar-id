@@ -44,7 +44,7 @@ class JPID_Settings_Delivery extends JPID_Settings {
           'jpid_delivery_cost_amount' => array(
             'title'             => __( 'Delivery Cost Amount', 'jpid' ),
             'description'       => __( 'The delivery cost the customer must pay. Setting this to 0 means the delivery cost is free.', 'jpid' ),
-            'sanitize_callback' => 'floatval'
+            'sanitize_callback' => array( $this, 'sanitize_delivery_cost' )
           ),
           'jpid_delivery_locations' => array(
             'title'             => __( 'Delivery Locations', 'jpid' ),
@@ -217,6 +217,17 @@ class JPID_Settings_Delivery extends JPID_Settings {
     $delivery_hours['end']   = sanitize_text_field( $delivery_hours['end'] );
 
     return $delivery_hours;
+  }
+
+  /**
+   * Sanitize delivery cost value.
+   *
+   * @since     1.0.0
+   * @param     float    $delivery_cost    Delivery cost.
+   * @return    float                      Sanitized delivery cost.
+   */
+  public function sanitize_delivery_cost( $delivery_cost ) {
+    return round( floatval( $delivery_cost ), 2 );
   }
 
   /**

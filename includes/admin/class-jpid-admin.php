@@ -3,7 +3,7 @@
 /**
  * JPID admin class.
  *
- * Load JPID admin area.
+ * Loads JPID admin area.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id/includes/admin
@@ -113,6 +113,17 @@ class JPID_Admin {
    */
   public function admin_init() {
     // TODO: do something...
+
+    // $customers_db = new JPID_DB_Customers();
+    //
+    // die(var_dump($customers_db->get_customers(array(
+    //   'customer_id' => array(1,2,3,4,5),
+    //   'orderby' => 'customer_id',
+    //   'number' => 50,
+    //   'offset' => 0,
+    //   'gorillaz' => 'Harambe',
+    //   'customer_email' => 'booyah@gmail.com'
+    // ))));
   }
 
   /**
@@ -141,8 +152,11 @@ class JPID_Admin {
       'ajax_url'  => admin_url( 'admin-ajax.php' ),
       'screen_id' => isset( $current_screen ) ? $current_screen->id : '',
       'post_id'   => isset( $current_post ) ? $current_post->ID : 0,
-      'load_product_categories_nonce' => wp_create_nonce( 'load_product_categories' )
     );
+
+    if ( $current_screen->id === 'edit-jpid_product' || $current_screen->id === 'jpid_product' ) {
+      $jpid_admin_args['load_product_categories_nonce'] = wp_create_nonce( 'load_product_categories' );
+    }
 
     if ( $current_screen->id === 'edit-jpid_product' ) {
       $snack_type = get_term_by( 'name', 'Snack', 'jpid_product_type' );

@@ -135,6 +135,12 @@ final class JPID {
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-roles.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-scripts.php';
 
+		// Abstract files:
+		require_once JPID_PLUGIN_DIR . 'includes/abstracts/abstract-jpid-db.php';
+
+		// Customer files:
+		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-db-customers.php';
+
 		// Product files:
 		require_once JPID_PLUGIN_DIR . 'includes/product/class-jpid-product.php';
 		require_once JPID_PLUGIN_DIR . 'includes/product/jpid-product-functions.php';

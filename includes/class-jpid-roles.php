@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Add plugin custom roles and capabilities.
+ * Adds plugin custom roles and capabilities.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
@@ -121,7 +121,7 @@ class JPID_Roles {
 	 */
   private function role_exists( $role ) {
     global $wp_roles;
-    
+
     return $wp_roles->is_role( $role );
   }
 

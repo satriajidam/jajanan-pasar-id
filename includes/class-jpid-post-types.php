@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Register all custom post types, taxonomies, and post statuses for the plugin.
+ * Registers all custom post types, taxonomies, and post statuses for the plugin.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id

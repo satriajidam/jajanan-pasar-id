@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Register all scripts and styles for the plugin.
+ * Registers all scripts and styles for the plugin.
  *
- * List and register all scripts and styles in the assets/ folder
- * to be loaded later in front-end and admin pages.
+ * You still need to enqueue the scripts and styles manually in the
+ * front-end or admin area in order to use them.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id

@@ -26,7 +26,13 @@
  * @return   string                The new price format with IDR prefix.
  */
 function jpid_to_rupiah( $price ) {
-  return 'Rp' . number_format( $price, 2, ',', '.' );
+  $decimal_count = strlen( substr( strrchr( $price, '.' ), 1 ) );
+
+  if ( $decimal_count == 0 ) {
+    $decimal_count = 2;
+  }
+
+  return 'Rp' . number_format( $price, $decimal_count, ',', '.' );
 }
 
 /**

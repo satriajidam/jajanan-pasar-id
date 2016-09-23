@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Manage plugin's options.
+ * Manages plugin's options.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
@@ -38,6 +38,12 @@ class JPID_Options {
     add_action( 'init', array( $this, 'load_options' ) );
   }
 
+  /**
+   * Get option names and their default values.
+   *
+   * @since     1.0.0
+   * @return    array    Plugin's options and their default values.
+   */
   private function get_default_options() {
     // 'option_name' => option_value
     return array(

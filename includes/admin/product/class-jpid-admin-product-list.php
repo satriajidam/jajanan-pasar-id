@@ -324,7 +324,7 @@ class JPID_Admin_Product_List {
 
     if ( isset( $_POST['jpid_product_price'] ) ) {
       $product_price = sanitize_text_field( $_POST['jpid_product_price'] );
-      $product_price = floatval( $product_price );
+      $product_price = round( floatval( $product_price ), 2 );
 
       update_post_meta( $post_id, '_jpid_product_price', $product_price );
     }
