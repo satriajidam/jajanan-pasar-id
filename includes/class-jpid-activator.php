@@ -141,7 +141,7 @@ class JPID_Activator {
     $tables .= "CREATE TABLE {$wpdb->prefix}jpid_snack_box (
       snack_box_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
       date_created datetime NOT NULL,
-      snack_box_name varchar(200) NOT NULL,
+      snack_box_name varchar(200),
       snack_box_type varchar(200) NOT NULL,
       snack_box_price decimal(10, 2) NOT NULL,
       PRIMARY KEY  (snack_box_id),
@@ -182,13 +182,13 @@ class JPID_Activator {
       customer_address varchar(200),
       customer_province varchar(200),
       customer_city varchar(200),
-      total_orders int(20),
+      order_count int(20),
       total_spendings decimal(10, 2),
       PRIMARY KEY  (customer_id),
       KEY user_id (user_id),
       KEY date_created (date_created),
       KEY customer_status (customer_status),
-      KEY customer_email (customer_email)
+      UNIQUE KEY customer_email (customer_email)
     ) {$charset_collate};";
 
     // Payments table

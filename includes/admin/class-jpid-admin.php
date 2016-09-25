@@ -114,16 +114,42 @@ class JPID_Admin {
   public function admin_init() {
     // TODO: do something...
 
-    // $customers_db = new JPID_DB_Customers();
-    //
-    // die(var_dump($customers_db->get_customers(array(
-    //   'customer_id' => array(1,2,3,4,5),
-    //   'orderby' => 'customer_id',
-    //   'number' => 50,
-    //   'offset' => 0,
-    //   'gorillaz' => 'Harambe',
-    //   'customer_email' => 'booyah@gmail.com'
-    // ))));
+    $customers_db = new JPID_DB_Customers();
+
+    $data = array(
+      'customer_email' => 'jasontodd@wayneenterprises.com'
+    );
+
+    // die( var_dump( $customers_db->get_next_id() ) );
+    // die( var_dump( $customers_db->insert( $data ) ) );
+    // die( var_dump( $customers_db->delete( 'haljordan@ferisairbas.com' ) ) );
+    // die( var_dump( $customers_db->update( 1, $data ) ) );
+    // die( var_dump( $customers_db->get_all( array() ) ) );
+    // die( var_dump( $customers_db->get( 1 ) ) );
+    // die( var_dump( $customers_db->exists( 'brucewayne@wayneenterprises.com' ) ) );
+    // die( var_dump( $customers_db->increase_order_stats( 1, 1000000 ) ) );
+
+    $orders_db = new JPID_DB_Orders();
+
+    $data = array(
+      'customer_id'       => 2,
+      'recipient_name'    => 'Richard Grayson',
+      'recipient_phone'   => '678-345-1278',
+      'delivery_date'     => '2016-10-01 10:00:00',
+      'delivery_address'  => 'Grayson Circus',
+      'delivery_province' => 'New Jersey',
+      'delivery_city'     => 'Bludhaven',
+      'delivery_cost'     => 0.00,
+      'order_cost'        => 1000000,
+    );
+
+    // die( var_dump( $orders_db->get_next_id() ) );
+    // die( var_dump( $orders_db->insert( $data ) ) );
+    // die( var_dump( $orders_db->delete( 'JPID5250916' ) ) );
+    // die( var_dump( $orders_db->update( 'JPID6250916', array( 'delivery_cost' => 5000 ) ) ) );
+    // die( var_dump( $orders_db->get_all( array( 'delivery_date' => '2016-10-01 00:00:00' ) ) ) );
+    // die( var_dump( $orders_db->get( 3 ) ) );
+    // die( var_dump( $orders_db->exists( 'JPID6250916' ) ) );
   }
 
   /**

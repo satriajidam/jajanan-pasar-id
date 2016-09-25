@@ -7,7 +7,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/abstracts
+ * @subpackage jajanan-pasar-id/includes/customer
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -26,6 +26,17 @@ class JPID_DB_Customers extends JPID_DB {
 
     $this->table_name  = $wpdb->prefix . 'jpid_customers';
     $this->primary_key = 'customer_id';
+
+    $this->setup_hooks();
+  }
+
+  /**
+   * Setup class hooks.
+   *
+   * @since    1.0.0
+   */
+  private function setup_hooks() {
+    add_action( 'profile_update', array( $this, 'update_customer_email_on_user_update' ) );
   }
 
   /**
@@ -36,18 +47,18 @@ class JPID_DB_Customers extends JPID_DB {
    */
   protected function get_column_formats() {
     return array(
-      'customer_id' => '%d',
-      'user_id' => '%d',
-      'date_created' => '%s',
-      'customer_status' => '%s',
-      'customer_name' => '%s',
-      'customer_email' => '%s',
-      'customer_phone' => '%s',
-      'customer_address' => '%s',
+      'customer_id'       => '%d',
+      'user_id'           => '%d',
+      'date_created'      => '%s',
+      'customer_status'   => '%s',
+      'customer_name'     => '%s',
+      'customer_email'    => '%s',
+      'customer_phone'    => '%s',
+      'customer_address'  => '%s',
       'customer_province' => '%s',
-      'customer_city' => '%s',
-      'total_orders' => '%d',
-      'total_spendings' => '%f'
+      'customer_city'     => '%s',
+      'order_count'       => '%d',
+      'order_value'       => '%f'
     );
   }
 
@@ -59,17 +70,17 @@ class JPID_DB_Customers extends JPID_DB {
    */
   protected function get_column_defaults() {
     return array(
-      'user_id' => 0,
-      'date_created' => $this->date_now(),
-      'customer_status' => 'guest',
-      'customer_name' => '',
-      'customer_email' => '',
-      'customer_phone' => '',
-      'customer_address' => '',
+      'user_id'           => 0,
+      'date_created'      => $this->date_now(),
+      'customer_status'   => JPID_Customer_Status::GUEST,
+      'customer_name'     => '',
+      'customer_email'    => '',
+      'customer_phone'    => '',
+      'customer_address'  => '',
       'customer_province' => '',
-      'customer_city' => '',
-      'total_orders' => 0,
-      'total_spendings' => 0.00
+      'customer_city'     => '',
+      'order_count'       => 0,
+      'order_value'       => 0.00
     );
   }
 
@@ -109,13 +120,7 @@ class JPID_DB_Customers extends JPID_DB {
    * @return    object                  Customer database object on success, false on failure.
    */
   public function get_by( $field, $value ) {
-    $field = strtolower( $field );
-
-    if ( ! in_array( $field, array( 'customer_id', 'user_id', 'customer_email' ) ) ) {
-      return false;
-    }
-
-		if ( $field === 'customer_id' || $field === 'user_id' ) {
+    if ( $field === 'customer_id' || $field === 'user_id' ) {
 
 			if ( ! is_numeric( $value ) ) {
 				return false;
@@ -135,7 +140,9 @@ class JPID_DB_Customers extends JPID_DB {
 
 			$value = sanitize_text_field( trim( $value ) );
 
-		}
+		} else {
+      return false;
+    }
 
 		if ( ! $value ) {
 			return false;
@@ -216,8 +223,7 @@ class JPID_DB_Customers extends JPID_DB {
       'user_id',
       'customer_status',
       'customer_email',
-      'date_created',
-      'customer_name'
+      'date_created'
     );
 
     $args = $this->filter_args( $args, $accepted_args );
@@ -248,7 +254,7 @@ class JPID_DB_Customers extends JPID_DB {
    * @param     string    $limit      Default LIMIT clause.
    * @return    string                Newly created SQL query.
    */
-  protected function build_query( $args, $select, $where = " WHERE 1=1 ", $orderby = "", $limit = "" ) {
+  private function build_query( $args, $select, $where = " WHERE 1=1 ", $orderby = "", $limit = "" ) {
     global $wpdb;
 
     // Prepare the SELECT clause
@@ -395,8 +401,9 @@ class JPID_DB_Customers extends JPID_DB {
    */
   public function insert( $data ) {
     $data = wp_parse_args( $data, $this->get_column_defaults() );
+    $data = $this->sanitize_data( $data );
 
-    if ( empty( $data['customer_email'] ) || ! is_email( $data['customer_email'] ) ) {
+    if ( ! $this->valid_data( $data ) ) {
       return false;
     }
 
@@ -412,6 +419,12 @@ class JPID_DB_Customers extends JPID_DB {
    * @return    int                           The updated customer's ID on success, false on failure.
    */
   public function update( $id_or_email, $data ) {
+    $data = $this->sanitize_data( $data );
+
+    if ( ! $this->valid_data( $data ) ) {
+      return false;
+    }
+
     if ( empty( $id_or_email ) ) {
       return false;
     }
@@ -424,6 +437,95 @@ class JPID_DB_Customers extends JPID_DB {
     }
 
     return false;
+  }
+
+  /**
+   * Sanitize all insert/update data.
+   *
+   * This function will set a data to null if its value doesn't fit
+   * the supposed constraints.
+   *
+   * Since MySQL has loosely checking system on data, this action is
+   * needed to make sure that every data goes into the database has
+   * valid value and type.
+   *
+   * @since     1.0.0
+   * @param     array    $data    Insert/update data.
+   * @return    array             Sanitized data.
+   */
+  protected function sanitize_data( $data ) {
+    foreach ( $data as $key => $value ) {
+      switch ( $key ) {
+        case 'customer_id':
+          if ( ! is_integer( $value ) || ( $value < 1 ) ) {
+            $value = null;
+          }
+          break;
+        case 'user_id':
+          if ( ! is_integer( $value ) || ( $value < 0 ) ) {
+            $value = null;
+          }
+          break;
+        case 'date_created':
+        case 'customer_status':
+        case 'customer_email':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $value = trim( $value );
+
+            if ( empty( $value ) ) {
+              $value = null;
+            }
+          }
+          break;
+        case 'customer_name':
+        case 'customer_phone':
+        case 'customer_address':
+        case 'customer_province':
+        case 'customer_city':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $value = trim( $value );
+          }
+          break;
+        case 'order_count':
+          if ( ! is_integer( $value ) ) {
+            $value = null;
+          }
+          break;
+        case 'order_value':
+          if ( ! is_float( $value ) && ! is_integer( $value ) ) {
+            $value = null;
+          }
+          break;
+      }
+
+      $data[ $key ] = $value;
+    }
+
+    return $data;
+  }
+
+  /**
+   * Check for insert/update data validity.
+   *
+   * If there is a data with null value, then that data is invalid.
+   * Empty data should be given empty string ('') or zero (0) value.
+   *
+   * @since     1.0.0
+   * @param     array      $data    Insert/update data.
+   * @return    boolean             True if all data are valid, otherwise false.
+   */
+  private function valid_data( $data ) {
+    foreach ( $data as $key => $value ) {
+      if ( is_null( $value ) ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -441,7 +543,7 @@ class JPID_DB_Customers extends JPID_DB {
     $column   = is_email( $id_or_email ) ? 'customer_email' : 'customer_id';
     $customer = $this->get_by( $column, $id_or_email );
 
-    if ( $customer->customer_id > 0 ) {
+    if ( $customer ) {
       return parent::delete( $customer->customer_id );
     }
 
@@ -462,6 +564,220 @@ class JPID_DB_Customers extends JPID_DB {
     }
 
     return (bool) $this->get_column_by( 'customer_id', $field, $value );
+  }
+
+  /**
+   * Update customer's email when its coresponding user account's is updated.
+   *
+   * @since     1.0.0
+   * @param     int      $user_id    User's ID.
+   * @return    int                  The updated customer's ID on success, false on failure.
+   */
+  public function update_customer_email_on_user_update( $user_id ) {
+    if ( $user_id < 1 ) {
+      return false;
+    }
+
+    $customer = $this->get_by( 'user_id', $user_id );
+
+    if ( ! $customer ) {
+      return false;
+    }
+
+    $user = get_userdata( $user_id );
+
+    if ( ! empty( $user ) && $user->user_email !== $customer->customer_email ) {
+      return $this->update( $customer->customer_id, array( 'customer_email' => $user->user_email ) );
+    }
+
+    return false;
+  }
+
+  /**
+   * Increase customer's order count.
+   *
+   * @since     1.0.0
+   * @param     int      $customer_id    Customer's ID.
+   * @param     int      $count          Increase count.
+   * @return    int                      The new order count on success, false on failure.
+   */
+  public function increase_order_count( $customer_id, $count = 1 ) {
+    if ( $customer_id < 1 ) {
+      return false;
+    }
+
+    $customer = $this->get( $customer_id );
+
+    if ( ! $customer ) {
+      return false;
+    }
+
+    $order_count = (int) $customer->order_count + (int) $count;
+
+    if ( $this->update( $customer_id, array( 'order_count' => $order_count ) ) ) {
+      return $order_count;
+    }
+
+    return false;
+  }
+
+  /**
+   * Decrease customer's order value.
+   *
+   * @since     1.0.0
+   * @param     int      $customer_id    Customer's ID.
+   * @param     int      $count          Decrease count.
+   * @return    int                      The new order count on success, false on failure.
+   */
+  public function decrease_order_count( $customer_id, $count = 1 ) {
+    if ( $customer_id < 1 ) {
+      return false;
+    }
+
+    $customer = $this->get( $customer_id );
+
+    if ( ! $customer ) {
+      return false;
+    }
+
+    $order_count = (int) $customer->order_count - (int) $count;
+
+    if ( $order_count < 0 ) {
+      $order_count = 0;
+    }
+
+    if ( $this->update( $customer_id, array( 'order_count' => $order_count ) ) ) {
+      return $order_count;
+    }
+
+    return false;
+  }
+
+  /**
+   * Increase customer's order value.
+   *
+   * @since     1.0.0
+   * @param     int      $customer_id    Customer's ID.
+   * @param     int      $value          Increase value.
+   * @return    int                      The new order value on success, false on failure.
+   */
+  public function increase_order_value( $customer_id, $value ) {
+    if ( $customer_id < 1 ) {
+      return false;
+    }
+
+    $customer = $this->get( $customer_id );
+
+    if ( ! $customer ) {
+      return false;
+    }
+
+    $order_value = (float) $customer->order_value + (float) $value;
+
+    if ( $this->update( $customer_id, array( 'order_value' => $order_value ) ) ) {
+      return $order_value;
+    }
+
+    return false;
+  }
+
+  /**
+   * Decrease customer's order value.
+   *
+   * @since     1.0.0
+   * @param     int      $customer_id    Customer's ID.
+   * @param     int      $value          Decrease value.
+   * @return    int                      The new order value on success, false on failure.
+   */
+  public function decrease_order_value( $customer_id, $value ) {
+    if ( $customer_id < 1 ) {
+      return false;
+    }
+
+    $customer = $this->get( $customer_id );
+
+    if ( ! $customer ) {
+      return false;
+    }
+
+    $order_value = (float) $customer->order_value - (float) $value;
+
+    if ( $order_value < 0 ) {
+      $order_value = 0.00;
+    }
+
+    if ( $this->update( $customer_id, array( 'order_value' => $order_value ) ) ) {
+      return $order_value;
+    }
+
+    return false;
+  }
+
+  /**
+   * Increase customer's order count & value.
+   *
+   * @since     1.0.0
+   * @param     int      $customer_id    Customer's ID.
+   * @param     int      $value          Increase value.
+   * @param     int      $count          Increase count.
+   * @return    int                      True on success, false on failure.
+   */
+  public function increase_order_stats( $customer_id, $value, $count = 1 ) {
+    if ( $customer_id < 1 ) {
+      return false;
+    }
+
+    $customer = $this->get( $customer_id );
+
+    if ( ! $customer ) {
+      return false;
+    }
+
+    $order_count = (int) $customer->order_count + (int) $count;
+    $order_value = (float) $customer->order_value + (float) $value;
+
+    return (bool) $this->update( $customer_id, array(
+      'order_count' => $order_count,
+      'order_value' => $order_value
+    ) );
+  }
+
+  /**
+   * Decrease customer's order count & value.
+   *
+   * @since     1.0.0
+   * @param     int      $customer_id    Customer's ID.
+   * @param     int      $value          Decrease value.
+   * @param     int      $count          Decrease count.
+   * @return    int                      True on success, false on failure.
+   */
+  public function decrease_order_stats( $customer_id, $value, $count = 1 ) {
+    if ( $customer_id < 1 ) {
+      return false;
+    }
+
+    $customer = $this->get( $customer_id );
+
+    if ( ! $customer ) {
+      return false;
+    }
+
+    $order_count = (int) $customer->order_count - (int) $count;
+
+    if ( $order_count < 0 ) {
+      $order_count = 0;
+    }
+
+    $order_value = (float) $customer->order_value - (float) $value;
+
+    if ( $order_value < 0 ) {
+      $order_value = 0.00;
+    }
+
+    return (bool) $this->update( $customer_id, array(
+      'order_count' => $order_count,
+      'order_value' => $order_value
+    ) );
   }
 
 }

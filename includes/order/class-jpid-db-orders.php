@@ -3,11 +3,11 @@
 /**
  * Order DB class.
  *
- * Handles interaction with customers database table.
+ * Handles interaction with orders database table.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/abstracts
+ * @subpackage jajanan-pasar-id/includes/order
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -24,8 +24,19 @@ class JPID_DB_Orders extends JPID_DB {
   public function __construct() {
     global $wpdb;
 
-    $this->table_name  = $wpdb->prefix . 'jpid_customers';
-    $this->primary_key = 'customer_id';
+    $this->table_name  = $wpdb->prefix . 'jpid_orders';
+    $this->primary_key = 'order_id';
+
+    $this->setup_hooks();
+  }
+
+  /**
+   * Setup class hooks.
+   *
+   * @since    1.0.0
+   */
+  private function setup_hooks() {
+
   }
 
   /**
@@ -36,21 +47,21 @@ class JPID_DB_Orders extends JPID_DB {
    */
   protected function get_column_formats() {
     return array(
-      'order_id' => '%d',
-      'order_invoice' => '%d',
-      'order_date' => '%s',
-      'order_status' => '%s',
-      'customer_id' => '%d',
-      'recipient_name' => '%s',
-      'recipient_phone' => '%s',
-      'delivery_date' => '%s',
-      'delivery_address' => '%s',
+      'order_id'          => '%d',
+      'order_invoice'     => '%s',
+      'order_date'        => '%s',
+      'order_status'      => '%s',
+      'customer_id'       => '%d',
+      'recipient_name'    => '%s',
+      'recipient_phone'   => '%s',
+      'delivery_date'     => '%s',
+      'delivery_address'  => '%s',
       'delivery_province' => '%s',
-      'delivery_city' => '%s',
-      'delivery_cost' => '%f',
-      'delivery_note' => '%s',
-      'order_cost' => '%f',
-      'modified_date' => '%s'
+      'delivery_city'     => '%s',
+      'delivery_cost'     => '%f',
+      'delivery_note'     => '%s',
+      'order_cost'        => '%f',
+      'modified_date'     => '%s'
     );
   }
 
@@ -61,10 +72,32 @@ class JPID_DB_Orders extends JPID_DB {
    * @return    array    Collection of column default values.
    */
   protected function get_column_defaults() {
+    $order_id      = $this->get_next_id();
+    $order_date    = $this->date_now();
+    $order_invoice = $this->generate_order_invoice( $order_id, $order_date );
+
     return array(
+      'order_id'      => $order_id,
+      'order_invoice' => $order_invoice,
+      'order_date'    => $order_date,
+      'order_status'  => JPID_Order_Status::PENDING,
       'delivery_note' => '',
+      'delivery_cost' => 0.00,
+      'order_cost'    => 0.00,
       'modified_date' => ''
     );
+  }
+
+  /**
+   * Generate order invoice.
+   *
+   * @since     1.0.0
+   * @param     int       $order_id      Order's ID.
+   * @param     string    $order_date    Order's date.
+   * @return    string                   Order's invoice.
+   */
+  private function generate_order_invoice( $order_id, $order_date ) {
+    return 'JPID' . $order_id . mysql2date( 'dmy', $order_date );
   }
 
   /**
@@ -74,7 +107,7 @@ class JPID_DB_Orders extends JPID_DB {
    * @param     int       $order_id    Order's ID to search.
    * @return    object                 Order database object on success, false on failure.
    */
-  public function get_order( $order_id ) {
+  public function get( $order_id ) {
     if ( ! is_numeric( $order_id ) ) {
       return false;
     }
@@ -85,164 +118,156 @@ class JPID_DB_Orders extends JPID_DB {
       return false;
     }
 
-    $order = $this->get( $order_id );
+    $order = parent::get( $order_id );
 
-    if ( ! $order ) {
-      return false;
-    }
+		if ( ! $order ) {
+			return false;
+		}
 
-    return $order;
+		return $order;
   }
 
   /**
-   * Get single customer from database based on customer ID, user ID, or customer email.
+   * Get single order from database based on order's ID or invoice.
    *
    * @since     1.0.0
-   * @param     string        $field    customer_id, user_id, or customer_email.
-   * @param     int|string    $value    The value of customer ID, user ID, or customer email.
-   * @return    object                  Customer database object on success, false on failure.
+   * @param     string        $field    order_id or order_invoice.
+   * @param     int|string    $value    The value of order's ID or invoice.
+   * @return    object                  Order database object on success, false on failure.
    */
-  public function get_customer_by( $field, $value ) {
-    $field = strtolower( $field );
+  public function get_by( $field, $value ) {
+    if ( $field === 'order_id' ) {
 
-    if ( ! in_array( $field, array( 'customer_id', 'user_id', 'customer_email' ) ) ) {
+			if ( ! is_numeric( $value ) ) {
+				return false;
+			}
+
+			$value = absint( $value );
+
+			if ( $value < 1 ) {
+				return false;
+			}
+
+		} elseif ( $field === 'order_invoice' ) {
+
+			$value = sanitize_text_field( trim( $value ) );
+
+		} else {
       return false;
     }
 
-    if ( $field === 'customer_id' || $field === 'user_id' ) {
+		if ( ! $value ) {
+			return false;
+		}
 
-      if ( ! is_numeric( $value ) ) {
-        return false;
-      }
+    $order = parent::get_by( $field, $value );
 
-      $value = absint( $value );
+		if ( ! $order ) {
+			return false;
+		}
 
-      if ( $value < 1 ) {
-        return false;
-      }
-
-    } elseif ( $field === 'customer_email' ) {
-
-      if ( ! is_email( $value ) ) {
-        return false;
-      }
-
-      $value = sanitize_text_field( trim( $value ) );
-
-    }
-
-    if ( ! $value ) {
-      return false;
-    }
-
-    $customer = $this->get_by( $field, $value );
-
-    if ( ! $customer ) {
-      return false;
-    }
-
-    return $customer;
+		return $order;
   }
 
   /**
-   * Get customers from database based on provided query arguments.
+   * Get orders from database based on provided query arguments.
    *
    * @since     1.0.0
-   * @param     array     $args    Customers query arguments.
-   * @return    array              Array of customer database objects.
+   * @param     array     $args    Orders query arguments.
+   * @return    array              Array of order database objects.
    */
-  public function get_customers( $args = array() ) {
+  public function get_all( $args = array() ) {
     global $wpdb;
 
     // List of accepted query arguments
     $accepted_args = array(
+      'order_id',
+      'order_invoice',
+      'order_date',
+      'order_status',
       'customer_id',
-      'user_id',
-      'customer_status',
-      'customer_email',
-      'date_created',
-      'customer_name',
+      'delivery_date',
       'orderby',
       'order',
       'number',
       'offset'
     );
 
-    $args = $this->strip_args( $args, $accepted_args );
+    $args = $this->filter_args( $args, $accepted_args );
 
     $defaults = array(
-      'orderby' => 'customer_id',
+      'orderby' => 'order_id',
       'order'   => 'DESC',
       'number'  => 20,
-      'offset'  => 0,
+      'offset'  => 0
     );
 
     $args = wp_parse_args( $args, $defaults );
 
     // Setup cache
-    $cache_key = md5( 'jpid_customers_' . serialize( $args ) );
+    $cache_key = md5( 'jpid_orders_' . serialize( $args ) );
 
-    $customers = wp_cache_get( $cache_key, 'customers' );
+    $orders = wp_cache_get( $cache_key, 'orders' );
 
-    if ( $customers === false ) {
+    if ( $orders === false ) {
       $query     = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
-      $customers = $wpdb->get_results( $query );
+      $orders = $wpdb->get_results( $query );
 
-      wp_cache_set( $cache_key, $customers, 'customers', 3600 );
+      wp_cache_set( $cache_key, $orders, 'orders', 3600 );
     }
 
-    return $customers;
+    return $orders;
   }
 
   /**
-   * Count the total numbers of customers in the database.
+   * Count the total numbers of orders in the database.
    *
    * @since     1.0.0
-   * @param     array     $args    Customer query arguments.
-   * @return    int                Total numbers of customers.
+   * @param     array     $args    Order query arguments.
+   * @return    int                Total numbers of orders.
    */
-  public function count_customers( $args = array() ) {
+  public function count( $args = array() ) {
     global $wpdb;
 
     // List of accepted query arguments
     $accepted_args = array(
+      'order_id',
+      'order_invoice',
+      'order_date',
+      'order_status',
       'customer_id',
-      'user_id',
-      'customer_status',
-      'customer_email',
-      'date_created',
-      'customer_name'
+      'delivery_date'
     );
 
-    $args = $this->strip_args( $args, $accepted_args );
+    $args = $this->filter_args( $args, $accepted_args );
 
     // Setup cache
-    $cache_key = md5( 'jpid_customers_count_' . serialize( $args ) );
+    $cache_key = md5( 'jpid_orders_count_' . serialize( $args ) );
 
-    $count = wp_cache_get( $cache_key, 'customers' );
+    $count = wp_cache_get( $cache_key, 'orders' );
 
     if ( $count === false ) {
       $query = $this->build_query( $args, " SELECT COUNT({$this->primary_key}) FROM {$this->table_name} " );
       $count = $wpdb->get_var( $query );
 
-      wp_cache_set( $cache_key, $count, 'customers', 3600 );
+      wp_cache_set( $cache_key, $count, 'orders', 3600 );
     }
 
-    return intval( $count );
+    return $count;
   }
 
   /**
-   * Build SQL query from using provided query arguments.
+   * Build SQL query using provided query arguments.
    *
    * @since     1.0.0
-   * @param     array     $args       Customer query arguments.
+   * @param     array     $args       Order query arguments.
    * @param     string    $select     Default SELECT clause.
    * @param     string    $where      Default WHERE clause.
    * @param     string    $orderby    Default ORDER BY clause.
    * @param     string    $limit      Default LIMIT clause.
    * @return    string                Newly created SQL query.
    */
-  protected function build_query( $args, $select, $where = " WHERE 1=1 ", $orderby = "", $limit = "" ) {
+  private function build_query( $args, $select, $where = " WHERE 1=1 ", $orderby = "", $limit = "" ) {
     global $wpdb;
 
     // Prepare the SELECT clause
@@ -251,7 +276,85 @@ class JPID_DB_Orders extends JPID_DB {
     // Prepare the WHERE clause
     $where = esc_sql( $where );
 
-    // Get specific customers
+    // Get specific orders based on order's ID
+    if ( ! empty( $args['order_id'] ) ) {
+
+      if ( is_array( $args['order_id'] ) ) {
+        $count     = count( $args['order_id'] );
+        $order_ids = array_map( 'absint', $args['order_id'] );
+      } else {
+        $count     = 1;
+        $order_ids = absint( $args['order_id'] );
+      }
+
+      $placeholder = implode( ', ', array_fill( 0, $count, '%d' ) );
+
+      $where .= $wpdb->prepare( " AND order_id IN( {$placeholder} ) ", $order_ids );
+
+    }
+
+    // Get specific orders based on order's invoice
+		if ( ! empty( $args['order_invoice'] ) ) {
+
+			if ( is_array( $args['order_invoice'] ) ) {
+				$count          = count( $args['order_invoice'] );
+				$order_invoices = array_map( 'sanitize_text_field', array_map( 'trim', $args['order_invoice'] ) );
+			} else {
+        $count          = 1;
+        $order_invoices = sanitize_text_field( trim( $args['order_invoice'] ) );
+      }
+
+      $placeholder = implode( ', ', array_fill( 0, $count, '%s' ) );
+
+      $where .= $wpdb->prepare( " AND order_invoice IN( {$placeholder} ) ", $order_invoices );
+
+		}
+
+    // Get orders made on specific date or in a date range
+    if ( ! empty( $args['order_date'] ) ) {
+
+      if ( is_array( $args['order_date'] ) ) {
+
+        if ( ! empty( $args['order_date']['start'] ) ) {
+          $start = date( 'Y-m-d 00:00:00', strtotime( $args['order_date']['start'] ) );
+
+          $where .= $wpdb->prepare( " AND order_date >= %s ", $start );
+        }
+
+        if ( ! empty( $args['order_date']['end'] ) ) {
+          $end = date( 'Y-m-d 23:59:59', strtotime( $args['order_date']['end'] ) );
+
+          $where .= $wpdb->prepare( " AND order_date <= %s ", $end );
+        }
+
+      } else {
+        $year  = date( 'Y', strtotime( $args['order_date'] ) );
+        $month = date( 'm', strtotime( $args['order_date'] ) );
+        $day   = date( 'd', strtotime( $args['order_date'] ) );
+
+        $where .= $wpdb->prepare( " AND YEAR ( order_date ) = %s AND MONTH ( order_date ) = %s AND DAY ( order_date ) = %s ", $year, $month, $day  );
+      }
+
+    }
+
+    // Get specific orders by status
+    if ( ! empty( $args['order_status'] ) ) {
+
+      if ( is_array( $args['order_status'] ) ) {
+        $count          = count( $args['order_status'] );
+        $order_statuses = array_map( 'sanitize_text_field', array_map( 'trim', $args['order_status'] ) );
+      } else {
+        $count          = 1;
+        $order_statuses = sanitize_text_field( trim( $args['order_status'] ) );
+      }
+
+      $placeholder = implode( ', ', array_fill( 0, $count, '%s' ) );
+
+      $where .= $wpdb->prepare( " AND order_status IN( {$placeholder} ) ", $order_statuses );
+
+    }
+
+    // Get specific orders based on customer's ID
     if ( ! empty( $args['customer_id'] ) ) {
 
       if ( is_array( $args['customer_id'] ) ) {
@@ -268,96 +371,38 @@ class JPID_DB_Orders extends JPID_DB {
 
     }
 
-    // Get customers for specific user accounts
-    if ( ! empty( $args['user_id'] ) ) {
+    // Get orders delivered on specific date or in a date range
+    if ( ! empty( $args['delivery_date'] ) ) {
 
-      if ( is_array( $args['user_id'] ) ) {
-        $count    = count( $args['user_id'] );
-        $user_ids = array_map( 'absint', $args['user_id'] );
-      } else {
-        $count    = 1;
-        $user_ids = absint( $args['user_id'] );
-      }
+      if ( is_array( $args['delivery_date'] ) ) {
 
-      $placeholder = implode( ', ', array_fill( 0, $count, '%d' ) );
+        if ( ! empty( $args['delivery_date']['start'] ) ) {
+          $start = date( 'Y-m-d 00:00:00', strtotime( $args['delivery_date']['start'] ) );
 
-      $where .= $wpdb->prepare( " AND user_id IN( {$placeholder} ) ", $user_ids );
-
-    }
-
-    // Get specific customers by status
-    if ( ! empty( $args['customer_status'] ) ) {
-
-      if ( is_array( $args['customer_status'] ) ) {
-        $count             = count( $args['customer_status'] );
-        $customer_statuses = array_map( 'sanitize_text_field', array_map( 'trim', $args['customer_status'] ) );
-      } else {
-        $count             = 1;
-        $customer_statuses = sanitize_text_field( trim( $args['customer_status'] ) );
-      }
-
-      $placeholder = implode( ', ', array_fill( 0, $count, '%s' ) );
-
-      $where .= $wpdb->prepare( " AND customer_status IN( {$placeholder} ) ", $customer_statuses );
-
-    }
-
-    // Get specific customers by email
-    if ( ! empty( $args['customer_email'] ) ) {
-
-      if ( is_array( $args['customer_email'] ) ) {
-        $count           = count( $args['customer_email'] );
-        $customer_emails = array_map( 'sanitize_text_field', array_map( 'trim', $args['customer_email'] ) );
-      } else {
-        $count           = 1;
-        $customer_emails = sanitize_text_field( trim( $args['customer_email'] ) );
-      }
-
-      $placeholder = implode( ', ', array_fill( 0, $count, '%s' ) );
-
-      $where .= $wpdb->prepare( " AND customer_email IN( {$placeholder} ) ", $customer_emails );
-
-    }
-
-    // Get customers created on specific date or in a date range
-    if ( ! empty( $args['date_created'] ) ) {
-
-      if ( is_array( $args['date_created'] ) ) {
-
-        if ( ! empty( $args['date_created']['start'] ) ) {
-          $start = date( 'Y-m-d 00:00:00', strtotime( $args['date_created']['start'] ) );
-
-          $where .= $wpdb->prepare( " AND date_created >= %s ", $start );
+          $where .= $wpdb->prepare( " AND delivery_date >= %s ", $start );
         }
 
-        if ( ! empty( $args['date_created']['end'] ) ) {
-          $end = date( 'Y-m-d 23:59:59', strtotime( $args['date_created']['end'] ) );
+        if ( ! empty( $args['delivery_date']['end'] ) ) {
+          $end = date( 'Y-m-d 23:59:59', strtotime( $args['delivery_date']['end'] ) );
 
-          $where .= $wpdb->prepare( " AND date_created <= %s ", $end );
+          $where .= $wpdb->prepare( " AND delivery_date <= %s ", $end );
         }
 
       } else {
-        $year  = date( 'Y', strtotime( $args['date_created'] ) );
-        $month = date( 'm', strtotime( $args['date_created'] ) );
-        $day   = date( 'd', strtotime( $args['date_created'] ) );
+        $year  = date( 'Y', strtotime( $args['delivery_date'] ) );
+        $month = date( 'm', strtotime( $args['delivery_date'] ) );
+        $day   = date( 'd', strtotime( $args['delivery_date'] ) );
 
-        $where .= $wpdb->prepare( " AND YEAR ( date_created ) = %s AND MONTH ( date_created ) = %s AND DAY ( date_created ) = %s ", $year, $month, $day  );
+        $where .= $wpdb->prepare( " AND YEAR ( delivery_date ) = %s AND MONTH ( delivery_date ) = %s AND DAY ( delivery_date ) = %s ", $year, $month, $day  );
       }
 
     }
-
-    // Get specific customers by name
-    if ( ! empty( $args['customer_name'] ) ) {
-      $where .= $wpdb->prepare( " AND customer_name LIKE '%%%%" . '%s' . "%%%%' ", $args['customer_name'] );
-    }
-
-    // TODO: Get customers with specific total spendings range.
 
     // Prepare the ORDER BY clause
     $orderby = esc_sql( $orderby );
 
     if ( ! empty( $args['orderby'] ) ) {
-      $args['orderby'] = ! array_key_exists( $args['orderby'], $this->get_column_formats() ) ? 'customer_id' : $args['orderby'];
+      $args['orderby'] = ! array_key_exists( $args['orderby'], $this->get_column_formats() ) ? 'order_id' : $args['orderby'];
       $args['orderby'] = esc_sql( $args['orderby'] );
 
       $args['order'] = ! in_array( strtoupper( $args['order'] ), array( 'ASC', 'DESC' ) ) ? 'DESC' : $args['order'];
@@ -381,93 +426,172 @@ class JPID_DB_Orders extends JPID_DB {
   }
 
   /**
-   * Add new customer to the database.
+   * Add new order to the database.
    *
    * @since     1.0.0
-   * @param     array    $data    Customer's data.
-   * @return    int               The newly created customer's ID on success, false on failure.
+   * @param     array    $data    Order's data.
+   * @return    int               The newly created order's ID on success, false on failure.
    */
-  public function insert_customer( $data ) {
+  public function insert( $data ) {
     $data = wp_parse_args( $data, $this->get_column_defaults() );
+    $data = $this->sanitize_data( $data );
 
-    if ( empty( $data['customer_email'] ) || ! is_email( $data['customer_email'] ) ) {
+    if ( ! $this->valid_data( $data ) ) {
       return false;
     }
 
-    $customer_id = $this->insert( $data );
-
-    if ( $customer_id <= 0 ) {
-      return false;
-    }
-
-    return $customer_id;
+    return parent::insert( $data );
   }
 
   /**
-   * Update existing customer in the database.
+   * Update existing order in the database.
    *
    * @since     1.0.0
-   * @param     int|string    $id_or_email    Customer's ID or email.
-   * @param     array         $data           Customer's data.
-   * @return    int                           The updated customer's ID on success, false on failure.
+   * @param     int|string    $id_or_invoice    Order's ID or invoice.
+   * @param     array         $data             Order's data.
+   * @return    int                             The updated order's ID on success, false on failure.
    */
-  public function update_customer( $id_or_email, $data ) {
-    if ( empty( $id_or_email ) ) {
+  public function update( $id_or_invoice, $data ) {
+    $data = $this->sanitize_data( $data );
+
+    if ( ! $this->valid_data( $data ) ) {
       return false;
     }
 
-    $column   = is_email( $id_or_email ) ? 'customer_email' : 'customer_id';
-    $customer = $this->get_customer_by( $column, $id_or_email );
+    if ( empty( $id_or_invoice ) ) {
+      return false;
+    }
 
-    if ( $customer ) {
-      $update_success = $this->update( $customer->customer_id, $data );
+    $column = ! is_numeric( $id_or_invoice ) ? 'order_invoice' : 'order_id';
+    $order  = $this->get_by( $column, $id_or_invoice );
 
-      if ( ! $update_success ) {
-        return false;
+    if ( $order ) {
+      return parent::update( $order->order_id, $data );
+    }
+
+    return false;
+  }
+
+  /**
+   * Sanitize all insert/update data.
+   *
+   * This function will set a data to null if its value doesn't fit
+   * the supposed constraints.
+   *
+   * Since MySQL has loosely checking system on data, this action is
+   * needed to make sure that every data goes into the database has
+   * valid value and type.
+   *
+   * @since     1.0.0
+   * @param     array    $data    Insert/update data.
+   * @return    array             Sanitized data.
+   */
+  protected function sanitize_data( $data ) {
+    foreach ( $data as $key => $value ) {
+      switch ( $key ) {
+        case 'order_id':
+        case 'customer_id':
+          if ( ! is_integer( $value ) || ( $value < 1 ) ) {
+            $value = null;
+          }
+          break;
+        case 'order_invoice':
+        case 'order_date':
+        case 'order_status':
+        case 'recipient_name':
+        case 'recipient_phone':
+        case 'delivery_date':
+        case 'delivery_address':
+        case 'delivery_province':
+        case 'delivery_city':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $value = trim( $value );
+
+            if ( empty( $value ) ) {
+              $value = null;
+            }
+          }
+          break;
+        case 'delivery_note':
+        case 'modified_date':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $value = trim( $value );
+          }
+          break;
+        case 'delivery_cost':
+        case 'order_cost':
+          if ( ! is_float( $value ) && ! is_integer( $value ) ) {
+            $value = null;
+          }
+          break;
       }
 
-      return $customer->customer_id;
+      $data[ $key ] = $value;
     }
 
-    return false;
+    return $data;
   }
 
   /**
-   * Delete existing customer in the database.
+   * Check for insert/update data validity.
+   *
+   * If there is a data with null value, then that data is invalid.
+   * Empty data should be given empty string ('') or zero (0) value.
    *
    * @since     1.0.0
-   * @param     int|string    $id_or_email    Customer's ID or email.
-   * @return    int                           The updated customer's ID on success, false on failure.
+   * @param     array      $data    Insert/update data.
+   * @return    boolean             True if all data are valid, otherwise false.
    */
-  public function delete_customer( $id_or_email ) {
-    if ( empty( $id_or_email ) ) {
+  private function valid_data( $data ) {
+    foreach ( $data as $key => $value ) {
+      if ( is_null( $value ) ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Delete existing order in the database.
+   *
+   * @since     1.0.0
+   * @param     int|string    $id_or_invoice    Order's ID or invoice.
+   * @return    int                             The deleted customer's ID on success, false on failure.
+   */
+  public function delete( $id_or_invoice ) {
+    if ( empty( $id_or_invoice ) ) {
       return false;
     }
 
-    $column   = is_email( $id_or_email ) ? 'customer_email' : 'customer_id';
-    $customer = $this->get_customer_by( $column, $id_or_email );
+    $column = ! is_numeric( $id_or_invoice ) ? 'order_invoice' : 'order_id';
+    $order  = $this->get_by( $column, $id_or_invoice );
 
-    if ( $customer->customer_id > 0 ) {
-      return $this->delete( $customer->customer_id );
+    if ( $order ) {
+      return parent::delete( $order->order_id );
     }
 
     return false;
   }
 
   /**
-   * Check if a customer exists.
+   * Check if a order exists.
    *
    * @since     1.0.0
-   * @param     mixed      $value    The value of customer's field to check.
-   * @param     string     $field    The name of customer's field to check.
-   * @return    boolean              True if customer exists, false if not.
+   * @param     mixed      $value    The value of order's field to check.
+   * @param     string     $field    The name of order's field to check.
+   * @return    boolean              True if order exists, false if not.
    */
-  public function customer_exists( $value, $field = 'customer_email' ) {
+  public function exists( $value, $field = 'order_invoice' ) {
     if ( ! array_key_exists( $field, $this->get_column_formats() ) ) {
       return false;
     }
 
-    return (bool) $this->get_column_by( 'customer_id', $field, $value );
+    return (bool) $this->get_column_by( 'order_id', $field, $value );
   }
 
 }

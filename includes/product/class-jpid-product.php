@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Product object.
+ * Product object class.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id

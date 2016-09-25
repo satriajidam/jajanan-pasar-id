@@ -139,7 +139,16 @@ final class JPID {
 		require_once JPID_PLUGIN_DIR . 'includes/abstracts/abstract-jpid-db.php';
 
 		// Customer files:
+		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-customer-status.php';
 		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-db-customers.php';
+
+		// Order files:
+		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-order-status.php';
+		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-db-orders.php';
+
+		// Payment files:
+		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-payment-status.php';
+		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-db-payments.php';
 
 		// Product files:
 		require_once JPID_PLUGIN_DIR . 'includes/product/class-jpid-product.php';
@@ -193,6 +202,11 @@ final class JPID {
 		$this->plugin_options    = new JPID_Options();
 		$this->plugin_post_types = new JPID_Post_Types();
 		$this->plugin_scripts    = new JPID_Scripts();
+
+		// Custom database table managers:
+		$this->db_customers = new JPID_DB_Customers();
+		$this->db_orders    = new JPID_DB_Orders();
+		$this->db_payments  = new JPID_DB_Payments();
 
 		if ( is_admin() ) {
 			$this->plugin_admin = new JPID_Admin();

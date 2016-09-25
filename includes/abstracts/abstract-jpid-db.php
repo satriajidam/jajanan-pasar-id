@@ -136,6 +136,24 @@ abstract class JPID_DB {
   }
 
   /**
+   * Get the next auto increment ID.
+   *
+   * @since     1.0.0
+   * @return    int      Next auto increment ID.
+   */
+  public function get_next_id() {
+    global $wpdb;
+
+    $table_status = $wpdb->get_row( $wpdb->prepare( "SHOW TABLE STATUS LIKE '{$this->table_name}';" ) );
+
+    if ( $table_status ) {
+      return (int) $table_status->Auto_increment;
+    }
+
+    return false;
+  }
+
+  /**
    * Insert a new row of data.
    *
    * @since     1.0.0
@@ -165,7 +183,7 @@ abstract class JPID_DB {
 		$wpdb->insert( $this->table_name, $data, $column_formats );
 
     // Check for the inserted ID
-    if ( $wpdb->insert_id <= 0 ) {
+    if ( $wpdb->insert_id < 1 ) {
       return false;
     }
 
@@ -202,6 +220,7 @@ abstract class JPID_DB {
     // Reorder $column_formats to match the order of columns given in $data
     $data_keys      = array_keys( $data );
     $column_formats = array_merge( array_flip( $data_keys ), $column_formats );
+    $column_formats = array_intersect_key( $column_formats, array_flip( $data_keys ) );
 
     // Perform the update
     $update_success = $wpdb->update( $this->table_name, $data, array( $this->primary_key => $row_id ), $column_formats, array( '%d' ) );
@@ -242,6 +261,23 @@ abstract class JPID_DB {
   }
 
   /**
+   * Sanitize insert/update data.
+   *
+   * @since     1.0.0
+   * @param     array    $data    The provided data.
+   * @return    array             Sanitized data.
+   */
+  protected function sanitize_data( $data ) {
+    foreach ( $data as $key => $value ) {
+      if ( is_string( $value ) ) {
+        $data[ $key ] = trim( $value );
+      }
+    }
+
+    return $data;
+  }
+
+  /**
    * Filter provided query arguments.
    *
    * @since     1.0.0
@@ -279,7 +315,7 @@ abstract class JPID_DB {
    * @return    string    Date string.
    */
   protected function date_now() {
-    return $this->time_to_date( time() );
+    return $this->time_to_date( current_time( 'timestamp' ) );
   }
 
   /**
