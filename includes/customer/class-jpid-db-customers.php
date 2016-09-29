@@ -468,11 +468,21 @@ class JPID_DB_Customers extends JPID_DB {
           break;
         case 'date_created':
         case 'customer_status':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $value = sanitize_text_field( trim( $value ) );
+
+            if ( empty( $value ) ) {
+              $value = null;
+            }
+          }
+          break;
         case 'customer_email':
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
-            $value = trim( $value );
+            $value = sanitize_email( trim( $value ) );
 
             if ( empty( $value ) ) {
               $value = null;
@@ -487,7 +497,7 @@ class JPID_DB_Customers extends JPID_DB {
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
-            $value = trim( $value );
+            $value = sanitize_text_field( trim( $value ) );
           }
           break;
         case 'order_count':
@@ -506,26 +516,6 @@ class JPID_DB_Customers extends JPID_DB {
     }
 
     return $data;
-  }
-
-  /**
-   * Check for insert/update data validity.
-   *
-   * If there is a data with null value, then that data is invalid.
-   * Empty data should be given empty string ('') or zero (0) value.
-   *
-   * @since     1.0.0
-   * @param     array      $data    Insert/update data.
-   * @return    boolean             True if all data are valid, otherwise false.
-   */
-  private function valid_data( $data ) {
-    foreach ( $data as $key => $value ) {
-      if ( is_null( $value ) ) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   /**

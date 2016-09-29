@@ -178,6 +178,7 @@ abstract class JPID_DB {
 		// Reorder $column_formats to match the order of columns given in $data
 		$data_keys      = array_keys( $data );
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
+    $column_formats = array_intersect_key( $column_formats, array_flip( $data_keys ) );
 
     // Perform the insertion
 		$wpdb->insert( $this->table_name, $data, $column_formats );
@@ -275,6 +276,26 @@ abstract class JPID_DB {
     }
 
     return $data;
+  }
+
+  /**
+   * Check for insert/update data validity.
+   *
+   * If there is a data with null value, then that data is invalid.
+   * Empty data should be given empty string ('') or zero (0) value.
+   *
+   * @since     1.0.0
+   * @param     array      $data    Insert/update data.
+   * @return    boolean             True if all data are valid, otherwise false.
+   */
+  protected function valid_data( $data ) {
+    foreach ( $data as $key => $value ) {
+      if ( is_null( $value ) ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

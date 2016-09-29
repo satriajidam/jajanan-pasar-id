@@ -17,6 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class JPID_DB_Orders extends JPID_DB {
 
   /**
+   * @since    1.0.0
+   * @var      string    Order items table name.
+   */
+  private $items_table;
+
+  /**
    * Class constructor.
    *
    * @since    1.0.0
@@ -24,8 +30,12 @@ class JPID_DB_Orders extends JPID_DB {
   public function __construct() {
     global $wpdb;
 
+    // Core orders table
     $this->table_name  = $wpdb->prefix . 'jpid_orders';
     $this->primary_key = 'order_id';
+
+    // Order items table
+    $this->items_table = $wpdb->prefix . 'jpid_order_items';
 
     $this->setup_hooks();
   }
@@ -74,17 +84,24 @@ class JPID_DB_Orders extends JPID_DB {
   protected function get_column_defaults() {
     $order_id      = $this->get_next_id();
     $order_date    = $this->date_now();
-    $order_invoice = $this->generate_order_invoice( $order_id, $order_date );
+    $order_invoice = $this->generate_invoice( $order_id, $order_date );
 
     return array(
-      'order_id'      => $order_id,
-      'order_invoice' => $order_invoice,
-      'order_date'    => $order_date,
-      'order_status'  => JPID_Order_Status::PENDING,
-      'delivery_note' => '',
-      'delivery_cost' => 0.00,
-      'order_cost'    => 0.00,
-      'modified_date' => ''
+      'order_id'          => $order_id,
+      'order_invoice'     => $order_invoice,
+      'order_date'        => $order_date,
+      'order_status'      => JPID_Order_Status::PENDING,
+      'customer_id'       => 0,
+      'recipient_name'    => '',
+      'recipient_phone'   => '',
+      'delivery_date'     => '',
+      'delivery_address'  => '',
+      'delivery_province' => '',
+      'delivery_city'     => '',
+      'delivery_cost'     => 0.00,
+      'delivery_note'     => '',
+      'order_cost'        => 0.00,
+      'modified_date'     => ''
     );
   }
 
@@ -96,7 +113,7 @@ class JPID_DB_Orders extends JPID_DB {
    * @param     string    $order_date    Order's date.
    * @return    string                   Order's invoice.
    */
-  private function generate_order_invoice( $order_id, $order_date ) {
+  private function generate_invoice( $order_id, $order_date ) {
     return 'JPID' . $order_id . mysql2date( 'dmy', $order_date );
   }
 
@@ -210,7 +227,7 @@ class JPID_DB_Orders extends JPID_DB {
     $orders = wp_cache_get( $cache_key, 'orders' );
 
     if ( $orders === false ) {
-      $query     = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
+      $query  = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
       $orders = $wpdb->get_results( $query );
 
       wp_cache_set( $cache_key, $orders, 'orders', 3600 );
@@ -490,8 +507,12 @@ class JPID_DB_Orders extends JPID_DB {
     foreach ( $data as $key => $value ) {
       switch ( $key ) {
         case 'order_id':
-        case 'customer_id':
           if ( ! is_integer( $value ) || ( $value < 1 ) ) {
+            $value = null;
+          }
+          break;
+        case 'customer_id':
+          if ( ! is_integer( $value ) || ( $value < 0 ) ) {
             $value = null;
           }
           break;
@@ -507,7 +528,7 @@ class JPID_DB_Orders extends JPID_DB {
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
-            $value = trim( $value );
+            $value = sanitize_text_field( trim( $value ) );
 
             if ( empty( $value ) ) {
               $value = null;
@@ -519,7 +540,7 @@ class JPID_DB_Orders extends JPID_DB {
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
-            $value = trim( $value );
+            $value = sanitize_text_field( trim( $value ) );
           }
           break;
         case 'delivery_cost':
@@ -534,26 +555,6 @@ class JPID_DB_Orders extends JPID_DB {
     }
 
     return $data;
-  }
-
-  /**
-   * Check for insert/update data validity.
-   *
-   * If there is a data with null value, then that data is invalid.
-   * Empty data should be given empty string ('') or zero (0) value.
-   *
-   * @since     1.0.0
-   * @param     array      $data    Insert/update data.
-   * @return    boolean             True if all data are valid, otherwise false.
-   */
-  private function valid_data( $data ) {
-    foreach ( $data as $key => $value ) {
-      if ( is_null( $value ) ) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   /**
@@ -592,6 +593,201 @@ class JPID_DB_Orders extends JPID_DB {
     }
 
     return (bool) $this->get_column_by( 'order_id', $field, $value );
+  }
+
+  /**
+   * Get single order item from database.
+   *
+   * @since     1.0.0
+   * @param     int       $order_id    Order's ID.
+   * @param     int       $item_id     Order item's ID.
+   * @return    object                 Order item database object.
+   */
+  public function get_item( $order_id, $item_id ) {
+    global $wpdb;
+
+    $order_id = absint( $order_id );
+    $item_id  = absint( $item_id );
+
+    if ( empty( $order_id ) || empty( $item_id ) ) {
+      return false;
+    }
+
+    return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->items_table} WHERE order_id = %d AND item_id = %d LIMIT 1;", $order_id, $item_id ) );
+  }
+
+  /**
+   * Get multiple order items from database.
+   *
+   * @since     1.0.0
+   * @param     int       $order_id     Order's ID.
+   * @param     string    $item_type    Order item's type.
+   * @return    object                  Array of order item database objects.
+   */
+  public function get_items( $order_id, $item_type = '' ) {
+    global $wpdb;
+
+    $order_id = absint( $order_id );
+
+    if ( empty( $order_id ) ) {
+      return false;
+    }
+
+    $select = " SELECT * FROM {$this->items_table} ";
+    $where  = $wpdb->prepare( " WHERE order_id = %d ", $order_id );
+
+    if ( ! empty( $item_type ) ) {
+      $where .= $wpdb->prepare( " AND item_type = %s ", $item_type );
+    }
+
+    // Setup cache
+    $cache_key = md5( 'jpid_orders_items_' . $order_id . $item_type );
+
+    $items = wp_cache_get( $cache_key, 'orders' );
+
+    if ( $items === false ) {
+      $query = $select . $where . ";";
+      $items = $wpdb->get_results( $query );
+
+      wp_cache_set( $cache_key, $items, 'orders', 3600 );
+    }
+
+    return $items;
+  }
+
+  /**
+   * Add order item to the database or update it if it already exists.
+   *
+   * @since     1.0.0
+   * @param     int        $order_id     Order's ID.
+   * @param     int        $item_id      Order item's ID.
+   * @param     int        $item_qty     Order item's quantity.
+   * @param     string     $item_type    Order item's type.
+   * @return    boolean                  True on success, false on failure.
+   */
+  public function add_item( $order_id, $item_id, $item_qty = 1, $item_type = '' ) {
+    global $wpdb;
+
+    $order = $this->get( $order_id );
+
+    if ( ! $order ) {
+      return false;
+    }
+
+    $item_id   = absint( $item_id );
+    $item_qty  = intval( $item_qty );
+
+    if ( empty( $item_id ) || $item_qty < 0 ) {
+      return false;
+    }
+
+    $item_type = sanitize_text_field( trim( $item_type ) );
+
+    if ( empty( $item_type ) ) {
+      $item_type = JPID_Order_Item::SNACK_BOX;
+    }
+
+    $order_item = $this->get_item( $order->order_id, $item_id );
+
+    $add_success = false;
+
+    if ( $order_item ) {
+
+      // Setup update data
+      $data  = array( 'item_qty' => $item_qty, 'item_type' => $item_type );
+      $where = array( 'order_id' => $order->order_id, 'item_id' => $item_id );
+
+      // Perform update
+      $update_success = $wpdb->update( $this->items_table, $data, $where, array( '%d', '%s' ), array( '%d', '%d' ) );
+
+      if ( $update_success !== false ) {
+        $add_success = true;
+      }
+
+    } else {
+
+      // Setup insert data
+      $data = array(
+        'order_id'  => $order->order_id,
+        'item_id'   => $item_id,
+        'item_qty'  => $item_qty,
+        'item_type' => $item_type
+      );
+
+      // Perform insert
+      $add_success = $wpdb->insert( $this->items_table, $data, array( '%d', '%d', '%d', '%s' ) );
+
+    }
+
+    // Update/insert success
+    if ( $add_success ) {
+      return $this->update_order_cost_on_items_change( $order->order_id );
+    }
+
+    // Update/insert failed
+    return false;
+  }
+
+  /**
+   * Remove existing order item in the database.
+   *
+   * @since     1.0.0
+   * @param     int        $order_id     Order's ID.
+   * @param     int        $item_id      Order item's ID.
+   * @return    boolean                  True on success, false on failure.
+   */
+  public function remove_item( $order_id, $item_id ) {
+    global $wpdb;
+
+    $order_id = absint( $order_id );
+    $item_id  = absint( $item_id );
+
+    if ( empty( $order_id ) || empty( $item_id ) ) {
+      return false;
+    }
+
+    $order_item = $this->get_item( $order_id, $item_id );
+
+    if ( $order_item ) {
+      $remove_success = $wpdb->delete( $this->items_table, array( 'order_id' => $order_item->order_id, 'item_id' => $order_item->item_id ), array( '%d', '%d' ) );
+
+      // Delete success
+      if ( $remove_success ) {
+        return $this->update_order_cost_on_items_change( $order_item->order_id );
+      }
+
+      // Delete failed
+      return false;
+    }
+
+    // No order item with provided IDs
+    return false;
+  }
+
+  /**
+   * Update order's cost when its items are updated or deleted.
+   *
+   * @since     1.0.0
+   * @param     int        $order_id    Order's ID.
+   * @return    boolean                 True on success, false on failure.
+   */
+  private function update_order_cost_on_items_change( $order_id ) {
+    $order_items = $this->get_items( $order_id );
+    $order_cost  = 0.00;
+
+    if ( ! empty( $order_items ) ) {
+      foreach ( $order_items as $order_item ) {
+        $item = JPID_Order_Item::create( $order_item->item_id, $order_item->item_type );
+
+        if ( ! $item ) {
+          continue;
+        }
+
+        $order_cost += ( (float) $item->get_price() * $order_item->item_qty );
+      }
+    }
+
+    return (bool) $this->update( $order_id, array( 'order_cost' => $order_cost ) );
   }
 
 }

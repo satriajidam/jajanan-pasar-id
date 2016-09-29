@@ -139,16 +139,24 @@ final class JPID {
 		require_once JPID_PLUGIN_DIR . 'includes/abstracts/abstract-jpid-db.php';
 
 		// Customer files:
-		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-customer-status.php';
 		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-db-customers.php';
+		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-customer.php';
+		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-customer-status.php';
 
 		// Order files:
-		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-order-status.php';
 		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-db-orders.php';
+		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-order-status.php';
+		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-order-item.php';
+		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-order.php';
 
 		// Payment files:
-		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-payment-status.php';
 		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-db-payments.php';
+		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-payment.php';
+		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-payment-status.php';
+
+		// Snack box files:
+		require_once JPID_PLUGIN_DIR . 'includes/snack-box/class-jpid-db-snack-boxes.php';
+		require_once JPID_PLUGIN_DIR . 'includes/snack-box/class-jpid-snack-box.php';
 
 		// Product files:
 		require_once JPID_PLUGIN_DIR . 'includes/product/class-jpid-product.php';

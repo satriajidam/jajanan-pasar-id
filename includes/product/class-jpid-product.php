@@ -52,6 +52,8 @@ class JPID_Product {
     // Setup product object's data.
     if ( $this->id && $this->post ) {
       $this->populate_data();
+    } else {
+      return null;
     }
   }
 

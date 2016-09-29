@@ -72,10 +72,19 @@ class JPID_DB_Payments extends JPID_DB {
    */
   protected function get_column_defaults() {
     return array(
-      'date_submitted' => $this->date_now(),
-      'receipt_id'     => 0,
-      'payment_status' => JPID_Payment_Status::UNVERIFIED,
-      'transfer_note'  => ''
+      'order_invoice'           => '',
+      'date_submitted'          => $this->date_now(),
+      'receipt_id'              => 0,
+      'payment_status'          => JPID_Payment_Status::UNVERIFIED,
+      'payment_bank'            => '',
+      'payment_account_name'    => '',
+      'payment_account_number'  => '',
+      'transfer_bank'           => '',
+      'transfer_account_name'   => '',
+      'transfer_account_number' => '',
+      'transfer_amount'         => 0.00,
+      'transfer_date'           => '',
+      'transfer_note'           => ''
     );
   }
 
@@ -156,6 +165,7 @@ class JPID_DB_Payments extends JPID_DB {
       'order_invoice',
       'date_submitted',
       'payment_status',
+      'transfer_account_name',
       'orderby',
       'order',
       'number',
@@ -230,11 +240,11 @@ class JPID_DB_Payments extends JPID_DB {
    * @param     array     $args       Order query arguments.
    * @param     string    $select     Default SELECT clause.
    * @param     string    $where      Default WHERE clause.
-   * @param     string    $paymentby    Default ORDER BY clause.
+   * @param     string    $orderby    Default ORDER BY clause.
    * @param     string    $limit      Default LIMIT clause.
    * @return    string                Newly created SQL query.
    */
-  private function build_query( $args, $select, $where = " WHERE 1=1 ", $paymentby = "", $limit = "" ) {
+  private function build_query( $args, $select, $where = " WHERE 1=1 ", $orderby = "", $limit = "" ) {
     global $wpdb;
 
     // Prepare the SELECT clause
@@ -434,7 +444,7 @@ class JPID_DB_Payments extends JPID_DB {
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
-            $value = trim( $value );
+            $value = sanitize_text_field( trim( $value ) );
 
             if ( empty( $value ) ) {
               $value = null;
@@ -450,7 +460,7 @@ class JPID_DB_Payments extends JPID_DB {
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
-            $value = trim( $value );
+            $value = sanitize_text_field( trim( $value ) );
           }
           break;
         case 'transfer_amount':
@@ -467,26 +477,6 @@ class JPID_DB_Payments extends JPID_DB {
   }
 
   /**
-   * Check for insert/update data validity.
-   *
-   * If there is a data with null value, then that data is invalid.
-   * Empty data should be given empty string ('') or zero (0) value.
-   *
-   * @since     1.0.0
-   * @param     array      $data    Insert/update data.
-   * @return    boolean             True if all data are valid, otherwise false.
-   */
-  private function valid_data( $data ) {
-    foreach ( $data as $key => $value ) {
-      if ( is_null( $value ) ) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
    * Delete existing payment in the database.
    *
    * @since     1.0.0
@@ -498,7 +488,7 @@ class JPID_DB_Payments extends JPID_DB {
       return false;
     }
 
-    $payment = $this->get_by( 'payment_id', $id_or_invoice );
+    $payment = $this->get_by( 'payment_id', $id );
 
     if ( $payment ) {
       return parent::delete( $payment->payment_id );

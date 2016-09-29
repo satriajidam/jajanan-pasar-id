@@ -17,6 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class JPID_DB_Snack_Boxes extends JPID_DB {
 
   /**
+   * @since    1.0.0
+   * @var      string    Snack box items table name.
+   */
+  private $items_table;
+
+  /**
    * Class constructor.
    *
    * @since    1.0.0
@@ -24,8 +30,12 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
   public function __construct() {
     global $wpdb;
 
+    // Core snack boxes table
     $this->table_name  = $wpdb->prefix . 'jpid_snack_box';
     $this->primary_key = 'snack_box_id';
+
+    // Snack box item table
+    $this->items_table = $wpdb->prefix . 'jpid_snack_box_items';
 
     $this->setup_hooks();
   }
@@ -62,7 +72,7 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
    * @return    array    Collection of column default values.
    */
   protected function get_column_defaults() {
-    // Available snack box types:
+    // NOTE: Available snack box types:
     // - packet
     // - custom
     return array(
@@ -169,16 +179,16 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
     // Setup cache
     $cache_key = md5( 'jpid_snack_boxes_' . serialize( $args ) );
 
-    $snack_boxs = wp_cache_get( $cache_key, 'snack_boxes' );
+    $snack_boxes = wp_cache_get( $cache_key, 'snack_boxes' );
 
-    if ( $snack_boxs === false ) {
-      $query      = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
-      $snack_boxs = $wpdb->get_results( $query );
+    if ( $snack_boxes === false ) {
+      $query       = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
+      $snack_boxes = $wpdb->get_results( $query );
 
-      wp_cache_set( $cache_key, $snack_boxs, 'snack_boxes', 3600 );
+      wp_cache_set( $cache_key, $snack_boxes, 'snack_boxes', 3600 );
     }
 
-    return $snack_boxs;
+    return $snack_boxes;
   }
 
   /**
@@ -221,11 +231,11 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
    * @param     array     $args       Order query arguments.
    * @param     string    $select     Default SELECT clause.
    * @param     string    $where      Default WHERE clause.
-   * @param     string    $snack_boxby    Default ORDER BY clause.
+   * @param     string    $orderby    Default ORDER BY clause.
    * @param     string    $limit      Default LIMIT clause.
    * @return    string                Newly created SQL query.
    */
-  private function build_query( $args, $select, $where = " WHERE 1=1 ", $snack_boxby = "", $limit = "" ) {
+  private function build_query( $args, $select, $where = " WHERE 1=1 ", $orderby = "", $limit = "" ) {
     global $wpdb;
 
     // Prepare the SELECT clause
@@ -340,7 +350,7 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
     $snack_box = $this->get_by( 'snack_box_id', $id );
 
     if ( $snack_box ) {
-      return parent::update( $snack_box->payment_id, $data );
+      return parent::update( $snack_box->snack_box_id, $data );
     }
 
     return false;
@@ -373,7 +383,7 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
-            $value = trim( $value );
+            $value = sanitize_text_field( trim( $value ) );
 
             if ( empty( $value ) ) {
               $value = null;
@@ -384,7 +394,7 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
-            $value = trim( $value );
+            $value = sanitize_text_field( trim( $value ) );
           }
           break;
         case 'snack_box_price':
@@ -401,26 +411,6 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
   }
 
   /**
-   * Check for insert/update data validity.
-   *
-   * If there is a data with null value, then that data is invalid.
-   * Empty data should be given empty string ('') or zero (0) value.
-   *
-   * @since     1.0.0
-   * @param     array      $data    Insert/update data.
-   * @return    boolean             True if all data are valid, otherwise false.
-   */
-  private function valid_data( $data ) {
-    foreach ( $data as $key => $value ) {
-      if ( is_null( $value ) ) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
    * Delete existing snack box in the database.
    *
    * @since     1.0.0
@@ -432,10 +422,10 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
       return false;
     }
 
-    $snack_box = $this->get_by( 'snack_box_id', $id_or_invoice );
+    $snack_box = $this->get_by( 'snack_box_id', $id );
 
     if ( $snack_box ) {
-      return parent::delete( $snack_box->payment_id );
+      return parent::delete( $snack_box->snack_box_id );
     }
 
     return false;
@@ -455,6 +445,184 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
     }
 
     return (bool) $this->get_column_by( 'snack_box_id', $field, $value );
+  }
+
+  /**
+   * Get single snack box item from database.
+   *
+   * @since     1.0.0
+   * @param     int       $snack_box_id    Snack box's ID.
+   * @param     int       $product_id      Product's ID.
+   * @return    object                     Snack box item database object.
+   */
+  public function get_item( $snack_box_id, $product_id ) {
+    global $wpdb;
+
+    $snack_box_id = absint( $snack_box_id );
+    $product_id   = absint( $product_id );
+
+    if ( empty( $snack_box_id ) || empty( $product_id ) ) {
+      return false;
+    }
+
+    return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->items_table} WHERE snack_box_id = %d AND product_id = %d LIMIT 1;", $snack_box_id, $product_id ) );
+  }
+
+  /**
+   * Get multiple snack box items from database.
+   *
+   * @since     1.0.0
+   * @param     int       $snack_box_id    Snack box's ID.
+   * @return    object                     Array of snack box item database objects.
+   */
+  public function get_items( $snack_box_id ) {
+    global $wpdb;
+
+    $snack_box_id = absint( $snack_box_id );
+
+    if ( empty( $snack_box_id ) ) {
+      return false;
+    }
+
+    // Setup cache
+    $cache_key = md5( 'jpid_snack_boxes_items_' . $snack_box_id );
+
+    $items = wp_cache_get( $cache_key, 'snack_boxes' );
+
+    if ( $items === false ) {
+      $items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->items_table} WHERE snack_box_id = %d;", $snack_box_id ) );
+
+      wp_cache_set( $cache_key, $items, 'snack_boxes', 3600 );
+    }
+
+    return $items;
+  }
+
+  /**
+   * Add snack box item to the database or update it if it already exists.
+   *
+   * @since     1.0.0
+   * @param     int        $snack_box_id    Snack box's ID.
+   * @param     int        $product_id      Product's ID.
+   * @param     int        $product_qty     Product's quantity.
+   * @return    boolean                     True on success, false on failure.
+   */
+  public function add_item( $snack_box_id, $product_id, $product_qty = 1 ) {
+    global $wpdb;
+
+    $snack_box = $this->get( $snack_box_id );
+
+    if ( ! $snack_box ) {
+      return false;
+    }
+
+    $product_id  = absint( $product_id );
+    $product_qty = intval( $product_qty );
+
+    if ( empty( $product_id ) || $product_qty < 0 ) {
+      return false;
+    }
+
+    $snack_box_item = $this->get_item( $snack_box->snack_box_id, $product_id );
+
+    $add_success = false;
+
+    if ( $snack_box_item ) {
+
+      // Setup update data
+      $data  = array( 'product_qty'  => $product_qty );
+      $where = array( 'snack_box_id' => $snack_box->snack_box_id, 'product_id' => $product_id );
+
+      // Perform update
+      $update_success = $wpdb->update( $this->items_table, $data, $where, array( '%d' ), array( '%d', '%d' ) );
+
+      if ( $update_success !== false ) {
+        $add_success = true;
+      }
+
+    } else {
+
+      // Setup insert data
+      $data = array(
+        'snack_box_id' => $snack_box->snack_box_id,
+        'product_id'   => $product_id,
+        'product_qty'  => $product_qty
+      );
+
+      // Perform insert
+      $add_success = $wpdb->insert( $this->items_table, $data, array( '%d', '%d', '%d' ) );
+
+    }
+
+    // Update/insert success
+    if ( $add_success ) {
+      return $this->update_snack_box_price_on_items_change( $snack_box->snack_box_id );
+    }
+
+    // Update/insert failed
+    return false;
+  }
+
+  /**
+   * Remove existing snack box item in the database.
+   *
+   * @since     1.0.0
+   * @param     int        $snack_box_id    Snack box's ID.
+   * @param     int        $product_id      Snack box item's ID.
+   * @return    boolean                     True on success, false on failure.
+   */
+  public function remove_item( $snack_box_id, $product_id ) {
+    global $wpdb;
+
+    $snack_box_id = absint( $snack_box_id );
+    $product_id   = absint( $product_id );
+
+    if ( empty( $snack_box_id ) || empty( $product_id ) ) {
+      return false;
+    }
+
+    $snack_box_item = $this->get_item( $snack_box_id, $product_id );
+
+    if ( $snack_box_item ) {
+      $remove_success = $wpdb->delete( $this->items_table, array( 'snack_box_id' => $snack_box_item->snack_box_id, 'product_id' => $snack_box_item->product_id ), array( '%d', '%d' ) );
+
+      // Delete success
+      if ( $remove_success ) {
+        return $this->update_snack_box_price_on_items_change( $snack_box_item->snack_box_id );
+      }
+
+      // Delete failed
+      return false;
+    }
+
+    // No snack box item with provided IDs
+    return false;
+  }
+
+  /**
+   * Update snack box's price when its items are updated or deleted.
+   *
+   * @since     1.0.0
+   * @param     int        $snack_box_id    Snack box's ID.
+   * @return    boolean                     True on success, false on failure.
+   */
+  private function update_snack_box_price_on_items_change( $snack_box_id ) {
+    $snack_box_items = $this->get_items( $snack_box_id );
+    $snack_box_price = 0.00;
+
+    if ( ! empty( $snack_box_items ) ) {
+      foreach ( $snack_box_items as $snack_box_item ) {
+        $product = jpid_get_product( $snack_box_item->product_id );
+
+        if ( ! $product ) {
+          continue;
+        }
+
+        $snack_box_price += ( (float) $product->get_price() * $snack_box_item->product_qty );
+      }
+    }
+
+    return (bool) $this->update( $snack_box_id, array( 'snack_box_price' => $snack_box_price ) );
   }
 
 }

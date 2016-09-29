@@ -132,7 +132,8 @@ class JPID_Activator {
     $tables .= "CREATE TABLE {$wpdb->prefix}jpid_order_items (
       order_id bigint(20) UNSIGNED NOT NULL,
       item_id bigint(20) UNSIGNED NOT NULL,
-      item_qty varchar(200) NOT NULL,
+      item_qty int(20) NOT NULL,
+      item_type varchar(200) NOT NULL DEFAULT '',
       PRIMARY KEY  (order_id, item_id),
       KEY order_id (order_id)
     ) {$charset_collate};";
