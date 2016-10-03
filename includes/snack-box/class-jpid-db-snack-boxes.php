@@ -151,7 +151,7 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
    * @param     array     $args    Snack boxes query arguments.
    * @return    array              Array of snack box database objects.
    */
-  public function get_all( $args = array() ) {
+  public function get_all( $args = array(), $use_cache = false ) {
     global $wpdb;
 
     // List of accepted query arguments
@@ -177,9 +177,12 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
     $args = wp_parse_args( $args, $defaults );
 
     // Setup cache
-    $cache_key = md5( 'jpid_snack_boxes_' . serialize( $args ) );
+    $cache_key   = md5( 'jpid_snack_boxes_' . serialize( $args ) );
+    $snack_boxes = false;
 
-    $snack_boxes = wp_cache_get( $cache_key, 'snack_boxes' );
+    if ( $use_cache ) {
+      $snack_boxes = wp_cache_get( $cache_key, 'snack_boxes' );
+    }
 
     if ( $snack_boxes === false ) {
       $query       = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
@@ -198,7 +201,7 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
    * @param     array     $args    Snack box query arguments.
    * @return    int                Total numbers of snack boxes.
    */
-  public function count( $args = array() ) {
+  public function count( $args = array(), $use_cache = false ) {
     global $wpdb;
 
     // List of accepted query arguments
@@ -211,8 +214,11 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_snack_boxes_count_' . serialize( $args ) );
+    $count = false;
 
-    $count = wp_cache_get( $cache_key, 'snack_boxes' );
+    if ( $use_cache ) {
+      $count = wp_cache_get( $cache_key, 'snack_boxes' );
+    }
 
     if ( $count === false ) {
       $query = $this->build_query( $args, " SELECT COUNT({$this->primary_key}) FROM {$this->table_name} " );
@@ -475,7 +481,7 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
    * @param     int       $snack_box_id    Snack box's ID.
    * @return    object                     Array of snack box item database objects.
    */
-  public function get_items( $snack_box_id ) {
+  public function get_items( $snack_box_id, $use_cache = false ) {
     global $wpdb;
 
     $snack_box_id = absint( $snack_box_id );
@@ -486,8 +492,11 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_snack_boxes_items_' . $snack_box_id );
+    $items     = false;
 
-    $items = wp_cache_get( $cache_key, 'snack_boxes' );
+    if ( $use_cache ) {
+      $items = wp_cache_get( $cache_key, 'snack_boxes' );
+    }
 
     if ( $items === false ) {
       $items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->items_table} WHERE snack_box_id = %d;", $snack_box_id ) );

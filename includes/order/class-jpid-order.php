@@ -123,7 +123,7 @@ class JPID_Order {
    * @param    int|string    $id_or_invoice    Order's ID or invoice
    */
   public function __construct( $id_or_invoice = false ) {
-    $this->db = new JPID_DB_Customers();
+    $this->db = new JPID_DB_Orders();
 
     if ( is_numeric( $id_or_invoice ) ) {
       $id_or_invoice = absint( $id_or_invoice );
@@ -178,20 +178,16 @@ class JPID_Order {
    * @return    array    Collection of order's items.
    */
   private function load_order_items() {
-    $old_items = $this->get_items();
-    $new_items = array();
-
+    $new_items   = array();
     $order_items = $this->db->get_items( $this->get_id() );
 
-    if ( empty( $order_items ) ) {
-      return $old_items;
-    }
+    if ( ! empty( $order_items ) ) {
+      foreach ( $order_items as $order_item ) {
+        $item = JPID_Order_Item::create( $order_item->item_id, $order_item->item_type );
 
-    foreach ( $order_items as $order_item ) {
-      $item = JPID_Order_Item::create( $order_item->item_id, $order_item->item_type );
-
-      if ( ! empty( $item ) && is_object( $item ) ) {
-        $new_items[] = $item;
+        if ( ! empty( $item ) && is_object( $item ) ) {
+          $new_items[] = $item;
+        }
       }
     }
 
@@ -616,7 +612,7 @@ class JPID_Order {
    * @param     string      $date    Order's modified date.
    * @return    int|bool             Updated order's ID on success, false on failure.
    */
-  public function set_delivery_date( $date ) {
+  public function set_modified_date( $date ) {
     $time = strtotime( $date );
 
     if ( empty( $time ) ) {
@@ -639,7 +635,7 @@ class JPID_Order {
    * @since     1.0.0
    * @return    int      Order's items.
    */
-  public function get_order_items() {
+  public function get_items() {
     return $this->order_items;
   }
 
@@ -651,7 +647,7 @@ class JPID_Order {
    * @param     float      $item_qty    Item's quantity.
    * @return    boolean                 True on success, false on failure.
    */
-  public function add_order_item( $item_id, $item_qty = 1 ) {
+  public function add_item( $item_id, $item_qty = 1, $item_type = '' ) {
     $item_id  = absint( $item_id );
     $item_qty = intval( $item_qty );
 
@@ -659,7 +655,7 @@ class JPID_Order {
       return false;
     }
 
-    $added = $this->db->add_item( $this->get_id(), $item_id, $item_qty );
+    $added = $this->db->add_item( $this->get_id(), $item_id, $item_qty, $item_type );
 
     if ( $added ) {
       $this->order_items = $this->load_order_items();
@@ -678,7 +674,7 @@ class JPID_Order {
    * @param     int        $item_id     Item's ID.
    * @return    boolean                 True on success, false on failure.
    */
-  public function remove_order_item( $item_id ) {
+  public function remove_item( $item_id ) {
     $item_id = absint( $item_id );
 
     if ( empty( $item_id ) ) {

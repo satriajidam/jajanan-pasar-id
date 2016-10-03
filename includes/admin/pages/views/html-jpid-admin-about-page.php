@@ -4,7 +4,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/views
+ * @subpackage jajanan-pasar-id/includes/admin/pages/views
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 ?>
@@ -91,5 +91,17 @@
   // die( var_dump( $payments_db->get( 6 ) ) );
   // die( var_dump( $payments_db->get_all( array( 'transfer_account_name' => 'Bruce'  ) ) ) );
   // die( var_dump( $payments_db->exists( 6 ) ) );
+
+  $order = new JPID_Order( 3 );
+
+  // var_dump( $order->add_item( 1, 50 ) );
+  // var_dump( $order->remove_item( 1 ) );
+  // var_dump( $order );
+
+  $snack_box = new JPID_Snack_Box( 1 );
+
+  // var_dump( $snack_box->add_item( 95 ) );
+  // var_dump( $snack_box->remove_item( 94 ) );
+  // var_dump( $snack_box );
 
 ?>

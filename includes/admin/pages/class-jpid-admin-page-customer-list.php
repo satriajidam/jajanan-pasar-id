@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Handle creation of admin about page.
+ * Handle creation of customer list page.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id/includes/admin/pages
@@ -11,15 +11,26 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class JPID_Admin_Page_About extends JPID_Admin_Page {
+class JPID_Admin_Page_Customer_List extends JPID_Admin_Page {
 
   /**
-   * Class constructor.
+	 * Class constructor.
+	 *
+	 * @since    1.0.0
+	 */
+  public function __construct() {
+    $this->set_slug( 'jpid-customers' );
+  }
+
+  /**
+   * Load page.
+   *
+   * Use this function as callback in load-{page} action hook.
    *
    * @since    1.0.0
    */
-  public function __construct() {
-    $this->set_slug( 'jpid-about' );
+  public function init_page() {
+
   }
 
   /**
@@ -30,7 +41,7 @@ class JPID_Admin_Page_About extends JPID_Admin_Page {
    * @since    1.0.0
    */
   public function display_page() {
-    include_once JPID_PLUGIN_DIR . 'includes/admin/pages/views/html-jpid-admin-about-page.php';
+
   }
 
 }

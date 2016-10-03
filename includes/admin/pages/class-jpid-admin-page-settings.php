@@ -4,7 +4,7 @@
  * Handle creation of admin settings page.
  *
  * @since      1.0.0
- * @package    jajanan-pasar-id/includes/admin
+ * @package    jajanan-pasar-id/includes/admin/pages
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -17,7 +17,7 @@ class JPID_Admin_Page_Settings extends JPID_Admin_Page {
    * @since    1.0.0
    * @var      array    Collection of settings objects.
    */
-  private $settings;
+  private $settings = array();
 
   /**
 	 * Class constructor.
@@ -75,7 +75,6 @@ class JPID_Admin_Page_Settings extends JPID_Admin_Page {
     $tabs = $this->get_tabs();
 
     // Setup settings
-    $this->settings   = array();
     $this->settings[] = new JPID_Settings_General( $tabs['general']['group'] );
     $this->settings[] = new JPID_Settings_Delivery( $tabs['delivery']['group'] );
     $this->settings[] = new JPID_Settings_Payment( $tabs['payment']['group'] );
@@ -96,7 +95,7 @@ class JPID_Admin_Page_Settings extends JPID_Admin_Page {
 	 * @since    1.0.0
 	 */
   public function register_settings() {
-    if ( ! isset( $this->settings ) ) {
+    if ( empty( $this->settings ) ) {
       return;
     }
 
@@ -106,7 +105,9 @@ class JPID_Admin_Page_Settings extends JPID_Admin_Page {
   }
 
   /**
-   * Display settings page.
+   * Display page.
+   *
+   * Use this function as callback in add_menu_page() or add_submenu_page() function.
    *
    * @since    1.0.0
    */

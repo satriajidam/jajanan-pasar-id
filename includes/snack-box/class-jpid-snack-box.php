@@ -99,20 +99,16 @@ class JPID_Snack_Box {
    * @return    array    Collection of snack box's items.
    */
   private function load_items() {
-    $old_items = $this->get_items();
     $new_items = array();
+    $items     = $this->db->get_items( $this->id );
 
-    $items = $this->db->get_items( $this->id );
+    if ( ! empty( $items ) ) {
+      foreach ( $items as $item ) {
+        $product = jpid_get_product( $item->product_id );
 
-    if ( empty( $items ) ) {
-      return $old_items;
-    }
-
-    foreach ( $items as $item ) {
-      $product = jpid_get_product( $item->product_id );
-
-      if ( ! empty( $product ) && is_object( $product ) ) {
-        $new_items[] = $product;
+        if ( ! empty( $product ) && is_object( $product ) ) {
+          $new_items[] = $product;
+        }
       }
     }
 

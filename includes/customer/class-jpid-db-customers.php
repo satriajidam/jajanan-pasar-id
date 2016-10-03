@@ -164,7 +164,7 @@ class JPID_DB_Customers extends JPID_DB {
    * @param     array     $args    Customers query arguments.
    * @return    array              Array of customer database objects.
    */
-  public function get_all( $args = array() ) {
+  public function get_all( $args = array(), $use_cache = false ) {
     global $wpdb;
 
     // List of accepted query arguments
@@ -194,8 +194,11 @@ class JPID_DB_Customers extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_customers_' . serialize( $args ) );
+    $customers = false;
 
-    $customers = wp_cache_get( $cache_key, 'customers' );
+    if ( $use_cache ) {
+      $customers = wp_cache_get( $cache_key, 'customers' );
+    }
 
     if ( $customers === false ) {
       $query     = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
@@ -214,7 +217,7 @@ class JPID_DB_Customers extends JPID_DB {
    * @param     array     $args    Customer query arguments.
    * @return    int                Total numbers of customers.
    */
-  public function count( $args = array() ) {
+  public function count( $args = array(), $use_cache = false ) {
     global $wpdb;
 
     // List of accepted query arguments
@@ -230,8 +233,11 @@ class JPID_DB_Customers extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_customers_count_' . serialize( $args ) );
+    $count     = false;
 
-    $count = wp_cache_get( $cache_key, 'customers' );
+    if ( $use_cache ) {
+      $count = wp_cache_get( $cache_key, 'customers' );
+    }
 
     if ( $count === false ) {
       $query = $this->build_query( $args, " SELECT COUNT({$this->primary_key}) FROM {$this->table_name} " );
@@ -603,8 +609,9 @@ class JPID_DB_Customers extends JPID_DB {
     }
 
     $order_count = (int) $customer->order_count + (int) $count;
+    $updated     = $this->update( $customer_id, array( 'order_count' => $order_count ) );
 
-    if ( $this->update( $customer_id, array( 'order_count' => $order_count ) ) ) {
+    if ( $updated ) {
       return $order_count;
     }
 
@@ -636,7 +643,9 @@ class JPID_DB_Customers extends JPID_DB {
       $order_count = 0;
     }
 
-    if ( $this->update( $customer_id, array( 'order_count' => $order_count ) ) ) {
+    $updated = $this->update( $customer_id, array( 'order_count' => $order_count ) );
+
+    if ( $updated ) {
       return $order_count;
     }
 
@@ -663,8 +672,9 @@ class JPID_DB_Customers extends JPID_DB {
     }
 
     $order_value = (float) $customer->order_value + (float) $value;
+    $updated     = $this->update( $customer_id, array( 'order_value' => $order_value ) );
 
-    if ( $this->update( $customer_id, array( 'order_value' => $order_value ) ) ) {
+    if ( $updated ) {
       return $order_value;
     }
 
@@ -696,7 +706,9 @@ class JPID_DB_Customers extends JPID_DB {
       $order_value = 0.00;
     }
 
-    if ( $this->update( $customer_id, array( 'order_value' => $order_value ) ) ) {
+    $updated = $this->update( $customer_id, array( 'order_value' => $order_value ) );
+
+    if ( $updated ) {
       return $order_value;
     }
 

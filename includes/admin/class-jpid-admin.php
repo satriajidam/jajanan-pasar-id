@@ -18,6 +18,12 @@ if ( ! class_exists( 'JPID_Admin' ) ) :
 class JPID_Admin {
 
   /**
+   * @since    1.0.0
+   * @var      array    Collection of page hooks.
+   */
+  private $page_hooks = array();
+
+  /**
 	 * Class constructor.
 	 *
 	 * @since    1.0.0
@@ -38,6 +44,8 @@ class JPID_Admin {
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/abstract-jpid-admin-page.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-about.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-settings.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-customer-list.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-customer-edit.php';
 
     // Core
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
@@ -56,11 +64,15 @@ class JPID_Admin {
    */
   private function setup_admin() {
     // Custom Pages
-    $this->about_page       = new JPID_Admin_Page_About();
-    $this->settings_page    = new JPID_Admin_Page_Settings();
+    $this->about_page    = new JPID_Admin_Page_About();
+    $this->settings_page = new JPID_Admin_Page_Settings();
+
+    // Customer Custom Pages
+    $this->customer_list = new JPID_Admin_Page_Customer_List();
+    $this->customer_edit = new JPID_Admin_Page_Customer_Edit();
 
     // Post Types
-    $this->post_types       = new JPID_Admin_Post_Types();
+    $this->post_types = new JPID_Admin_Post_Types();
 
     // Post Type - Product
     $this->product_category = new JPID_Admin_Product_Category();
@@ -91,19 +103,57 @@ class JPID_Admin {
    * @since    1.0.0
    */
   public function admin_menus() {
+    // General Custom Pages
     add_menu_page(
       __( 'Jajanan Pasar', 'jpid' ), __( 'Jajanan Pasar', 'jpid' ), 'manage_options',
       $this->about_page->get_slug(), null, 'dashicons-store', 50
     );
 
-    add_submenu_page(
-      $this->about_page->get_slug(), __( 'About', 'jpid' ), __( 'About', 'jpid' ), 'manage_options',
-      $this->about_page->get_slug(), array( $this->about_page, 'display_page' )
+    $this->page_hooks['about'] = add_submenu_page(
+      $this->about_page->get_slug(),
+      __( 'About', 'jpid' ),
+      __( 'About', 'jpid' ),
+      'manage_options',
+      $this->about_page->get_slug(),
+      array( $this->about_page, 'display_page' )
     );
-    add_submenu_page(
-      $this->about_page->get_slug(), __( 'Settings', 'jpid' ), __( 'Settings', 'jpid' ), 'manage_options',
-      $this->settings_page->get_slug(), array( $this->settings_page, 'display_page' )
+
+    $this->page_hooks['settings'] = add_submenu_page(
+      $this->about_page->get_slug(),
+      __( 'Settings', 'jpid' ),
+      __( 'Settings', 'jpid' ),
+      'manage_options',
+      $this->settings_page->get_slug(),
+      array( $this->settings_page, 'display_page' )
     );
+
+    // Customer Custom Pages
+    add_menu_page(
+      __( 'Customers', 'jpid' ), __( 'Customers', 'jpid' ), 'edit_posts',
+      $this->customer_list->get_slug(), null, 'dashicons-id', 49
+    );
+
+    $this->page_hooks['customer_list'] = add_submenu_page(
+      $this->customer_list->get_slug(),
+      __( 'All Customers', 'jpid' ),
+      __( 'All Customers', 'jpid' ),
+      'edit_posts',
+      $this->customer_list->get_slug(),
+      array( $this->customer_list, 'display_page' )
+    );
+
+    add_action( 'load-' . $this->page_hooks['customer_list'], array( $this->customer_list, 'load_page' ) );
+
+    $this->page_hooks['customer_edit'] = add_submenu_page(
+      $this->customer_list->get_slug(),
+      __( 'Add Customer', 'jpid' ),
+      __( 'Add Customer', 'jpid' ),
+      'edit_posts',
+      $this->customer_edit->get_slug(),
+      array( $this->customer_edit, 'display_page' )
+    );
+
+    add_action( 'load-' . $this->page_hooks['customer_edit'], array( $this->customer_edit, 'load_page' ) );
   }
 
   /**
@@ -112,7 +162,7 @@ class JPID_Admin {
    * @since    1.0.0
    */
   public function admin_init() {
-    // TODO: do something...
+
   }
 
   /**
@@ -159,7 +209,7 @@ class JPID_Admin {
       $jpid_admin_args['load_product_categories_display_nonce'] = wp_create_nonce( 'load_product_categories_display' );
     }
 
-    if ( $current_screen->id === 'jajanan-pasar_page_jpid-settings' ) {
+    if ( $current_screen->id === $this->page_hooks['settings'] ) {
       $jpid_admin_args['remove_location'] = __( 'Are you sure you want to remove this location?', 'jpid' );
       $jpid_admin_args['remove_account'] = __( 'Are you sure you want to remove this account?', 'jpid' );
     }
@@ -270,7 +320,7 @@ class JPID_Admin {
     foreach ( $default_product_types as $product_type => $slug ) {
       if ( ! term_exists( $product_type, 'jpid_product_type' ) ) {
         $message  = '<p class="error">';
-        $message .= __( 'Can\'t find product type: ' . $product_type . '. You might\'ve accidentally replaced or removed them from the database. Please deactivate then reactivate <i>j' . JPID_SLUG . '</i> plugin to restore them.', 'jpid' );
+        $message .= __( 'Can\'t find product type: ' . $product_type . '. You might\'ve accidentally replaced or removed them from the database. Please deactivate then reactivate <i>' . JPID_SLUG . '</i> plugin to restore them.', 'jpid' );
         $message .= '</p>';
         $message .= '<p style="font-style: italic;">Plugin: ' . JPID_SLUG . '<br />Version: ' . JPID_VERSION . '</p>';
 

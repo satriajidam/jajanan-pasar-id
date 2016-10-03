@@ -156,7 +156,7 @@ class JPID_DB_Payments extends JPID_DB {
    * @param     array     $args    Payments query arguments.
    * @return    array              Array of order database objects.
    */
-  public function get_all( $args = array() ) {
+  public function get_all( $args = array(), $use_cache = false ) {
     global $wpdb;
 
     // List of accepted query arguments
@@ -185,8 +185,11 @@ class JPID_DB_Payments extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_payments_' . serialize( $args ) );
+    $payments = false;
 
-    $payments = wp_cache_get( $cache_key, 'payments' );
+    if ( $use_cache ) {
+      $payments = wp_cache_get( $cache_key, 'payments' );
+    }
 
     if ( $payments === false ) {
       $query    = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
@@ -205,7 +208,7 @@ class JPID_DB_Payments extends JPID_DB {
    * @param     array     $args    Payment query arguments.
    * @return    int                Total numbers of payments.
    */
-  public function count( $args = array() ) {
+  public function count( $args = array(), $use_cache = false ) {
     global $wpdb;
 
     // List of accepted query arguments
@@ -220,8 +223,11 @@ class JPID_DB_Payments extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_payments_count_' . serialize( $args ) );
+    $count     = false;
 
-    $count = wp_cache_get( $cache_key, 'payments' );
+    if ( $use_cache ) {
+      $count = wp_cache_get( $cache_key, 'payments' );
+    }
 
     if ( $count === false ) {
       $query = $this->build_query( $args, " SELECT COUNT({$this->primary_key}) FROM {$this->table_name} " );

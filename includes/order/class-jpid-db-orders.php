@@ -193,7 +193,7 @@ class JPID_DB_Orders extends JPID_DB {
    * @param     array     $args    Orders query arguments.
    * @return    array              Array of order database objects.
    */
-  public function get_all( $args = array() ) {
+  public function get_all( $args = array(), $use_cache = false ) {
     global $wpdb;
 
     // List of accepted query arguments
@@ -223,8 +223,11 @@ class JPID_DB_Orders extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_orders_' . serialize( $args ) );
+    $orders    = false;
 
-    $orders = wp_cache_get( $cache_key, 'orders' );
+    if ( $use_cache ) {
+      $orders = wp_cache_get( $cache_key, 'orders' );
+    }
 
     if ( $orders === false ) {
       $query  = $this->build_query( $args, " SELECT * FROM {$this->table_name} " );
@@ -243,7 +246,7 @@ class JPID_DB_Orders extends JPID_DB {
    * @param     array     $args    Order query arguments.
    * @return    int                Total numbers of orders.
    */
-  public function count( $args = array() ) {
+  public function count( $args = array(), $use_cache = false ) {
     global $wpdb;
 
     // List of accepted query arguments
@@ -260,8 +263,11 @@ class JPID_DB_Orders extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_orders_count_' . serialize( $args ) );
+    $count     = false;
 
-    $count = wp_cache_get( $cache_key, 'orders' );
+    if ( $use_cache ) {
+      $count = wp_cache_get( $cache_key, 'orders' );
+    }
 
     if ( $count === false ) {
       $query = $this->build_query( $args, " SELECT COUNT({$this->primary_key}) FROM {$this->table_name} " );
@@ -624,7 +630,7 @@ class JPID_DB_Orders extends JPID_DB {
    * @param     string    $item_type    Order item's type.
    * @return    object                  Array of order item database objects.
    */
-  public function get_items( $order_id, $item_type = '' ) {
+  public function get_items( $order_id, $item_type = '', $use_cache = false ) {
     global $wpdb;
 
     $order_id = absint( $order_id );
@@ -642,8 +648,11 @@ class JPID_DB_Orders extends JPID_DB {
 
     // Setup cache
     $cache_key = md5( 'jpid_orders_items_' . $order_id . $item_type );
+    $items     = false;
 
-    $items = wp_cache_get( $cache_key, 'orders' );
+    if ( $use_cache ) {
+      $items = wp_cache_get( $cache_key, 'orders' );
+    }
 
     if ( $items === false ) {
       $query = $select . $where . ";";
