@@ -40,21 +40,21 @@ class JPID_Admin {
 	 * @since    1.0.0
 	 */
   private function includes() {
+    // Core
+    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
+
+    // Post Types
+    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-category.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-list.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-edit.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-ajax.php';
+
     // Custom Pages
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/abstract-jpid-admin-page.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-about.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-settings.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-customer-list.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-customer-edit.php';
-
-    // Core
-    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
-
-    // Product Post Type
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-category.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-list.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-edit.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-ajax.php';
   }
 
   /**
@@ -63,22 +63,22 @@ class JPID_Admin {
    * @since    1.0.0
    */
   private function setup_admin() {
-    // Custom Pages
-    $this->about_page    = new JPID_Admin_Page_About();
-    $this->settings_page = new JPID_Admin_Page_Settings();
-
-    // Customer Custom Pages
-    $this->customer_list = new JPID_Admin_Page_Customer_List();
-    $this->customer_edit = new JPID_Admin_Page_Customer_Edit();
-
     // Post Types
-    $this->post_types = new JPID_Admin_Post_Types();
+    $this->post_types       = new JPID_Admin_Post_Types();
 
     // Post Type - Product
     $this->product_category = new JPID_Admin_Product_Category();
     $this->product_list     = new JPID_Admin_Product_List();
     $this->product_edit     = new JPID_Admin_Product_Edit();
     $this->product_ajax     = new JPID_Admin_Product_Ajax();
+
+    // General Custom Pages
+    $this->about_page       = new JPID_Admin_Page_About();
+    $this->settings_page    = new JPID_Admin_Page_Settings();
+
+    // Customer Custom Pages
+    $this->customer_list    = new JPID_Admin_Page_Customer_List();
+    $this->customer_edit    = new JPID_Admin_Page_Customer_Edit();
   }
 
   /**
@@ -162,7 +162,7 @@ class JPID_Admin {
    * @since    1.0.0
    */
   public function admin_init() {
-
+    // TODO: do something...
   }
 
   /**

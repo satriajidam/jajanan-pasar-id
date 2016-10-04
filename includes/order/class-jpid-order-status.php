@@ -58,4 +58,22 @@ class JPID_Order_Status {
 	 */
   const REFUNDED = 'refunded';
 
+  /**
+   * Get list of available order statuses.
+   *
+   * @since     1.0.0
+   * @return    array    List of available order statuses.
+   */
+  public static function get_statuses() {
+    return array(
+      self::PENDING,
+      self::PROCESSING,
+      self::READY,
+      self::COMPLETED,
+      self::ONHOLD,
+      self::CANCELLED,
+      self::REFUNDED
+    );
+  }
+
 }

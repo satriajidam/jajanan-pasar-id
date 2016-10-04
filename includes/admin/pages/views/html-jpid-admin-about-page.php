@@ -104,4 +104,9 @@
   // var_dump( $snack_box->remove_item( 94 ) );
   // var_dump( $snack_box );
 
+  $customer = new JPID_Customer();
+  var_dump( $customer->get_order_count() );
+  var_dump( $customer->increase_order_count() );
+  var_dump( $customer->get_order_count() );
+
 ?>

@@ -28,4 +28,17 @@ class JPID_Payment_Status {
 	 */
   const VERIFIED = 'verified';
 
+  /**
+   * Get list of available payment statuses.
+   *
+   * @since     1.0.0
+   * @return    array    List of available payment statuses.
+   */
+  public static function get_statuses() {
+    return array(
+      self::UNVERIFIED,
+      self::VERIFIED
+    );
+  }
+
 }

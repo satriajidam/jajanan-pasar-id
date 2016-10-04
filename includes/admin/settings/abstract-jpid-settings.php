@@ -65,10 +65,28 @@ abstract class JPID_Settings {
     }
   }
 
+  /**
+   * Get settings options for this settings page.
+   *
+   * @since     1.0.0
+   * @return    array    Collection of settings options for this settings page.
+   */
   abstract protected function get_settings();
 
+  /**
+   * Display sections of this settings page.
+   *
+   * @since    1.0.0
+   * @param    array    $args    Array of display options for settings sections.
+   */
   abstract public function display_sections( $args );
 
+  /**
+   * Display fields of this settings page.
+   *
+   * @since    1.0.0
+   * @param    array    $args    Array of display options for settings fields.
+   */
   abstract public function display_fields( $args );
 
 }

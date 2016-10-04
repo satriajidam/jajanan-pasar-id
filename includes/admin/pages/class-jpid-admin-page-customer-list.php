@@ -29,7 +29,7 @@ class JPID_Admin_Page_Customer_List extends JPID_Admin_Page {
    *
    * @since    1.0.0
    */
-  public function init_page() {
+  public function load_page() {
 
   }
 

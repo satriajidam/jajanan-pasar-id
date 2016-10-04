@@ -150,10 +150,7 @@ class JPID_Customer {
     $this->city         = (string) $customer->customer_city;
     $this->order_count  = (float) $customer->order_count;
     $this->order_value  = (float) $customer->order_value;
-
-    if ( $this->user_id > 0 ) {
-      $this->user_data = $this->load_user_data( $this->user_id );
-    }
+    $this->user_data    = $this->load_user_data( $this->user_id );
   }
 
   /**
@@ -164,13 +161,13 @@ class JPID_Customer {
    * @return    WP_User                User object.
    */
   private function load_user_data( $user_id ) {
-    $userdata = get_userdata( $user_id );
+    $userdata = null;
 
-    if ( $userdata ) {
-      return $userdata;
+    if ( $user_id > 0 ) {
+      $userdata = get_userdata( $user_id );
     }
 
-    return null;
+    return $userdata;
   }
 
   /**
@@ -502,6 +499,10 @@ class JPID_Customer {
    * @return    int                The new order count on success, false on failure.
    */
   public function increase_order_count( $count = 1 ) {
+    if ( $this->get_id() < 1 && empty( $this->get_email() ) ) {
+      return false;
+    }
+
     $count = intval( $count );
 
     if ( $count < 0 ) {
@@ -525,6 +526,10 @@ class JPID_Customer {
    * @return    int                The new order count on success, false on failure.
    */
   public function decrease_order_count( $count = 1 ) {
+    if ( $this->get_id() < 1 && empty( $this->get_email() ) ) {
+      return false;
+    }
+
     $count = intval( $count );
 
     if ( $count < 0 ) {
@@ -558,6 +563,10 @@ class JPID_Customer {
    * @return    int                The new order count on success, false on failure.
    */
   public function increase_order_value( $value = 0.00 ) {
+    if ( $this->get_id() < 1 && empty( $this->get_email() ) ) {
+      return false;
+    }
+
     $value = floatval( $value );
 
     if ( $value < 0.00 ) {
@@ -581,6 +590,10 @@ class JPID_Customer {
    * @return    int                The new order count on success, false on failure.
    */
   public function decrease_order_value( $value = 0.00 ) {
+    if ( $this->get_id() < 1 && empty( $this->get_email() ) ) {
+      return false;
+    }
+
     $value = floatval( $value );
 
     if ( $value < 0.00 ) {

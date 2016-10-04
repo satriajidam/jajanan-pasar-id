@@ -28,4 +28,17 @@ class JPID_Customer_Status {
 	 */
   const REGISTERED = 'registered';
 
+  /**
+   * Get list of available customer statuses.
+   *
+   * @since     1.0.0
+   * @return    array    List of available customer statuses.
+   */
+  public static function get_statuses() {
+    return array(
+      self::GUEST,
+      self::REGISTERED
+    );
+  }
+
 }
