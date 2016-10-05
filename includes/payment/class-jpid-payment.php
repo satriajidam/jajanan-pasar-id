@@ -233,24 +233,6 @@ class JPID_Payment {
   }
 
   /**
-   * Set and update payment's status.
-   *
-   * @since     1.0.0
-   * @param     string      $status    Payment's status.
-   * @return    int|bool               Updated payment's ID on success, false on failure.
-   */
-  public function set_status( $status ) {
-    $status  = sanitize_text_field( trim( $status ) );
-    $updated = $this->db->update( $this->get_id(), array( 'payment_status' => $status ) );
-
-    if ( $updated ) {
-      $this->status = $status;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get payment's bank.
    *
    * @since     1.0.0
@@ -258,24 +240,6 @@ class JPID_Payment {
    */
   public function get_payment_bank() {
     return $this->payment_bank;
-  }
-
-  /**
-   * Set and update payment's bank.
-   *
-   * @since     1.0.0
-   * @param     string      $bank    Payment's bank.
-   * @return    int|bool             Updated payment's ID on success, false on failure.
-   */
-  public function set_payment_bank( $bank ) {
-    $bank  = sanitize_text_field( trim( $bank ) );
-    $updated = $this->db->update( $this->get_id(), array( 'payment_bank' => $bank ) );
-
-    if ( $updated ) {
-      $this->payment_bank = $bank;
-    }
-
-    return $updated;
   }
 
   /**
@@ -289,24 +253,6 @@ class JPID_Payment {
   }
 
   /**
-   * Set and update payment's account name.
-   *
-   * @since     1.0.0
-   * @param     string      $account_name    Payment's account name.
-   * @return    int|bool                     Updated payment's ID on success, false on failure.
-   */
-  public function set_payment_account_name( $account_name ) {
-    $account_name = sanitize_text_field( trim( $account_name ) );
-    $updated      = $this->db->update( $this->get_id(), array( 'payment_account_name' => $account_name ) );
-
-    if ( $updated ) {
-      $this->payment_account_name = $account_name;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get payment's account number.
    *
    * @since     1.0.0
@@ -314,24 +260,6 @@ class JPID_Payment {
    */
   public function get_payment_account_number() {
     return $this->payment_account_number;
-  }
-
-  /**
-   * Set and update payment's account number.
-   *
-   * @since     1.0.0
-   * @param     string      $account_number    Payment's account number.
-   * @return    int|bool                       Updated payment's ID on success, false on failure.
-   */
-  public function set_payment_account_number( $account_number ) {
-    $account_number = sanitize_text_field( trim( $account_number ) );
-    $updated        = $this->db->update( $this->get_id(), array( 'payment_account_number' => $account_number ) );
-
-    if ( $updated ) {
-      $this->payment_account_number = $account_number;
-    }
-
-    return $updated;
   }
 
   /**
@@ -345,24 +273,6 @@ class JPID_Payment {
   }
 
   /**
-   * Set and update transfer's bank.
-   *
-   * @since     1.0.0
-   * @param     string      $bank    Transfer's bank.
-   * @return    int|bool             Updated payment's ID on success, false on failure.
-   */
-  public function set_transfer_bank( $bank ) {
-    $bank    = sanitize_text_field( trim( $bank ) );
-    $updated = $this->db->update( $this->get_id(), array( 'transfer_bank' => $bank ) );
-
-    if ( $updated ) {
-      $this->transfer_bank = $bank;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get transfer's account name.
    *
    * @since     1.0.0
@@ -370,24 +280,6 @@ class JPID_Payment {
    */
   public function get_transfer_account_name() {
     return $this->transfer_account_name;
-  }
-
-  /**
-   * Set and update transfer's account name.
-   *
-   * @since     1.0.0
-   * @param     string      $account_name    Transfer's account name.
-   * @return    int|bool                     Updated payment's ID on success, false on failure.
-   */
-  public function set_transfer_account_name( $account_name ) {
-    $account_name = sanitize_text_field( trim( $account_name ) );
-    $updated      = $this->db->update( $this->get_id(), array( 'transfer_account_name' => $account_name ) );
-
-    if ( $updated ) {
-      $this->transfer_account_name = $account_name;
-    }
-
-    return $updated;
   }
 
   /**
@@ -401,24 +293,6 @@ class JPID_Payment {
   }
 
   /**
-   * Set and update transfer's account number.
-   *
-   * @since     1.0.0
-   * @param     string      $account_number    Transfer's account number.
-   * @return    int|bool                       Updated payment's ID on success, false on failure.
-   */
-  public function set_transfer_account_number( $account_number ) {
-    $account_number = sanitize_text_field( trim( $account_number ) );
-    $updated        = $this->db->update( $this->get_id(), array( 'transfer_account_number' => $account_number ) );
-
-    if ( $updated ) {
-      $this->transfer_account_number = $account_number;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get transfer's amount.
    *
    * @since     1.0.0
@@ -426,24 +300,6 @@ class JPID_Payment {
    */
   public function get_transfer_amount() {
     return $this->transfer_amount;
-  }
-
-  /**
-   * Set and update transfer's amount.
-   *
-   * @since     1.0.0
-   * @param     float       $amount    Transfer's amount.
-   * @return    int|bool               Updated payment's ID on success, false on failure.
-   */
-  public function set_transfer_amount( $amount ) {
-    $amount  = floatval( $amount );
-    $updated = $this->db->update( $this->get_id(), array( 'transfer_amount' => $amount ) );
-
-    if ( $updated ) {
-      $this->transfer_amount = $amount;
-    }
-
-    return $updated;
   }
 
   /**
@@ -459,30 +315,6 @@ class JPID_Payment {
   }
 
   /**
-   * Set and update transfer's date.
-   *
-   * @since     1.0.0
-   * @param     string      $date    Transfer date.
-   * @return    int|bool             Updated payment's ID on success, false on failure.
-   */
-  public function set_transfer_date( $date ) {
-    $time = strtotime( $date );
-
-    if ( empty( $time ) ) {
-      return false;
-    }
-
-    $transfer_date = date( 'Y-m-d H:i:s', $time );
-    $updated       = $this->db->update( $this->get_id(), array( 'transfer_date' => $transfer_date ) );
-
-    if ( $updated ) {
-      $this->transfer_date = $transfer_date;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get transfer's note.
    *
    * @since     1.0.0
@@ -490,24 +322,6 @@ class JPID_Payment {
    */
   public function get_transfer_note() {
     return $this->transfer_note;
-  }
-
-  /**
-   * Set and update transfer's note.
-   *
-   * @since     1.0.0
-   * @param     string      $note    Transfer's notes.
-   * @return    int|bool             Updated payment's ID on success, false on failure.
-   */
-  public function set_transfer_note( $note ) {
-    $note    = sanitize_text_field( trim( $note ) );
-    $updated = $this->db->update( $this->get_id(), array( 'transfer_note' => $note ) );
-
-    if ( $updated ) {
-      $this->transfer_note = $note;
-    }
-
-    return $updated;
   }
 
 }

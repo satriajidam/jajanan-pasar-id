@@ -36,15 +36,10 @@ class JPID_Admin_Page_Customer_Edit extends JPID_Admin_Page {
    * @since    1.0.0
    */
   public function load_page() {
-    $action = empty( $_GET['action'] ) ? 'new' : $_GET['action'];
-
-    if ( $action === 'new' ) {
-
+    if ( empty( $_GET['customer'] ) ) {
       $this->customer = new JPID_Customer();
-
-    } elseif ( $action === 'edit' ) {
-
-      $customer_id = empty( $_GET['customer'] ) ? 0 : $_GET['customer'];
+    } else {
+      $customer_id = absint( $_GET['customer'] );
 
       $this->customer = new JPID_Customer( $customer_id );
 
@@ -55,15 +50,6 @@ class JPID_Admin_Page_Customer_Edit extends JPID_Admin_Page {
 
         wp_die( $message );
       }
-
-    } else {
-
-      $message  = '<p class="error">';
-      $message .= __( 'Invalid action: <i>' . $action . '</i>', 'jpid' );
-      $message .= '</p>';
-
-      wp_die( $message );
-
     }
   }
 

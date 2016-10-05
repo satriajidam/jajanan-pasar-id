@@ -323,7 +323,7 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
    * @param     array    $data    Snack box's data.
    * @return    int               The newly created snack box's ID on success, false on failure.
    */
-  public function insert( $data ) {
+  public function insert( $data = array() ) {
     $data = wp_parse_args( $data, $this->get_column_defaults() );
     $data = $this->sanitize_data( $data );
 
@@ -385,6 +385,18 @@ class JPID_DB_Snack_Boxes extends JPID_DB {
           }
           break;
         case 'date_created':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $time = strtotime( $value );
+
+            if ( empty( $time ) ) {
+              $value = null;
+            } else {
+              $value = date( 'Y-m-d H:i:s', $time );
+            }
+          }
+          break;
         case 'snack_box_type':
           if ( ! is_string( $value ) ) {
             $value = null;

@@ -21,7 +21,27 @@
     }
   ?>
   <h1><?php esc_html_e( $title ); ?></h1>
-  <form id="" method="post">
-
+  <form id="jpid_edit_customer_form" method="post">
+    <?php if ( $this->customer->get_id() > 0 ) : ?>
+      <input type="hidden" id="jpid_customer_id" name="jpid_customer_id" value="<?php esc_attr_e( $this->customer->get_id() ); ?>" />
+      <input type="hidden" id="jpid_user_id" name="jpid_user_id" value="<?php esc_attr_e( $this->customer->get_user_id() ); ?>" />
+    <?php endif; ?>
+    <div id="poststuff">
+      <div id="post-body" class="metabox-holder columns-2">
+        <div id="postbox-container-1" class="postbox-container">
+          <div id="side-sortables" class="meta-box-sortables ui-sortable">
+            <?php include_once JPID_PLUGIN_DIR . 'includes/admin/pages/views/html-jpid-admin-customer-edit-page-actions.php'; ?>
+          </div>
+        </div>
+        <div id="postbox-container-2" class="postbox-container">
+          <div id="normal-sortables" class="meta-box-sortables ui-sortable">
+            <?php include_once JPID_PLUGIN_DIR . 'includes/admin/pages/views/html-jpid-admin-customer-edit-page-details.php'; ?>
+            <?php if ( $this->customer->get_id() > 0 ) : ?>
+              <?php include_once JPID_PLUGIN_DIR . 'includes/admin/pages/views/html-jpid-admin-customer-edit-page-orders.php'; ?>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
 </div>

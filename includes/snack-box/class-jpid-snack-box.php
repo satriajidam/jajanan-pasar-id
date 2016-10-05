@@ -193,24 +193,6 @@ class JPID_Snack_Box {
   }
 
   /**
-   * Set and update snack box's name.
-   *
-   * @since     1.0.0
-   * @param     string      $name    Snack box's name.
-   * @return    int|bool             Updated snack box's ID on success, false on failure.
-   */
-  public function set_name( $name ) {
-    $name    = sanitize_text_field( trim( $name ) );
-    $updated = $this->db->update( $this->get_id(), array( 'snack_box_name' => $name ) );
-
-    if ( $updated ) {
-      $this->name = $name;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get snack box's type.
    *
    * @since     1.0.0
@@ -218,24 +200,6 @@ class JPID_Snack_Box {
    */
   public function get_type() {
     return $this->type;
-  }
-
-  /**
-   * Set and update snack box's type.
-   *
-   * @since     1.0.0
-   * @param     string      $type    Snack box's type.
-   * @return    int|bool             Updated snack box's ID on success, false on failure.
-   */
-  public function set_type( $type ) {
-    $type    = sanitize_text_field( trim( $type ) );
-    $updated = $this->db->update( $this->get_id(), array( 'snack_box_type' => $type ) );
-
-    if ( $updated ) {
-      $this->type = $type;
-    }
-
-    return $updated;
   }
 
   /**

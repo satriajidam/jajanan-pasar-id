@@ -212,9 +212,10 @@ final class JPID {
 		$this->plugin_scripts    = new JPID_Scripts();
 
 		// Custom database table managers:
-		$this->db_customers = new JPID_DB_Customers();
-		$this->db_orders    = new JPID_DB_Orders();
-		$this->db_payments  = new JPID_DB_Payments();
+		$this->db_customers   = new JPID_DB_Customers();
+		$this->db_orders      = new JPID_DB_Orders();
+		$this->db_payments    = new JPID_DB_Payments();
+		$this->db_snack_boxes = new JPID_DB_Snack_Boxes();
 
 		if ( is_admin() ) {
 			$this->plugin_admin = new JPID_Admin();

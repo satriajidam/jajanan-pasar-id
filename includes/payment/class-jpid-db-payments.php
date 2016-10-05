@@ -438,7 +438,6 @@ class JPID_DB_Payments extends JPID_DB {
           }
           break;
         case 'order_invoice':
-        case 'date_submitted':
         case 'payment_status':
         case 'payment_bank':
         case 'payment_account_name':
@@ -446,7 +445,6 @@ class JPID_DB_Payments extends JPID_DB {
         case 'transfer_bank':
         case 'transfer_account_name':
         case 'transfer_account_number':
-        case 'transfer_date':
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
@@ -454,6 +452,20 @@ class JPID_DB_Payments extends JPID_DB {
 
             if ( empty( $value ) ) {
               $value = null;
+            }
+          }
+          break;
+        case 'date_submitted':
+        case 'transfer_date':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $time = strtotime( $value );
+
+            if ( empty( $time ) ) {
+              $value = null;
+            } else {
+              $value = date( 'Y-m-d H:i:s', $time );
             }
           }
           break;

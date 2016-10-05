@@ -60,6 +60,6 @@
   </div>
   <div class="jpid-field-wrapper">
     <!-- Separate the view for this field in different file so we can use it in AJAX call. -->
-    <?php include JPID_PLUGIN_DIR . 'includes/admin/product/views/html-jpid-meta-box-product-data-category-field.php'; ?>
+    <?php include_once JPID_PLUGIN_DIR . 'includes/admin/product/views/html-jpid-meta-box-product-data-category-field.php'; ?>
   </div>
 </div>

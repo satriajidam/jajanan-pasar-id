@@ -473,6 +473,17 @@ class JPID_DB_Customers extends JPID_DB {
           }
           break;
         case 'date_created':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $time = strtotime( $value );
+
+            if ( empty( $time ) ) {
+              $value = null;
+            } else {
+              $value = date( 'Y-m-d H:i:s', $time );
+            }
+          }
         case 'customer_status':
           if ( ! is_string( $value ) ) {
             $value = null;

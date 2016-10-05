@@ -19,7 +19,7 @@ abstract class JPID_Admin_Page {
    * @since    1.0.0
    * @var      string    Page slug.
    */
-  protected $slug;
+  private $slug;
 
   /**
    * Set page slug.

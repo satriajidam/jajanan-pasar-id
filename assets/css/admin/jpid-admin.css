@@ -8,6 +8,10 @@
   Meta Box Styles
 --------------------------------------------------------------------------------- */
 
+.jpid-panel {
+  padding: 20px 10px 10px 10px;
+}
+
 .jpid-field-container {
   display: table;
   width: 100%;
@@ -28,7 +32,7 @@
 .jpid-field-wrapper {
   display: table-cell;
   width: 70%;
-  padding: 10px 10px 10px 10px;
+  padding: 10px 10px 10px 0;
 }
 
 .jpid-field-wrapper__field {
@@ -38,7 +42,6 @@
 .jpid-field-wrapper__field-short {
   width: 50%;
 }
-
 
 /* --------------------------------------------------------------------------------
   Independent Styles
@@ -64,6 +67,17 @@
 
 .column-type {
   width: 15%;
+}
+
+.jpid-actions {
+  margin: 0;
+}
+
+.jpid-label-required::after {
+  content: "*";
+  color: #f44336;
+  width: 20px;
+  height: 20px;
 }
 
 
@@ -192,10 +206,75 @@
   background: #fefbcc;
 }
 
+
 /* --------------------------------------------------------------------------------
-  Specific Page Styles
+  Customer Page Styles
 --------------------------------------------------------------------------------- */
 
+#jpid_customer_actions {
+  display: table;
+  width: 100%;
+  padding: 0 0 10px 0;
+}
+
+#jpid_customer_actions select {
+  display: table-cell;
+  width: 65%;
+  float: left;
+}
+
+#jpid_customer_actions button {
+  display: table-cell;
+  width: 30%;
+  float: right;
+}
+
+#jpid_customer_details .jpid-panel img.avatar {
+  float: left;
+  width: 60px;
+  height: auto;
+  margin-right: 1.5em;
+  margin-bottom: 1.5em;
+  border: 1px solid #C5C5C5;
+}
+
+#jpid_customer_details .jpid-panel h2 {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
+  font-size: 1.6em;
+  font-weight: 400;
+  line-height: 1.4em;
+  text-shadow: 1px 1px 1px #fff;
+  margin: 0;
+  padding: 0;
+  clear: none;
+}
+
+#jpid_customer_details .jpid-panel p {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
+  font-size: 1.2em;
+  font-weight: 400;
+  line-height: 1em;
+  color: #777;
+  float: left;
+  margin: .5em 1em 0 0;
+}
+
+#jpid_customer_details .jpid-panel p::before {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  font-family: dashicons;
+  vertical-align: top;
+  text-align: left;
+}
+
+#jpid_customer_details #jpid_order_value::before {
+  content: "\f185";
+}
+
+#jpid_customer_details #jpid_order_count::before {
+  content: "\f174";
+}
 
 /* --------------------------------------------------------------------------------
   WP Default Styles Modifier

@@ -17,11 +17,11 @@
   $customers_db = new JPID_DB_Customers();
 
   $data = array(
-    'customer_email' => 'jasontodd@wayneenterprise.com'
+    'customer_email' => 'johnnymarwanto@gmail.com'
   );
 
   // die( var_dump( $customers_db->get_next_id() ) );
-  // die( var_dump( $customers_db->insert( $data ) ) );
+  // var_dump( $customers_db->insert( $data ) );
   // die( var_dump( $customers_db->delete( 9 ) ) );
   // die( var_dump( $customers_db->update( 1, $data ) ) );
   // die( var_dump( $customers_db->get_all( array() ) ) );
@@ -64,6 +64,7 @@
 
   // Available product: 69, 94, 95, 97
 
+  // var_dump( $snack_boxes_db->insert() );
   // die( var_dump( $snack_boxes_db->update( 1, $data ) ) );
   // die( var_dump( $snack_boxes_db->get( 1 ) ) );
   // die( var_dump( $snack_boxes_db->get_all( array( 'snack_box_type' => array( 'custom' )  ) ) ) );
@@ -105,8 +106,8 @@
   // var_dump( $snack_box );
 
   $customer = new JPID_Customer();
-  var_dump( $customer->get_order_count() );
-  var_dump( $customer->increase_order_count() );
-  var_dump( $customer->get_order_count() );
+  // var_dump( $customer->get_order_count() );
+  // var_dump( $customer->increase_order_count() );
+  // var_dump( $customer->get_order_count() );
 
 ?>

@@ -130,13 +130,13 @@ class JPID_Options {
       return false;
     }
 
-  	$did_update = update_option( $option_name, $option_value );
+  	$updated = update_option( $option_name, $option_value );
 
-  	if ( $did_update ) {
+  	if ( $updated ) {
   		self::$options_cache[ $option_name ] = $option_value;
   	}
 
-  	return $did_update;
+  	return $updated;
   }
 
 }

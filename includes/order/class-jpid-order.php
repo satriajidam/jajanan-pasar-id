@@ -286,24 +286,6 @@ class JPID_Order {
   }
 
   /**
-   * Set and update order's status.
-   *
-   * @since     1.0.0
-   * @param     string      $status    Order's status.
-   * @return    int|bool               Updated order's ID on success, false on failure.
-   */
-  public function set_status( $status ) {
-    $status  = sanitize_text_field( trim( $status ) );
-    $updated = $this->db->update( $this->get_id(), array( 'order_status' => $status ) );
-
-    if ( $updated ) {
-      $this->status = $status;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get order's customer ID.
    *
    * @since     1.0.0
@@ -311,24 +293,6 @@ class JPID_Order {
    */
   public function get_customer_id() {
     return $this->customer_id;
-  }
-
-  /**
-   * Set and update order's customer ID.
-   *
-   * @since     1.0.0
-   * @param     int         $id    Order's customer ID.
-   * @return    int|bool           Updated order's ID on success, false on failure.
-   */
-  public function set_customer_id( $id ) {
-    $id      = absint( $id );
-    $updated = $this->db->update( $this->get_id(), array( 'customer_id' => $id ) );
-
-    if ( $updated ) {
-      $this->customer_id = $id;
-    }
-
-    return $updated;
   }
 
   /**
@@ -342,24 +306,6 @@ class JPID_Order {
   }
 
   /**
-   * Set and update order's recipient name.
-   *
-   * @since     1.0.0
-   * @param     string      $name    Order's recipient name.
-   * @return    int|bool             Updated order's ID on success, false on failure.
-   */
-  public function set_recipient_name( $name ) {
-    $name    = sanitize_text_field( trim( $name ) );
-    $updated = $this->db->update( $this->get_id(), array( 'recipient_name' => $name ) );
-
-    if ( $updated ) {
-      $this->recipient_name = $name;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get order's recipient phone.
    *
    * @since     1.0.0
@@ -367,24 +313,6 @@ class JPID_Order {
    */
   public function get_recipient_phone() {
     return $this->recipient_phone;
-  }
-
-  /**
-   * Set and update order's recipient phone.
-   *
-   * @since     1.0.0
-   * @param     string      $phone    Order's recipient phone.
-   * @return    int|bool              Updated order's ID on success, false on failure.
-   */
-  public function set_recipient_phone( $phone ) {
-    $phone   = sanitize_text_field( trim( $phone ) );
-    $updated = $this->db->update( $this->get_id(), array( 'recipient_phone' => $phone ) );
-
-    if ( $updated ) {
-      $this->recipient_phone = $phone;
-    }
-
-    return $updated;
   }
 
   /**
@@ -400,30 +328,6 @@ class JPID_Order {
   }
 
   /**
-   * Set and update order's delivery date.
-   *
-   * @since     1.0.0
-   * @param     string      $date    Order's delivery date.
-   * @return    int|bool             Updated order's ID on success, false on failure.
-   */
-  public function set_delivery_date( $date ) {
-    $time = strtotime( $date );
-
-    if ( empty( $time ) ) {
-      return false;
-    }
-
-    $delivery_date = date( 'Y-m-d H:i:s', $time );
-    $updated       = $this->db->update( $this->get_id(), array( 'delivery_date' => $delivery_date ) );
-
-    if ( $updated ) {
-      $this->delivery_date = $delivery_date;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get order's delivery address.
    *
    * @since     1.0.0
@@ -431,24 +335,6 @@ class JPID_Order {
    */
   public function get_delivery_address() {
     return $this->delivery_address;
-  }
-
-  /**
-   * Set and update order's delivery address.
-   *
-   * @since     1.0.0
-   * @param     string      $address    Order's delivery address.
-   * @return    int|bool                Updated order's ID on success, false on failure.
-   */
-  public function set_delivery_address( $address ) {
-    $address = sanitize_text_field( trim( $address ) );
-    $updated = $this->db->update( $this->get_id(), array( 'delivery_address' => $address ) );
-
-    if ( $updated ) {
-      $this->delivery_address = $address;
-    }
-
-    return $updated;
   }
 
   /**
@@ -462,24 +348,6 @@ class JPID_Order {
   }
 
   /**
-   * Set and update order's delivery province.
-   *
-   * @since     1.0.0
-   * @param     string      $province    Order's delivery province.
-   * @return    int|bool                 Updated order's ID on success, false on failure.
-   */
-  public function set_delivery_province( $province ) {
-    $province = sanitize_text_field( trim( $province ) );
-    $updated  = $this->db->update( $this->get_id(), array( 'delivery_province' => $province ) );
-
-    if ( $updated ) {
-      $this->delivery_province = $province;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get order's delivery city.
    *
    * @since     1.0.0
@@ -487,24 +355,6 @@ class JPID_Order {
    */
   public function get_delivery_city() {
     return $this->delivery_city;
-  }
-
-  /**
-   * Set and update order's delivery city.
-   *
-   * @since     1.0.0
-   * @param     string      $city    Order's delivery city.
-   * @return    int|bool             Updated order's ID on success, false on failure.
-   */
-  public function set_delivery_city( $city ) {
-    $city    = sanitize_text_field( trim( $city ) );
-    $updated = $this->db->update( $this->get_id(), array( 'delivery_city' => $city ) );
-
-    if ( $updated ) {
-      $this->delivery_city = $city;
-    }
-
-    return $updated;
   }
 
   /**
@@ -528,24 +378,6 @@ class JPID_Order {
   }
 
   /**
-   * Set and update order's delivery cost.
-   *
-   * @since     1.0.0
-   * @param     float       $cost    Order's delivery cost.
-   * @return    int|bool             Updated order's ID on success, false on failure.
-   */
-  public function set_delivery_cost( $cost ) {
-    $cost    = floatval( $id );
-    $updated = $this->db->update( $this->get_id(), array( 'delivery_cost' => $cost ) );
-
-    if ( $updated ) {
-      $this->delivery_cost = $cost;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get order's delivery note.
    *
    * @since     1.0.0
@@ -553,24 +385,6 @@ class JPID_Order {
    */
   public function get_delivery_note() {
     return $this->delivery_note;
-  }
-
-  /**
-   * Set and update order's delivery note.
-   *
-   * @since     1.0.0
-   * @param     string      $note    Order's delivery note.
-   * @return    int|bool             Updated order's ID on success, false on failure.
-   */
-  public function set_delivery_note( $note ) {
-    $note    = sanitize_text_field( trim( $note ) );
-    $updated = $this->db->update( $this->get_id(), array( 'delivery_note' => $note ) );
-
-    if ( $updated ) {
-      $this->delivery_note = $note;
-    }
-
-    return $updated;
   }
 
   /**
@@ -603,30 +417,6 @@ class JPID_Order {
    */
   public function get_modified_date( $format = 'Y-m-d H:i:s', $translate = true ) {
     return mysql2date( $format, $this->modified_date, $translate );
-  }
-
-  /**
-   * Set and update order's modified date.
-   *
-   * @since     1.0.0
-   * @param     string      $date    Order's modified date.
-   * @return    int|bool             Updated order's ID on success, false on failure.
-   */
-  public function set_modified_date( $date ) {
-    $time = strtotime( $date );
-
-    if ( empty( $time ) ) {
-      return false;
-    }
-
-    $modified_date = date( 'Y-m-d H:i:s', $time );
-    $updated       = $this->db->update( $this->get_id(), array( 'modified_date' => $modified_date ) );
-
-    if ( $updated ) {
-      $this->modified_date = $modified_date;
-    }
-
-    return $updated;
   }
 
   /**

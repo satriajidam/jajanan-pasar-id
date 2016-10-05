@@ -522,12 +522,24 @@ class JPID_DB_Orders extends JPID_DB {
             $value = null;
           }
           break;
-        case 'order_invoice':
         case 'order_date':
+        case 'delivery_date':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $time = strtotime( $value );
+
+            if ( empty( $time ) ) {
+              $value = null;
+            } else {
+              $value = date( 'Y-m-d H:i:s', $time );
+            }
+          }
+          break;
+        case 'order_invoice':
         case 'order_status':
         case 'recipient_name':
         case 'recipient_phone':
-        case 'delivery_date':
         case 'delivery_address':
         case 'delivery_province':
         case 'delivery_city':
@@ -542,11 +554,23 @@ class JPID_DB_Orders extends JPID_DB {
           }
           break;
         case 'delivery_note':
-        case 'modified_date':
           if ( ! is_string( $value ) ) {
             $value = null;
           } else {
             $value = sanitize_text_field( trim( $value ) );
+          }
+          break;
+        case 'modified_date':
+          if ( ! is_string( $value ) ) {
+            $value = null;
+          } else {
+            $time = strtotime( $value );
+
+            if ( empty( $time ) ) {
+              $value = '';
+            } else {
+              $value = date( 'Y-m-d H:i:s', $time );
+            }
           }
           break;
         case 'delivery_cost':

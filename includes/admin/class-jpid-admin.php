@@ -42,6 +42,7 @@ class JPID_Admin {
   private function includes() {
     // Core
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-actions.php';
 
     // Post Types
     require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-category.php';
@@ -63,8 +64,9 @@ class JPID_Admin {
    * @since    1.0.0
    */
   private function setup_admin() {
-    // Post Types
+    // Core
     $this->post_types       = new JPID_Admin_Post_Types();
+    $this->post_actions     = new JPID_Admin_Post_Actions();
 
     // Post Type - Product
     $this->product_category = new JPID_Admin_Product_Category();
@@ -162,7 +164,10 @@ class JPID_Admin {
    * @since    1.0.0
    */
   public function admin_init() {
-    // TODO: do something...
+    // Set product post type page hooks
+    $this->page_hooks['product_category'] = 'edit-jpid_product_category';
+    $this->page_hooks['product_list']     = 'edit-jpid_product';
+    $this->page_hooks['product_edit']     = 'jpid_product';
   }
 
   /**
@@ -191,13 +196,14 @@ class JPID_Admin {
       'ajax_url'  => admin_url( 'admin-ajax.php' ),
       'screen_id' => isset( $current_screen ) ? $current_screen->id : '',
       'post_id'   => isset( $current_post ) ? $current_post->ID : 0,
+      'pages'     => $this->page_hooks
     );
 
-    if ( $current_screen->id === 'edit-jpid_product' || $current_screen->id === 'jpid_product' ) {
+    if ( $current_screen->id === $this->page_hooks['product_list'] || $current_screen->id === $this->page_hooks['product_edit'] ) {
       $jpid_admin_args['load_product_categories_nonce'] = wp_create_nonce( 'load_product_categories' );
     }
 
-    if ( $current_screen->id === 'edit-jpid_product' ) {
+    if ( $current_screen->id === $this->page_hooks['product_list'] ) {
       $snack_type = get_term_by( 'name', 'Snack', 'jpid_product_type' );
       $jpid_admin_args['snack_term_id'] = ! is_null( $snack_type ) ? (int) $snack_type->term_id : 0;
 
@@ -205,13 +211,19 @@ class JPID_Admin {
       $jpid_admin_args['drink_term_id'] = ! is_null( $drink_type ) ? (int) $drink_type->term_id : 0;
     }
 
-    if ( $current_screen->id === 'jpid_product' ) {
+    if ( $current_screen->id === $this->page_hooks['product_edit'] ) {
       $jpid_admin_args['load_product_categories_display_nonce'] = wp_create_nonce( 'load_product_categories_display' );
     }
 
     if ( $current_screen->id === $this->page_hooks['settings'] ) {
       $jpid_admin_args['remove_location'] = __( 'Are you sure you want to remove this location?', 'jpid' );
-      $jpid_admin_args['remove_account'] = __( 'Are you sure you want to remove this account?', 'jpid' );
+      $jpid_admin_args['remove_account']  = __( 'Are you sure you want to remove this account?', 'jpid' );
+    }
+
+    if ( $current_screen->id === $this->page_hooks['customer_edit'] ) {
+      $jpid_admin_args['locations']       = jpid_get_provinces();
+      $jpid_admin_args['select_city']     = __( 'Select City', 'jpid' );
+      $jpid_admin_args['delete_customer'] = __( 'Are you sure you want to delete this customer?', 'jpid' );
     }
 
     wp_localize_script( 'jpid-admin', 'jpid_admin', $jpid_admin_args );
@@ -307,9 +319,9 @@ class JPID_Admin {
   public function product_types_exist() {
     $current_screen = get_current_screen();
 
-    $valid_screen = $current_screen->id === 'jpid_product'
-      || $current_screen->id === 'edit-jpid_product'
-      || $current_screen->id === 'edit-jpid_product_category';
+    $valid_screen = $current_screen->id === $this->page_hooks['product_edit']
+      || $current_screen->id === $this->page_hooks['product_list']
+      || $current_screen->id === $this->page_hooks['product_category'];
 
     if ( ! $valid_screen ) {
       return;

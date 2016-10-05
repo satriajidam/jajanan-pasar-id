@@ -41,9 +41,7 @@ abstract class JPID_DB {
    * @since     1.0.0
    * @return    array    Collection of column names & their formats.
    */
-  protected function get_column_formats() {
-    return array();
-  }
+  abstract protected function get_column_formats();
 
   /**
    * Get default column values.
@@ -51,9 +49,7 @@ abstract class JPID_DB {
    * @since     1.0.0
    * @return    array    Collection of column default values.
    */
-  protected function get_column_defaults() {
-    return array();
-  }
+  abstract protected function get_column_defaults();
 
   /**
    * Get a single row of data based on its ID.
@@ -107,6 +103,26 @@ abstract class JPID_DB {
   }
 
   /**
+   * Filter provided query arguments.
+   *
+   * @since     1.0.0
+   * @param     array    $args             The provided query arguments.
+   * @param     array    $accepted_args    List of accepted query arguments.
+   * @return    array                      Filtered query arguments.
+   */
+  protected function filter_args( $args, $accepted_args = array() ) {
+    foreach ( $args as $key => $value ) {
+      $key = strtolower( $key );
+
+      if ( ! in_array( $key, $accepted_args ) ) {
+        unset( $args[ $key ] );
+      }
+    }
+
+    return $args;
+  }
+
+  /**
    * Get a specific column's value based on the row's ID.
    *
    * @since     1.0.0
@@ -144,7 +160,7 @@ abstract class JPID_DB {
   public function get_next_id() {
     global $wpdb;
 
-    $table_status = $wpdb->get_row( $wpdb->prepare( "SHOW TABLE STATUS LIKE '{$this->table_name}';" ) );
+    $table_status = $wpdb->get_row( "SHOW TABLE STATUS LIKE '{$this->table_name}';" );
 
     if ( $table_status ) {
       return (int) $table_status->Auto_increment;
@@ -235,6 +251,35 @@ abstract class JPID_DB {
   }
 
   /**
+   * Sanitize insert/update data.
+   *
+   * @since     1.0.0
+   * @param     array    $data    The provided data.
+   * @return    array             Sanitized data.
+   */
+  abstract protected function sanitize_data( $data );
+
+  /**
+   * Check for insert/update data validity.
+   *
+   * If there is a data with null value, then that data is invalid.
+   * Empty data should be given empty string ('') or zero (0) value.
+   *
+   * @since     1.0.0
+   * @param     array      $data    Insert/update data.
+   * @return    boolean             True if all data are valid, otherwise false.
+   */
+  protected function valid_data( $data ) {
+    foreach ( $data as $key => $value ) {
+      if ( is_null( $value ) ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * Delete single row of data based on its ID.
    *
    * @since     1.0.0
@@ -262,61 +307,14 @@ abstract class JPID_DB {
   }
 
   /**
-   * Sanitize insert/update data.
+   * Check if a row of data exists.
    *
    * @since     1.0.0
-   * @param     array    $data    The provided data.
-   * @return    array             Sanitized data.
+   * @param     mixed      $value    Field value to check.
+   * @param     string     $field    Field name to search.
+   * @return    boolean              True if row exists, false if not.
    */
-  protected function sanitize_data( $data ) {
-    foreach ( $data as $key => $value ) {
-      if ( is_string( $value ) ) {
-        $data[ $key ] = trim( $value );
-      }
-    }
-
-    return $data;
-  }
-
-  /**
-   * Check for insert/update data validity.
-   *
-   * If there is a data with null value, then that data is invalid.
-   * Empty data should be given empty string ('') or zero (0) value.
-   *
-   * @since     1.0.0
-   * @param     array      $data    Insert/update data.
-   * @return    boolean             True if all data are valid, otherwise false.
-   */
-  protected function valid_data( $data ) {
-    foreach ( $data as $key => $value ) {
-      if ( is_null( $value ) ) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * Filter provided query arguments.
-   *
-   * @since     1.0.0
-   * @param     array    $args             The provided query arguments.
-   * @param     array    $accepted_args    List of accepted query arguments.
-   * @return    array                      Filtered query arguments.
-   */
-  protected function filter_args( $args, $accepted_args = array() ) {
-    foreach ( $args as $key => $value ) {
-      $key = strtolower( $key );
-
-      if ( ! in_array( $key, $accepted_args ) ) {
-        unset( $args[ $key ] );
-      }
-    }
-
-    return $args;
-  }
+  abstract public function exists( $value, $field );
 
   /**
    * Convert UNIX timestamp to SQL date string.

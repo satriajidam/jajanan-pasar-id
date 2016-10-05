@@ -18,6 +18,8 @@ class JPID_Product {
 
   private $post = null;
 
+  private $status = '';
+
   private $name = '';
 
   private $description = '';
@@ -63,6 +65,7 @@ class JPID_Product {
 	 * @since    1.0.0
 	 */
   private function populate_data() {
+    $this->status      = (string) $this->post->post_status;
     $this->name        = (string) $this->post->post_title;
     $this->description = (string) $this->post->post_content;
     $this->price       = (float) get_post_meta( $this->id, '_jpid_product_price', true );
@@ -79,12 +82,12 @@ class JPID_Product {
     return $this->id;
   }
 
-  public function get_post_object() {
-    return $this->post;
+  public function get_status() {
+    return $this->status;
   }
 
   public function exists() {
-    return ! is_null( $this->get_post_object() ) ? true : false;
+    return ! is_null( $this->post ) ? true : false;
   }
 
   public function get_name() {
@@ -214,7 +217,7 @@ class JPID_Product {
       return false;
     }
 
-    if ( $this->get_post_object()->post_status !== 'publish' ) {
+    if ( $this->get_status() !== 'publish' ) {
       return false;
     }
 

@@ -260,6 +260,50 @@
 		},
 
 		/**
+		 * Module: Customer Edit.
+		 */
+		customerEdit: function() {
+			$('#jpid_customer_account').select2({
+
+			});
+
+			$('#jpid_customer_province').on('change', function (evt) {
+				let currentProvince = $(this).val();
+				let options = '<option value="">- ' + jpid_admin.select_city + ' -</option>';
+
+				if ( currentProvince !== '' ) {
+					let cities = jpid_admin.locations[ currentProvince ];
+
+					options = cities.map(function (city) {
+						return '<option value=' + city + '>' + city + '</option>';
+					}).join('');
+				}
+
+				$('#jpid_customer_city').html(options);
+			});
+
+			$('#jpid_customer_phone').on('keypress', function (evt) {
+				let allowedCharCodes = evt.which === 43 || ( evt.which > 47 && evt.which < 58 );
+
+				if ( ! allowedCharCodes ) {
+          evt.preventDefault();
+        }
+			});
+
+			$('.handlediv').on('click', function (evt) {
+				$(this).parent().toggleClass('closed');
+
+				let expandedValue = $(this).attr('aria-expanded') === 'false' ? 'true' : 'false';
+
+				$(this).attr('aria-expanded', expandedValue);
+			});
+
+			$('#jpid_delete_customer').on('click', function (evt) {
+				return confirm(jpid_admin.delete_customer);
+			});
+		},
+
+		/**
 		 * Helper: Get query string value based on its name.
 		 */
 		getQueryStringByName: function (name, url) {
@@ -290,17 +334,20 @@
 	 */
 	$(function () {
 		switch (jpid_admin.screen_id) {
-			case 'edit-jpid_product_category':
+			case jpid_admin.pages.product_category:
 				JPIDAdmin.productCategoryQuickEdit();
 				break;
-			case 'edit-jpid_product':
+			case jpid_admin.pages.product_list:
 				JPIDAdmin.productListQuickEdit();
 				break;
-			case 'jpid_product':
+			case jpid_admin.pages.product_edit:
 				JPIDAdmin.productEdit();
 				break;
-			case 'jajanan-pasar_page_jpid-settings':
+			case jpid_admin.pages.settings:
 				JPIDAdmin.adminSettings();
+				break;
+			case jpid_admin.pages.customer_edit:
+				JPIDAdmin.customerEdit();
 				break;
 			default:
 				break;

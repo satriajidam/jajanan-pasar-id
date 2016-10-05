@@ -33,12 +33,6 @@ class JPID_Customer {
   private $user_id = 0;
 
   /**
-	 * @since    1.0.0
-	 * @var      WP_User    Customer's user data.
-	 */
-  private $user_data = null;
-
-  /**
    * @since    1.0.0
    * @var      string    Customer's creation date.
    */
@@ -150,24 +144,6 @@ class JPID_Customer {
     $this->city         = (string) $customer->customer_city;
     $this->order_count  = (float) $customer->order_count;
     $this->order_value  = (float) $customer->order_value;
-    $this->user_data    = $this->load_user_data( $this->user_id );
-  }
-
-  /**
-   * Load user data.
-   *
-   * @since     1.0.0
-   * @param     int        $user_id    Customer's user ID.
-   * @return    WP_User                User object.
-   */
-  private function load_user_data( $user_id ) {
-    $userdata = null;
-
-    if ( $user_id > 0 ) {
-      $userdata = get_userdata( $user_id );
-    }
-
-    return $userdata;
   }
 
   /**
@@ -240,9 +216,13 @@ class JPID_Customer {
       return false;
     }
 
-    $user_data = $this->load_user_data( $user_id );
+    $user_data = get_userdata( $user_id );
 
     if ( $user_data ) {
+      if ( $user_data->user_email !== $this->get_email() ) {
+        return false;
+      }
+
       $data = array(
         'user_id' => $user_data->ID,
         'customer_status' => JPID_Customer_Status::REGISTERED
@@ -251,9 +231,8 @@ class JPID_Customer {
       $updated = $this->db->update( $this->get_id(), $data );
 
       if ( $updated ) {
-        $this->user_id   = $data['user_id'];
-        $this->status    = $data['customer_status'];
-        $this->user_data = $user_data;
+        $this->user_id = $data['user_id'];
+        $this->status  = $data['customer_status'];
       }
 
       return $updated;
@@ -281,22 +260,11 @@ class JPID_Customer {
     $updated = $this->db->update( $this->get_id(), $data );
 
     if ( $updated ) {
-      $this->user_id   = $data['user_id'];
-      $this->status    = $data['customer_status'];
-      $this->user_data = null;
+      $this->user_id = $data['user_id'];
+      $this->status  = $data['customer_status'];
     }
 
     return $updated;
-  }
-
-  /**
-   * Get customer's user data.
-   *
-   * @since     1.0.0
-   * @return    int      Customer's user data.
-   */
-  public function get_user_data() {
-    return $this->user_data;
   }
 
   /**
@@ -332,24 +300,6 @@ class JPID_Customer {
   }
 
   /**
-   * Set and update customer's name.
-   *
-   * @since     1.0.0
-   * @param     string      $name    Customer's name.
-   * @return    int|bool             Updated customer's ID on success, false on failure.
-   */
-  public function set_name( $name ) {
-    $name    = sanitize_text_field( trim( $name ) );
-    $updated = $this->db->update( $this->get_id(), array( 'customer_name' => $name ) );
-
-    if ( $updated ) {
-      $this->name = $name;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get customer's email.
    *
    * @since     1.0.0
@@ -370,24 +320,6 @@ class JPID_Customer {
   }
 
   /**
-   * Set and update customer's phone.
-   *
-   * @since     1.0.0
-   * @param     string      $phone    Customer's phone.
-   * @return    int|bool              Updated customer's ID on success, false on failure.
-   */
-  public function set_phone( $phone ) {
-    $phone   = sanitize_text_field( trim( $phone ) );
-    $updated = $this->db->update( $this->get_id(), array( 'customer_phone' => $phone ) );
-
-    if ( $updated ) {
-      $this->phone = $phone;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get customer's address.
    *
    * @since     1.0.0
@@ -395,24 +327,6 @@ class JPID_Customer {
    */
   public function get_address() {
     return $this->address;
-  }
-
-  /**
-   * Set and update customer's address.
-   *
-   * @since     1.0.0
-   * @param     string      $address    Customer's address.
-   * @return    int|bool                Updated customer's ID on success, false on failure.
-   */
-  public function set_address( $address ) {
-    $address = sanitize_text_field( trim( $address ) );
-    $updated = $this->db->update( $this->get_id(), array( 'customer_address' => $address ) );
-
-    if ( $updated ) {
-      $this->address = $address;
-    }
-
-    return $updated;
   }
 
   /**
@@ -426,24 +340,6 @@ class JPID_Customer {
   }
 
   /**
-   * Set and update customer's province.
-   *
-   * @since     1.0.0
-   * @param     string      $province    Customer's province.
-   * @return    int|bool                 Updated customer's ID on success, false on failure.
-   */
-  public function set_province( $province ) {
-    $province = sanitize_text_field( trim( $province ) );
-    $updated  = $this->db->update( $this->get_id(), array( 'customer_province' => $province ) );
-
-    if ( $updated ) {
-      $this->province = $province;
-    }
-
-    return $updated;
-  }
-
-  /**
    * Get customer's city.
    *
    * @since     1.0.0
@@ -451,24 +347,6 @@ class JPID_Customer {
    */
   public function get_city() {
     return $this->city;
-  }
-
-  /**
-   * Set and update customer's city.
-   *
-   * @since     1.0.0
-   * @param     string      $city    Customer's city.
-   * @return    int|bool             Updated customer's ID on success, false on failure.
-   */
-  public function set_city( $city ) {
-    $city    = sanitize_text_field( trim( $city ) );
-    $updated = $this->db->update( $this->get_id(), array( 'customer_city' => $city ) );
-
-    if ( $updated ) {
-      $this->city = $city;
-    }
-
-    return $updated;
   }
 
   /**
