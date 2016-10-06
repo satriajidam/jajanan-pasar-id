@@ -16,32 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 abstract class JPID_Admin_Page {
 
   /**
-   * @since    1.0.0
-   * @var      string    Page slug.
-   */
-  private $slug;
-
-  /**
-   * Set page slug.
-   *
-   * @since    1.0.0
-   * @param    string    Page slug.
-   */
-  protected function set_slug( $slug ) {
-    $this->slug = $slug;
-  }
-
-  /**
-   * Get page slug.
-   *
-   * @since     1.0.0
-   * @return    string    This page slug.
-   */
-  public function get_slug() {
-    return $this->slug;
-  }
-
-  /**
    * Display page.
    *
    * @since    1.0.0

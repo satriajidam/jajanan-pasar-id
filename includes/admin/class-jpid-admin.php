@@ -43,12 +43,13 @@ class JPID_Admin {
     // Core
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-actions.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-notices.php';
 
     // Post Types
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-category.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-list.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-edit.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/class-jpid-admin-product-ajax.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-category.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-list.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-edit.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-ajax.php';
 
     // Custom Pages
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/abstract-jpid-admin-page.php';
@@ -67,8 +68,9 @@ class JPID_Admin {
     // Core
     $this->post_types       = new JPID_Admin_Post_Types();
     $this->post_actions     = new JPID_Admin_Post_Actions();
+    $this->notices          = new JPID_Admin_Notices();
 
-    // Post Type - Product
+    // Post Types
     $this->product_category = new JPID_Admin_Product_Category();
     $this->product_list     = new JPID_Admin_Product_List();
     $this->product_edit     = new JPID_Admin_Product_Edit();
@@ -108,50 +110,50 @@ class JPID_Admin {
     // General Custom Pages
     add_menu_page(
       __( 'Jajanan Pasar', 'jpid' ), __( 'Jajanan Pasar', 'jpid' ), 'manage_options',
-      $this->about_page->get_slug(), null, 'dashicons-store', 50
+      JPID_Admin_Page_About::SLUG, null, 'dashicons-store', 50
     );
 
     $this->page_hooks['about'] = add_submenu_page(
-      $this->about_page->get_slug(),
+      JPID_Admin_Page_About::SLUG,
       __( 'About', 'jpid' ),
       __( 'About', 'jpid' ),
       'manage_options',
-      $this->about_page->get_slug(),
+      JPID_Admin_Page_About::SLUG,
       array( $this->about_page, 'display_page' )
     );
 
     $this->page_hooks['settings'] = add_submenu_page(
-      $this->about_page->get_slug(),
+      JPID_Admin_Page_About::SLUG,
       __( 'Settings', 'jpid' ),
       __( 'Settings', 'jpid' ),
       'manage_options',
-      $this->settings_page->get_slug(),
+      JPID_Admin_Page_Settings::SLUG,
       array( $this->settings_page, 'display_page' )
     );
 
     // Customer Custom Pages
     add_menu_page(
       __( 'Customers', 'jpid' ), __( 'Customers', 'jpid' ), 'edit_posts',
-      $this->customer_list->get_slug(), null, 'dashicons-id', 49
+      JPID_Admin_Page_Customer_List::SLUG, null, 'dashicons-id', 49
     );
 
     $this->page_hooks['customer_list'] = add_submenu_page(
-      $this->customer_list->get_slug(),
+      JPID_Admin_Page_Customer_List::SLUG,
       __( 'All Customers', 'jpid' ),
       __( 'All Customers', 'jpid' ),
       'edit_posts',
-      $this->customer_list->get_slug(),
+      JPID_Admin_Page_Customer_List::SLUG,
       array( $this->customer_list, 'display_page' )
     );
 
     add_action( 'load-' . $this->page_hooks['customer_list'], array( $this->customer_list, 'load_page' ) );
 
     $this->page_hooks['customer_edit'] = add_submenu_page(
-      $this->customer_list->get_slug(),
+      JPID_Admin_Page_Customer_List::SLUG,
       __( 'Add Customer', 'jpid' ),
       __( 'Add Customer', 'jpid' ),
       'edit_posts',
-      $this->customer_edit->get_slug(),
+      JPID_Admin_Page_Customer_Edit::SLUG,
       array( $this->customer_edit, 'display_page' )
     );
 
@@ -164,7 +166,7 @@ class JPID_Admin {
    * @since    1.0.0
    */
   public function admin_init() {
-    // Set product post type page hooks
+    // Setup post type page hooks
     $this->page_hooks['product_category'] = 'edit-jpid_product_category';
     $this->page_hooks['product_list']     = 'edit-jpid_product';
     $this->page_hooks['product_edit']     = 'jpid_product';

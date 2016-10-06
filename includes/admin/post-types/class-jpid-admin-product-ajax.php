@@ -1,11 +1,11 @@
 <?php
 
 /**
- * JPID product admin ajax.
+ * Product admin ajax.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/product
+ * @subpackage jajanan-pasar-id/includes/admin/post-types
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -91,7 +91,7 @@ class JPID_Admin_Product_Ajax {
 
     $product = jpid_get_product( $current_post );
 
-    include JPID_PLUGIN_DIR . 'includes/admin/product/views/html-jpid-meta-box-product-data-category-field.php';
+    include JPID_PLUGIN_DIR . 'includes/admin/post-types/views/html-jpid-meta-box-product-data-category-field.php';
 
     die();
   }

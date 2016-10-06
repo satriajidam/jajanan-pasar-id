@@ -1,11 +1,11 @@
 <?php
 
 /**
- * JPID product post edit admin screen.
+ * Product post edit admin screen.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/product
+ * @subpackage jajanan-pasar-id/includes/admin/post-types
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -42,7 +42,7 @@ class JPID_Admin_Product_Edit {
 	 * @since    1.0.0
 	 */
   private function includes() {
-    require_once JPID_PLUGIN_DIR . 'includes/admin/product/meta-boxes/class-jpid-meta-box-product-data.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/meta-boxes/class-jpid-meta-box-product-data.php';
   }
 
   /**

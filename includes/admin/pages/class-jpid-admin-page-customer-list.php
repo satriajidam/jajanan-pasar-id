@@ -14,13 +14,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class JPID_Admin_Page_Customer_List extends JPID_Admin_Page {
 
   /**
+   * @since    1.0.0
+   * @var      string    Page slug.
+   */
+  const SLUG = 'jpid-customers';
+
+  /**
 	 * Class constructor.
 	 *
 	 * @since    1.0.0
 	 */
-  public function __construct() {
-    $this->set_slug( 'jpid-customers' );
-  }
+  public function __construct() {}
 
   /**
    * Load page.

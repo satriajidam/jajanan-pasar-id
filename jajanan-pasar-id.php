@@ -164,7 +164,6 @@ final class JPID {
 
 		// Helper files:
 		require_once JPID_PLUGIN_DIR . 'includes/jpid-helper-functions.php';
-		require_once JPID_PLUGIN_DIR . 'includes/jpid-ajax-functions.php';
 
 		if ( is_admin() ) {
 			require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin.php';
@@ -210,12 +209,6 @@ final class JPID {
 		$this->plugin_options    = new JPID_Options();
 		$this->plugin_post_types = new JPID_Post_Types();
 		$this->plugin_scripts    = new JPID_Scripts();
-
-		// Custom database table managers:
-		$this->db_customers   = new JPID_DB_Customers();
-		$this->db_orders      = new JPID_DB_Orders();
-		$this->db_payments    = new JPID_DB_Payments();
-		$this->db_snack_boxes = new JPID_DB_Snack_Boxes();
 
 		if ( is_admin() ) {
 			$this->plugin_admin = new JPID_Admin();

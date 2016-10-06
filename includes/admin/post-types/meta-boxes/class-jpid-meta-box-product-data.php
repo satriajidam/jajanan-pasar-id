@@ -5,7 +5,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/product
+ * @subpackage jajanan-pasar-id/includes/admin/post-types
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -23,7 +23,7 @@ class JPID_Meta_Box_Product_Data {
   public static function display( $post ) {
     $product = jpid_get_product( $post->ID );
 
-    include_once JPID_PLUGIN_DIR . 'includes/admin/product/views/html-jpid-meta-box-product-data.php';
+    include_once JPID_PLUGIN_DIR . 'includes/admin/post-types/views/html-jpid-meta-box-product-data.php';
   }
 
   /**

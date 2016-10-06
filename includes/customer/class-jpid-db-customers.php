@@ -26,17 +26,6 @@ class JPID_DB_Customers extends JPID_DB {
 
     $this->table_name  = $wpdb->prefix . 'jpid_customers';
     $this->primary_key = 'customer_id';
-
-    $this->setup_hooks();
-  }
-
-  /**
-   * Setup class hooks.
-   *
-   * @since    1.0.0
-   */
-  private function setup_hooks() {
-    add_action( 'profile_update', array( $this, 'update_customer_email_on_user_update' ) );
   }
 
   /**

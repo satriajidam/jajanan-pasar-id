@@ -22,10 +22,8 @@
   ?>
   <h1><?php esc_html_e( $title ); ?></h1>
   <form id="jpid_edit_customer_form" method="post">
-    <?php if ( $this->customer->get_id() > 0 ) : ?>
-      <input type="hidden" id="jpid_customer_id" name="jpid_customer_id" value="<?php esc_attr_e( $this->customer->get_id() ); ?>" />
-      <input type="hidden" id="jpid_user_id" name="jpid_user_id" value="<?php esc_attr_e( $this->customer->get_user_id() ); ?>" />
-    <?php endif; ?>
+    <input type="hidden" id="jpid_customer_id" name="jpid_customer_id" value="<?php esc_attr_e( $this->customer->get_id() ); ?>" />
+    <input type="hidden" id="jpid_user_id" name="jpid_user_id" value="<?php esc_attr_e( $this->customer->get_user_id() ); ?>" />
     <div id="poststuff">
       <div id="post-body" class="metabox-holder columns-2">
         <div id="postbox-container-1" class="postbox-container">

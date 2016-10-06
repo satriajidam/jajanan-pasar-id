@@ -36,62 +36,6 @@ function jpid_to_rupiah( $price ) {
 }
 
 /**
- * Get a list of provinces in Indonesia.
- *
- * @since    1.0.0
- * @return   array    A list of available provinces.
- */
-function jpid_get_province_list() {
-  return array(
-    // Sumatera
-    'Aceh',
-    'Sumatera Utara',
-    'Sumatera Barat',
-    'Riau',
-    'Kepulauan Riau',
-    'Jambi',
-    'Sumatera Selatan',
-    'Bangka Belitung',
-    'Bengkulu',
-    'Lampung',
-
-    // Jawa
-    'Jakarta',
-    'Jawa Barat',
-    'Banten',
-    'Jawa Tengah',
-    'Yogyakarta',
-    'Jawa Timur',
-
-    // Bali & Nusa Tenggara
-    'Bali',
-    'Nusa Tenggara Barat',
-    'Nusa Tenggara Timur',
-
-    // Kalimantan
-    'Kalimantan Barat',
-    'Kalimantan Tengah',
-    'Kalimantan Selatan',
-    'Kalimantan Timur',
-    'Kalimantan Utara',
-
-    // Sulawesi
-    'Sulawesi Utara',
-    'Sulawesi Barat',
-    'Sulawesi Tengah',
-    'Sulawesi Tenggara',
-    'Sulawesi Selatan',
-    'Gorontalo',
-
-    // Maluku & Papua
-    'Maluku',
-    'Maluku Utara',
-    'Papua',
-    'Papua Barat'
-  );
-}
-
-/**
  * Get a list of provinces and their cities in Indonesia.
  *
  * @since    1.0.0
@@ -693,4 +637,14 @@ function jpid_get_provinces() {
       'Kota Sorong'
     )
   );
+}
+
+/**
+ * Get a list of provinces in Indonesia.
+ *
+ * @since    1.0.0
+ * @return   array    A list of available provinces.
+ */
+function jpid_get_province_list() {
+  return array_keys( jpid_get_provinces() );
 }

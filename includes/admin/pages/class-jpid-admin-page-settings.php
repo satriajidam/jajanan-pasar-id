@@ -15,6 +15,12 @@ class JPID_Admin_Page_Settings extends JPID_Admin_Page {
 
   /**
    * @since    1.0.0
+   * @var      string    Page slug.
+   */
+  const SLUG = 'jpid-settings';
+
+  /**
+   * @since    1.0.0
    * @var      array    Collection of settings objects.
    */
   private $settings = array();
@@ -25,8 +31,6 @@ class JPID_Admin_Page_Settings extends JPID_Admin_Page {
 	 * @since    1.0.0
 	 */
   public function __construct() {
-    $this->set_slug( 'jpid-settings' );
-
     $this->includes();
     $this->setup_settings();
     $this->setup_hooks();

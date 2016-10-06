@@ -15,6 +15,12 @@ class JPID_Admin_Page_Customer_Edit extends JPID_Admin_Page {
 
   /**
    * @since    1.0.0
+   * @var      string    Page slug.
+   */
+  const SLUG = 'jpid-customer';
+
+  /**
+   * @since    1.0.0
    * @var      JPID_Customer    Current active customer.
    */
   private $customer = null;
@@ -24,9 +30,7 @@ class JPID_Admin_Page_Customer_Edit extends JPID_Admin_Page {
 	 *
 	 * @since    1.0.0
 	 */
-  public function __construct() {
-    $this->set_slug( 'jpid-customer' );
-  }
+  public function __construct() {}
 
   /**
    * Load page.

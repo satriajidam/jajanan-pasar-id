@@ -12,7 +12,7 @@
   <?php
     settings_errors();
 
-    $settings_page = $this->get_slug();
+    $settings_page = self::SLUG;
     $settings_tabs = $this->get_tabs();
     $active_tab    = isset( $_GET['tab'] ) && array_key_exists( $_GET['tab'], $settings_tabs ) ? $_GET['tab'] : 'general';
   ?>

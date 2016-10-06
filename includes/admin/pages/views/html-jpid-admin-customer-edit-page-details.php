@@ -13,23 +13,25 @@
     <?php wp_nonce_field( JPID_Admin_Customer_Actions::NONCE_ACTION, JPID_Admin_Customer_Actions::NONCE_NAME ); ?>
     <div class="panel-wrap">
       <div class="jpid-panel panel">
-        <?php if ( $this->customer->get_id() > 0 ) : ?>
-          <?php echo get_avatar( $this->customer->get_email(), 60 ); ?>
-          <?php $header = esc_html( 'Customer', 'jpid' ) . ' #' . $this->customer->get_id() . ' ' . esc_html( 'details', 'jpid' ); ?>
-          <h2><?php echo $header; ?></h2>
-          <p id="jpid_order_value" class=""><?php echo jpid_to_rupiah( $this->customer->get_order_value() ); ?></p>
-          <p id="jpid_order_count" class=""><?php echo sprintf( _n( '1 order', '%s orders', $this->customer->get_order_count(), 'jpid' ), $this->customer->get_order_count() ); ?></p>
-        <?php else : ?>
-          <h2>
-            <?php
-              $customers_db = new JPID_DB_Customers();
+        <div class="jpid-header-container">
+          <?php if ( $this->customer->get_id() > 0 ) : ?>
+            <?php echo get_avatar( $this->customer->get_email(), 60 ); ?>
+            <?php $header = esc_html( 'Customer', 'jpid' ) . ' #' . $this->customer->get_id() . ' ' . esc_html( 'details', 'jpid' ); ?>
+            <h2><?php echo $header; ?></h2>
+            <p id="jpid_order_value" class=""><?php echo jpid_to_rupiah( $this->customer->get_order_value() ); ?></p>
+            <p id="jpid_order_count" class=""><?php echo sprintf( _n( '1 order', '%s orders', $this->customer->get_order_count(), 'jpid' ), $this->customer->get_order_count() ); ?></p>
+          <?php else : ?>
+            <h2>
+              <?php
+                $customers_db = new JPID_DB_Customers();
 
-              $header = esc_html( 'Customer', 'jpid' ) . ' #' . $customers_db->get_next_id() . ' ' . esc_html( 'details', 'jpid' );
+                $header = esc_html( 'Customer', 'jpid' ) . ' #' . $customers_db->get_next_id() . ' ' . esc_html( 'details', 'jpid' );
 
-              echo $header;
-            ?>
-					</h2>
-        <?php endif; ?>
+                echo $header;
+              ?>
+  					</h2>
+          <?php endif; ?>
+        </div>
         <div class="jpid-field-container">
           <div class="jpid-label-wrapper">
             <label for="jpid_customer_account" class="jpid-label-wrapper__label">

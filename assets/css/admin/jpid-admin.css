@@ -12,6 +12,10 @@
   padding: 20px 10px 10px 10px;
 }
 
+.jpid-header-container {
+  margin-bottom: 1.5em;
+}
+
 .jpid-field-container {
   display: table;
   width: 100%;
@@ -20,13 +24,14 @@
 .jpid-label-wrapper {
   display: table-cell;
   width: 30%;
-  padding: 15px 10px 20px 0;
+  padding: 10px 10px 10px 0;
+  vertical-align: top;
 }
 
 .jpid-label-wrapper__label {
-  position: absolute;
   font-weight: 600;
   line-height: 1.4em;
+  word-wrap: break-word;
 }
 
 .jpid-field-wrapper {
@@ -211,22 +216,10 @@
   Customer Page Styles
 --------------------------------------------------------------------------------- */
 
-#jpid_customer_actions {
-  display: table;
+
+#jpid_customer_action {
   width: 100%;
-  padding: 0 0 10px 0;
-}
-
-#jpid_customer_actions select {
-  display: table-cell;
-  width: 65%;
-  float: left;
-}
-
-#jpid_customer_actions button {
-  display: table-cell;
-  width: 30%;
-  float: right;
+  margin: 0 0 10px 0;
 }
 
 #jpid_customer_details .jpid-panel img.avatar {

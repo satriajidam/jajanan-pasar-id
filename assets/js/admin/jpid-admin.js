@@ -263,9 +263,6 @@
 		 * Module: Customer Edit.
 		 */
 		customerEdit: function() {
-			$('#jpid_customer_account').select2({
-
-			});
 
 			$('#jpid_customer_province').on('change', function (evt) {
 				let currentProvince = $(this).val();
@@ -275,7 +272,7 @@
 					let cities = jpid_admin.locations[ currentProvince ];
 
 					options = cities.map(function (city) {
-						return '<option value=' + city + '>' + city + '</option>';
+						return '<option value="' + city + '">' + city + '</option>';
 					}).join('');
 				}
 
