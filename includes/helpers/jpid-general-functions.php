@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Collection of helper functions for this plugin.
+ * Collection of helper functions to manage general tasks.
  *
  * All functions declared here are available in the global scope.
  *
@@ -11,7 +11,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes
+ * @subpackage jajanan-pasar-id/includes/helpers
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 

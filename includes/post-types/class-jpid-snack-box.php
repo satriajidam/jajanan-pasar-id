@@ -5,7 +5,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/snack-box
+ * @subpackage jajanan-pasar-id/includes/post-types
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 

@@ -5,7 +5,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/actions
+ * @subpackage jajanan-pasar-id/includes/admin/post-actions
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -99,7 +99,7 @@ class JPID_Admin_Customer_Actions {
       $customer_edit_page = admin_url() . 'admin.php?page=' . JPID_Admin_Page_Customer_Edit::SLUG . '&customer=' . $new_customer_id;
 
       JPID_Admin_Notices::add_notice( 'Testing some notices duuude!!!' );
-      
+
       wp_safe_redirect( $customer_edit_page );
     } else {
 

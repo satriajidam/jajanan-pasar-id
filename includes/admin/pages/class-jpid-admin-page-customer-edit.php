@@ -11,7 +11,7 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class JPID_Admin_Page_Customer_Edit extends JPID_Admin_Page {
+class JPID_Admin_Page_Customer_Edit {
 
   /**
    * @since    1.0.0

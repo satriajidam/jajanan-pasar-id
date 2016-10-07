@@ -68,6 +68,7 @@ final class JPID {
 	private function __construct() {
 		$this->define_constants();
 		$this->includes();
+		$this->setup_session();
 		$this->setup_hooks();
 	}
 
@@ -90,7 +91,7 @@ final class JPID {
 	}
 
 	/**
-	 * Define plugin constants.
+	 * Define constants.
 	 *
 	 * @since    1.0.0
 	 */
@@ -132,38 +133,32 @@ final class JPID {
 		// Core files:
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-options.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-post-types.php';
+		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-post-actions.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-roles.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-scripts.php';
+		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-session.php';
 
-		// Abstract files:
-		require_once JPID_PLUGIN_DIR . 'includes/abstracts/abstract-jpid-db.php';
+		// Database files:
+		require_once JPID_PLUGIN_DIR . 'includes/database/abstract-jpid-db.php';
+		require_once JPID_PLUGIN_DIR . 'includes/database/class-jpid-db-customers.php';
+		require_once JPID_PLUGIN_DIR . 'includes/database/class-jpid-db-orders.php';
+		require_once JPID_PLUGIN_DIR . 'includes/database/class-jpid-db-payments.php';
+		require_once JPID_PLUGIN_DIR . 'includes/database/class-jpid-db-snack-boxes.php';
 
-		// Customer files:
-		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-db-customers.php';
-		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-customer.php';
-		require_once JPID_PLUGIN_DIR . 'includes/customer/class-jpid-customer-status.php';
-
-		// Order files:
-		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-db-orders.php';
-		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-order-status.php';
-		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-order-item.php';
-		require_once JPID_PLUGIN_DIR . 'includes/order/class-jpid-order.php';
-
-		// Payment files:
-		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-db-payments.php';
-		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-payment.php';
-		require_once JPID_PLUGIN_DIR . 'includes/payment/class-jpid-payment-status.php';
-
-		// Snack box files:
-		require_once JPID_PLUGIN_DIR . 'includes/snack-box/class-jpid-db-snack-boxes.php';
-		require_once JPID_PLUGIN_DIR . 'includes/snack-box/class-jpid-snack-box.php';
-
-		// Product files:
-		require_once JPID_PLUGIN_DIR . 'includes/product/class-jpid-product.php';
-		require_once JPID_PLUGIN_DIR . 'includes/product/jpid-product-functions.php';
+		// Post Type files:
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-product.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-customer.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-customer-status.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-order.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-order-status.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-order-item.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-payment.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-payment-status.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-snack-box.php';
 
 		// Helper files:
-		require_once JPID_PLUGIN_DIR . 'includes/jpid-helper-functions.php';
+		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-general-functions.php';
+		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-product-functions.php';
 
 		if ( is_admin() ) {
 			require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin.php';
@@ -172,6 +167,15 @@ final class JPID {
 		// Activation files:
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-activator.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-deactivator.php';
+	}
+
+	/**
+   * Setup session.
+   *
+   * @since    1.0.0
+   */
+	private function setup_session() {
+		$this->session = new JPID_Session();
 	}
 
 	/**
@@ -192,7 +196,7 @@ final class JPID {
 	}
 
 	/**
-	 * Load plugin language files.
+	 * Load language files.
 	 *
 	 * @since    1.0.0
 	 */
@@ -201,17 +205,18 @@ final class JPID {
 	}
 
 	/**
-	 * Init JPID when WordPress initialises.
+	 * Init core functionalities when WordPress initialises.
 	 *
 	 * @since    1.0.0
 	 */
 	public function init() {
-		$this->plugin_options    = new JPID_Options();
-		$this->plugin_post_types = new JPID_Post_Types();
-		$this->plugin_scripts    = new JPID_Scripts();
+		$this->options      = new JPID_Options();
+		$this->post_types   = new JPID_Post_Types();
+		$this->post_actions = new JPID_Post_Actions();
+		$this->scripts      = new JPID_Scripts();
 
 		if ( is_admin() ) {
-			$this->plugin_admin = new JPID_Admin();
+			$this->admin = new JPID_Admin();
 		}
 	}
 

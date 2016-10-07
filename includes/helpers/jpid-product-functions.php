@@ -1,11 +1,13 @@
 <?php
 
 /**
- * Collection of functions to manage product object.
+ * Collection of helper functions to manage product object.
+ *
+ * All functions declared here are available in the global scope.
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/product
+ * @subpackage jajanan-pasar-id/includes/helpers
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 

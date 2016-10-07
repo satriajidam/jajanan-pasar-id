@@ -52,7 +52,6 @@ class JPID_Admin {
     require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-ajax.php';
 
     // Custom Pages
-    require_once JPID_PLUGIN_DIR . 'includes/admin/pages/abstract-jpid-admin-page.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-about.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-settings.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-customer-list.php';
