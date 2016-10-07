@@ -19,9 +19,9 @@ class JPID_Admin {
 
   /**
    * @since    1.0.0
-   * @var      array    Collection of page hooks.
+   * @var      array    Collection of screen hooks.
    */
-  private $page_hooks = array();
+  private $screens = array();
 
   /**
 	 * Class constructor.
@@ -31,6 +31,7 @@ class JPID_Admin {
   public function __construct() {
     $this->includes();
     $this->setup_admin();
+    $this->setup_screens();
     $this->setup_hooks();
   }
 
@@ -75,13 +76,22 @@ class JPID_Admin {
     $this->product_edit     = new JPID_Admin_Product_Edit();
     $this->product_ajax     = new JPID_Admin_Product_Ajax();
 
-    // General Custom Pages
-    $this->about_page       = new JPID_Admin_Page_About();
-    $this->settings_page    = new JPID_Admin_Page_Settings();
-
-    // Customer Custom Pages
+    // Custom Pages
+    $this->about            = new JPID_Admin_Page_About();
+    $this->settings         = new JPID_Admin_Page_Settings();
     $this->customer_list    = new JPID_Admin_Page_Customer_List();
     $this->customer_edit    = new JPID_Admin_Page_Customer_Edit();
+  }
+
+  /**
+   * Setup admin default screen hooks.
+   *
+   * @since    1.0.0
+   */
+  private function setup_screens() {
+    $this->screens['product_category'] = 'edit-jpid_product_category';
+    $this->screens['product_list']     = 'edit-jpid_product';
+    $this->screens['product_edit']     = 'jpid_product';
   }
 
   /**
@@ -91,7 +101,6 @@ class JPID_Admin {
    */
   private function setup_hooks() {
     add_action( 'admin_menu', array( $this, 'admin_menus' ) );
-    add_action( 'admin_init', array( $this, 'admin_init' ) );
 
     add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
     add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );
@@ -101,7 +110,7 @@ class JPID_Admin {
   }
 
   /**
-   * Add admin pages to the admin area.
+   * Add admin pages and setup their screen hooks for the admin area.
    *
    * @since    1.0.0
    */
@@ -112,22 +121,22 @@ class JPID_Admin {
       JPID_Admin_Page_About::SLUG, null, 'dashicons-store', 50
     );
 
-    $this->page_hooks['about'] = add_submenu_page(
+    $this->screens['about'] = add_submenu_page(
       JPID_Admin_Page_About::SLUG,
       __( 'About', 'jpid' ),
       __( 'About', 'jpid' ),
       'manage_options',
       JPID_Admin_Page_About::SLUG,
-      array( $this->about_page, 'display_page' )
+      array( $this->about, 'display_page' )
     );
 
-    $this->page_hooks['settings'] = add_submenu_page(
+    $this->screens['settings'] = add_submenu_page(
       JPID_Admin_Page_About::SLUG,
       __( 'Settings', 'jpid' ),
       __( 'Settings', 'jpid' ),
       'manage_options',
       JPID_Admin_Page_Settings::SLUG,
-      array( $this->settings_page, 'display_page' )
+      array( $this->settings, 'display_page' )
     );
 
     // Customer Custom Pages
@@ -136,7 +145,7 @@ class JPID_Admin {
       JPID_Admin_Page_Customer_List::SLUG, null, 'dashicons-id', 49
     );
 
-    $this->page_hooks['customer_list'] = add_submenu_page(
+    $this->screens['customer_list'] = add_submenu_page(
       JPID_Admin_Page_Customer_List::SLUG,
       __( 'All Customers', 'jpid' ),
       __( 'All Customers', 'jpid' ),
@@ -145,9 +154,9 @@ class JPID_Admin {
       array( $this->customer_list, 'display_page' )
     );
 
-    add_action( 'load-' . $this->page_hooks['customer_list'], array( $this->customer_list, 'load_page' ) );
+    add_action( 'load-' . $this->screens['customer_list'], array( $this->customer_list, 'load_page' ) );
 
-    $this->page_hooks['customer_edit'] = add_submenu_page(
+    $this->screens['customer_edit'] = add_submenu_page(
       JPID_Admin_Page_Customer_List::SLUG,
       __( 'Add Customer', 'jpid' ),
       __( 'Add Customer', 'jpid' ),
@@ -156,19 +165,7 @@ class JPID_Admin {
       array( $this->customer_edit, 'display_page' )
     );
 
-    add_action( 'load-' . $this->page_hooks['customer_edit'], array( $this->customer_edit, 'load_page' ) );
-  }
-
-  /**
-   * Initialises admin core functionalities.
-   *
-   * @since    1.0.0
-   */
-  public function admin_init() {
-    // Setup post type page hooks
-    $this->page_hooks['product_category'] = 'edit-jpid_product_category';
-    $this->page_hooks['product_list']     = 'edit-jpid_product';
-    $this->page_hooks['product_edit']     = 'jpid_product';
+    add_action( 'load-' . $this->screens['customer_edit'], array( $this->customer_edit, 'load_page' ) );
   }
 
   /**
@@ -197,14 +194,14 @@ class JPID_Admin {
       'ajax_url'  => admin_url( 'admin-ajax.php' ),
       'screen_id' => isset( $current_screen ) ? $current_screen->id : '',
       'post_id'   => isset( $current_post ) ? $current_post->ID : 0,
-      'pages'     => $this->page_hooks
+      'pages'     => $this->screens
     );
 
-    if ( $current_screen->id === $this->page_hooks['product_list'] || $current_screen->id === $this->page_hooks['product_edit'] ) {
+    if ( $current_screen->id === $this->screens['product_list'] || $current_screen->id === $this->screens['product_edit'] ) {
       $jpid_admin_args['load_product_categories_nonce'] = wp_create_nonce( 'load_product_categories' );
     }
 
-    if ( $current_screen->id === $this->page_hooks['product_list'] ) {
+    if ( $current_screen->id === $this->screens['product_list'] ) {
       $snack_type = get_term_by( 'name', 'Snack', 'jpid_product_type' );
       $jpid_admin_args['snack_term_id'] = ! is_null( $snack_type ) ? (int) $snack_type->term_id : 0;
 
@@ -212,16 +209,16 @@ class JPID_Admin {
       $jpid_admin_args['drink_term_id'] = ! is_null( $drink_type ) ? (int) $drink_type->term_id : 0;
     }
 
-    if ( $current_screen->id === $this->page_hooks['product_edit'] ) {
+    if ( $current_screen->id === $this->screens['product_edit'] ) {
       $jpid_admin_args['load_product_categories_display_nonce'] = wp_create_nonce( 'load_product_categories_display' );
     }
 
-    if ( $current_screen->id === $this->page_hooks['settings'] ) {
+    if ( $current_screen->id === $this->screens['settings'] ) {
       $jpid_admin_args['remove_location'] = __( 'Are you sure you want to remove this location?', 'jpid' );
       $jpid_admin_args['remove_account']  = __( 'Are you sure you want to remove this account?', 'jpid' );
     }
 
-    if ( $current_screen->id === $this->page_hooks['customer_edit'] ) {
+    if ( $current_screen->id === $this->screens['customer_edit'] ) {
       $jpid_admin_args['locations']       = jpid_get_provinces();
       $jpid_admin_args['select_city']     = __( 'Select City', 'jpid' );
       $jpid_admin_args['delete_customer'] = __( 'Are you sure you want to delete this customer?', 'jpid' );
@@ -320,9 +317,9 @@ class JPID_Admin {
   public function product_types_exist() {
     $current_screen = get_current_screen();
 
-    $valid_screen = $current_screen->id === $this->page_hooks['product_edit']
-      || $current_screen->id === $this->page_hooks['product_list']
-      || $current_screen->id === $this->page_hooks['product_category'];
+    $valid_screen = $current_screen->id === $this->screens['product_edit']
+      || $current_screen->id === $this->screens['product_list']
+      || $current_screen->id === $this->screens['product_category'];
 
     if ( ! $valid_screen ) {
       return;

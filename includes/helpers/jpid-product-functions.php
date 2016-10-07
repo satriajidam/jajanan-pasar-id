@@ -68,7 +68,7 @@ function jpid_get_product_category_terms( $product_type_id = '' ) {
 }
 
 /**
- * Get an instance of JPID_Product object.
+ * Get an instance of product object.
  *
  * @since    1.0.0
  * @param    int|JPID_Product|WP_Post    $product    Post ID, product object, or post object.
@@ -103,10 +103,10 @@ function jpid_get_product( $product = null ) {
 }
 
 /**
- * Get the instance of global JPID_Product object.
+ * Get the instance of global product object.
  *
  * @since    1.0.0
- * @return   JPID_Product    Return global product object;
+ * @return   JPID_Product    Return global product object.
  */
 function jpid_get_theproduct() {
 	global $theproduct, $post;
@@ -119,7 +119,7 @@ function jpid_get_theproduct() {
 }
 
 /**
- * Check if object is type of JPID_Product
+ * Check if object is a product.
  *
  * @since     1.0.0
  * @param     object    $product    The object to be checked.

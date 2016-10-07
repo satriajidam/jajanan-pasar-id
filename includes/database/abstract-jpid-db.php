@@ -111,11 +111,9 @@ abstract class JPID_DB {
    * @return    array                      Filtered query arguments.
    */
   protected function filter_args( $args, $accepted_args = array() ) {
-    foreach ( $args as $key => $value ) {
-      $key = strtolower( $key );
-
-      if ( ! in_array( $key, $accepted_args ) ) {
-        unset( $args[ $key ] );
+    foreach ( $args as $arg_key => $arg_value ) {
+      if ( ! in_array( $arg_key, $accepted_args ) ) {
+        unset( $args[ $arg_key ] );
       }
     }
 

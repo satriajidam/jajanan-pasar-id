@@ -34,12 +34,12 @@
         </div>
         <div class="jpid-field-container">
           <div class="jpid-label-wrapper">
-            <label for="jpid_customer_account" class="jpid-label-wrapper__label">
+            <label for="jpid_user_id" class="jpid-label-wrapper__label">
               <?php esc_html_e( 'User Account', 'jpid' ); ?>
             </label>
           </div>
           <div class="jpid-field-wrapper">
-            <select id="jpid_customer_account" name="jpid_customer_account" class="jpid-field-wrapper__field">
+            <select id="jpid_user_id" name="jpid_user_id" class="jpid-field-wrapper__field">
             </select>
           </div>
         </div>

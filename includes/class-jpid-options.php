@@ -96,7 +96,7 @@ class JPID_Options {
    * @since     1.0.0
    * @return    array    Collection of current plugin options' values.
    */
-  public static function get_options() {
+  public function get_options() {
     return self::$options_cache;
   }
 
@@ -111,7 +111,7 @@ class JPID_Options {
    * @param     mixed     $default        Default value if option doesn't exist.
    * @return    mixed                     Option value.
    */
-  public static function get_option( $option_name, $default = false ) {
+  public function get_option( $option_name, $default = false ) {
   	return array_key_exists( $option_name, self::$options_cache ) ? self::$options_cache[ $option_name ] : $default;
   }
 
@@ -125,7 +125,7 @@ class JPID_Options {
    * @param     mixed     $option_value    The new option value.
    * @return    boolean                    Wheter the update successfully performed or not.
    */
-  public static function update_option( $option_name, $option_value ) {
+  public function update_option( $option_name, $option_value ) {
     if ( ! array_key_exists( $option_name, self::$options_cache ) ) {
       return false;
     }
@@ -139,38 +139,4 @@ class JPID_Options {
   	return $updated;
   }
 
-}
-
-/**
- * Wrapper for JPID_Options::get_options() function.
- *
- * @since     1.0.0
- * @return    array    Collection of current plugin options' values.
- */
-function jpid_get_options() {
-  return JPID_Options::get_options();
-}
-
-/**
- * Wrapper for JPID_Options::get_option() function.
- *
- * @since     1.0.0
- * @param     string    $option_name    Option name.
- * @param     mixed     $default        Default value if option doesn't exist.
- * @return    mixed                     Option value.
- */
-function jpid_get_option( $option_name, $default = false ) {
-  return JPID_Options::get_option( $option_name, $default );
-}
-
-/**
- * Wrapper for JPID_Options::update_option() function.
- *
- * @since     1.0.0
- * @param     string    $option_name     Name of option to update.
- * @param     mixed     $option_value    The new option value.
- * @return    boolean                    Wheter the update successfully performed or not.
- */
-function jpid_update_option( $option_name, $option_value ) {
-  return JPID_Options::update_option( $option_name, $option_value );
 }

@@ -68,7 +68,7 @@ final class JPID {
 	private function __construct() {
 		$this->define_constants();
 		$this->includes();
-		$this->setup_session();
+		$this->setup_plugin();
 		$this->setup_hooks();
 	}
 
@@ -147,18 +147,19 @@ final class JPID {
 
 		// Post Type files:
 		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-product.php';
+		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-snack-box.php';
 		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-customer.php';
 		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-customer-status.php';
 		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-order.php';
 		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-order-status.php';
-		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-order-item.php';
 		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-payment.php';
 		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-payment-status.php';
-		require_once JPID_PLUGIN_DIR . 'includes/post-types/class-jpid-snack-box.php';
 
 		// Helper files:
+		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-option-functions.php';
 		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-general-functions.php';
 		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-product-functions.php';
+		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-order-functions.php';
 
 		if ( is_admin() ) {
 			require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin.php';
@@ -174,8 +175,16 @@ final class JPID {
    *
    * @since    1.0.0
    */
-	private function setup_session() {
-		$this->session = new JPID_Session();
+	private function setup_plugin() {
+		$this->options      = new JPID_Options();
+		$this->post_types   = new JPID_Post_Types();
+		$this->post_actions = new JPID_Post_Actions();
+		$this->scripts      = new JPID_Scripts();
+		$this->session      = new JPID_Session();
+
+		if ( is_admin() ) {
+			$this->admin = new JPID_Admin();
+		}
 	}
 
 	/**
@@ -189,8 +198,6 @@ final class JPID {
 
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 
-		add_action( 'init', array( $this, 'init' ), 0 );
-
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 	}
@@ -202,22 +209,6 @@ final class JPID {
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain( 'jpid', false, JPID_PLUGIN_DIR . 'languages/' );
-	}
-
-	/**
-	 * Init core functionalities when WordPress initialises.
-	 *
-	 * @since    1.0.0
-	 */
-	public function init() {
-		$this->options      = new JPID_Options();
-		$this->post_types   = new JPID_Post_Types();
-		$this->post_actions = new JPID_Post_Actions();
-		$this->scripts      = new JPID_Scripts();
-
-		if ( is_admin() ) {
-			$this->admin = new JPID_Admin();
-		}
 	}
 
 	/**

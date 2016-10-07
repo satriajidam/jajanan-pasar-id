@@ -183,7 +183,7 @@ class JPID_Order {
 
     if ( ! empty( $order_items ) ) {
       foreach ( $order_items as $order_item ) {
-        $item = JPID_Order_Item::create( $order_item->item_id, $order_item->item_type );
+        $item = jpid_get_order_item( $order_item->item_id, $order_item->item_type );
 
         if ( ! empty( $item ) && is_object( $item ) ) {
           $new_items[] = $item;

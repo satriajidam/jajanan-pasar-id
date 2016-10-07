@@ -717,7 +717,7 @@ class JPID_DB_Orders extends JPID_DB {
     $item_type = sanitize_text_field( trim( $item_type ) );
 
     if ( empty( $item_type ) ) {
-      $item_type = JPID_Order_Item::SNACK_BOX;
+      $item_type = 'snack-box';
     }
 
     $order_item = $this->get_item( $order->order_id, $item_id );
@@ -810,7 +810,7 @@ class JPID_DB_Orders extends JPID_DB {
 
     if ( ! empty( $order_items ) ) {
       foreach ( $order_items as $order_item ) {
-        $item = JPID_Order_Item::create( $order_item->item_id, $order_item->item_type );
+        $item = jpid_get_order_item( $order_item->item_id, $order_item->item_type );
 
         if ( ! $item ) {
           continue;

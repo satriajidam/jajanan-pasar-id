@@ -69,10 +69,10 @@ class JPID_Admin_Post_Actions {
     if ( isset( $_REQUEST['jpid_customer_action'] ) ) {
       switch ( $_REQUEST['jpid_customer_action'] ) {
         case 'save_customer':
-          $this->customer_actions->save( $customer_id );
+          $this->customer_actions->save_customer( $customer_id, $_POST );
           break;
         case 'delete_customer':
-          $this->customer_actions->delete( $customer_id );
+          $this->customer_actions->delete_customer( $customer_id );
           break;
         default:
           $message  = '<p class="error">';

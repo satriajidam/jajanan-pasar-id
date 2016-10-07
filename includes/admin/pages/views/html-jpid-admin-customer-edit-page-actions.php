@@ -34,7 +34,8 @@
           </div>
         <?php endif; ?>
         <div id="publishing-action">
-          <input type="submit" style="float: right;" class="button button-primary" value="<?php esc_attr_e( 'Save Customer', 'jpid' ); ?>">
+          <span class="spinner"></span>
+          <input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Submit', 'jpid' ); ?>" >
         </div>
         <div class="clear"></div>
       </div>

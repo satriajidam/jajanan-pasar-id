@@ -298,6 +298,10 @@
 			$('#jpid_delete_customer').on('click', function (evt) {
 				return confirm(jpid_admin.delete_customer);
 			});
+
+			$('#jpid_edit_customer_form').on('submit', function (evt) {
+				$('#publishing-action .spinner').addClass('is-active');
+			});
 		},
 
 		/**
