@@ -40,6 +40,7 @@
           </div>
           <div class="jpid-field-wrapper">
             <select id="jpid_user_id" name="jpid_user_id" class="jpid-field-wrapper__field">
+              <option value="0"><?php esc_html_e( 'Guest', 'jpid' ); ?></option>
             </select>
           </div>
         </div>
@@ -50,7 +51,7 @@
             </label>
           </div>
           <div class="jpid-field-wrapper">
-            <input type="text" id="jpid_customer_name" name="jpid_customer_name" class="jpid-field-wrapper__field" value="<?php esc_attr_e( $this->customer->get_name() ); ?>" />
+            <input type="text" id="jpid_customer_name" name="jpid_customer_name" class="jpid-field-wrapper__field" value="<?php esc_attr_e( $this->customer->get_name() ); ?>" <?php if ( $this->customer->get_user_id() > 0 ) echo 'readonly'; ?> />
           </div>
         </div>
         <div class="jpid-field-container">

@@ -109,5 +109,4 @@
   // var_dump( $customer->get_order_count() );
   // var_dump( $customer->increase_order_count() );
   // var_dump( $customer->get_order_count() );
-
 ?>

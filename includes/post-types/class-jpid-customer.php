@@ -223,9 +223,14 @@ class JPID_Customer {
         return false;
       }
 
+      $new_customer_name  = $user_data->first_name . ' ' . $user_data->last_name;
+      $new_customer_email = $user_data->user_email;
+
       $data = array(
         'user_id' => $user_data->ID,
-        'customer_status' => JPID_Customer_Status::REGISTERED
+        'customer_status' => JPID_Customer_Status::REGISTERED,
+        'customer_name' => $new_customer_name,
+        'custoemr_email' => $new_customer_email
       );
 
       $updated = $this->db->update( $this->get_id(), $data );

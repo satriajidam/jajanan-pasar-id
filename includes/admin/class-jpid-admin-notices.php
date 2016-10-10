@@ -3,6 +3,9 @@
 /**
  * Notice functions for admin area.
  *
+ * This class requires the use of WP_Session to save notice messages
+ * and travel them between page load.
+ *
  * @since      1.0.0
  * @package    jajanan-pasar-id
  * @subpackage jajanan-pasar-id/includes/admin
@@ -16,22 +19,42 @@ class JPID_Admin_Notices {
 
   /**
    * @since    1.0.0
+   * @var      string    Error notice type.
+   */
+  const ERROR = 'error';
+
+  /**
+   * @since    1.0.0
+   * @var      string    Warning notice type.
+   */
+  const WARNING = 'warning';
+
+  /**
+   * @since    1.0.0
    * @var      string    Success notice type.
    */
   const SUCCESS = 'success';
 
   /**
    * @since    1.0.0
-   * @var      string    Error notice type.
+   * @var      string    Info notice type.
    */
-  const ERROR = 'error';
+  const INFO = 'info';
 
   /**
-	 * Class constructor.
-	 *
-	 * @since    1.0.0
-	 */
-  public function __construct() {}
+   * Get all available notice types.
+   *
+   * @since     1.0.0
+   * @return    array    Notice types.
+   */
+  public static function get_notice_types() {
+    return array(
+      self::ERROR,
+      self::WARNING,
+      self::SUCCESS,
+      self::INFO
+    );
+  }
 
   /**
    * Get all queued notices, optionally filtered by a notice type.
@@ -41,11 +64,7 @@ class JPID_Admin_Notices {
    * @return    array                     All queued notices.
    */
   public static function get_notices( $notice_type = '' ) {
-  	$all_notices = array();
-
-  	if ( isset( $_SESSION['jpid_notices'] ) ) {
-  		$all_notices = $_SESSION['jpid_notices'];
-  	}
+  	$all_notices = jpid_session_isset( 'jpid_notices' ) ? jpid_session_get( 'jpid_notices' ) : array();
 
   	if ( ! is_array( $all_notices ) ) {
   		$all_notices = array();
@@ -111,7 +130,7 @@ class JPID_Admin_Notices {
 
   	$notices[ $notice_type ][] = $message;
 
-  	$_SESSION['jpid_notices'] = $notices;
+  	jpid_session_set( 'jpid_notices', $notices );
   }
 
   /**
@@ -120,8 +139,8 @@ class JPID_Admin_Notices {
    * @since    1.0.0
    */
   public static function clear_notices() {
-    if( isset( $_SESSION['jpid_notices'] ) ){
-      unset( $_SESSION['jpid_notices'] );
+    if ( jpid_session_isset( 'jpid_notices' ) ) {
+      jpid_session_unset( 'jpid_notices' );
     }
   }
 
@@ -131,10 +150,9 @@ class JPID_Admin_Notices {
    * @since    1.0.0
    */
   public static function print_notices() {
-    $all_notices  = self::get_notices();
-  	$notice_types = array( 'success', 'error' );
+    $all_notices = self::get_notices();
 
-  	foreach ( $notice_types as $notice_type ) {
+  	foreach ( self::get_notice_types() as $notice_type ) {
   		if ( self::count_notices( $notice_type ) > 0 ) {
   			foreach ( $all_notices[ $notice_type ] as $message ) {
   				self::print_notice( $message, $notice_type );
@@ -153,10 +171,8 @@ class JPID_Admin_Notices {
    * @param    string    $notice_type    The type of notice to print.
    */
   public static function print_notice( $message, $notice_type = 'success' ) {
-    $class = $notice_type === 'error' ? 'notice notice-error is-dismissible' : 'notice notice-success is-dismissible';
-
     ?>
-    <div id="message" class="<?php echo $class; ?>">
+    <div id="message" class="notice notice-<?php echo $notice_type; ?> is-dismissible">
       <p><?php echo $message; ?></p>
       <button type="button" class="notice-dismiss">
         <span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'jpid' ); ?></span>
@@ -174,7 +190,7 @@ class JPID_Admin_Notices {
   public static function add_wp_error_notices( $errors ) {
   	if ( is_wp_error( $errors ) && $errors->get_error_messages() ) {
   		foreach ( $errors->get_error_messages() as $error ) {
-  			self::add_notice( $error, 'error' );
+  			self::add_notice( $error, self::ERROR );
   		}
   	}
   }

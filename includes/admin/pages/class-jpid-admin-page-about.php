@@ -20,10 +20,10 @@ class JPID_Admin_Page_About {
   const SLUG = 'jpid-about';
 
   /**
-   * Class constructor.
-   *
-   * @since    1.0.0
-   */
+	 * Class constructor.
+	 *
+	 * @since    1.0.0
+	 */
   public function __construct() {}
 
   /**

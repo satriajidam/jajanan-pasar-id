@@ -78,7 +78,7 @@ final class JPID {
 	 * @since    1.0.0
 	 */
 	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'jpid' ), '2.1' );
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'jpid' ), '4.6' );
 	}
 
 	/**
@@ -87,7 +87,7 @@ final class JPID {
 	 * @since    1.0.0
 	 */
 	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'jpid' ), '2.1' );
+		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'jpid' ), '4.6' );
 	}
 
 	/**
@@ -131,7 +131,7 @@ final class JPID {
 	 */
 	private function includes() {
 		// Core files:
-		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-options.php';
+		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-option.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-post-types.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-post-actions.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-roles.php';
@@ -157,9 +157,11 @@ final class JPID {
 
 		// Helper files:
 		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-option-functions.php';
+		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-session-functions.php';
 		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-general-functions.php';
 		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-product-functions.php';
 		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-order-functions.php';
+		require_once JPID_PLUGIN_DIR . 'includes/helpers/jpid-customer-functions.php';
 
 		if ( is_admin() ) {
 			require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin.php';
@@ -176,7 +178,8 @@ final class JPID {
    * @since    1.0.0
    */
 	private function setup_plugin() {
-		$this->options      = new JPID_Options();
+		$this->option       = new JPID_Option();
+		$this->roles        = new JPID_Roles();
 		$this->post_types   = new JPID_Post_Types();
 		$this->post_actions = new JPID_Post_Actions();
 		$this->scripts      = new JPID_Scripts();

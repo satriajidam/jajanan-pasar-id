@@ -12,7 +12,7 @@
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class JPID_Options {
+class JPID_Option {
 
   /**
    * @since    1.0.0

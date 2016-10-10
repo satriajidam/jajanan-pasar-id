@@ -29,7 +29,7 @@ class JPID_Roles {
    * @since    1.0.0
    */
   private function setup_hooks() {
-    // TODO: do something...
+	   add_filter( 'map_meta_cap', array( $this, 'meta_caps' ), 10, 4 );
   }
 
   /**
@@ -123,6 +123,61 @@ class JPID_Roles {
     global $wp_roles;
 
     return $wp_roles->is_role( $role );
+  }
+
+  /**
+   * Map meta capabilities to primitive capabilities.
+   *
+   * See: https://codex.wordpress.org/Function_Reference/map_meta_cap
+   *
+   * @since     1.0.0
+   * @param     array     $caps       The user's actual capabilities.
+   * @param     string    $cap        Capability name.
+   * @param     int       $user_id    The user ID.
+   * @param     array     $args       Adds the context to the cap. Typically the object ID.
+   * @return    array                 Filtered user’s capabilities depending on specific
+   *                                  context and/or privilege.
+   */
+  public function meta_caps( $caps, $cap, $user_id, $args ) {
+    // TODO: see easy-digital-downloads plugin source codes for example implementation.
+
+    return $caps;
+  }
+
+  /**
+   * Get core custom capabilities.
+   *
+   * @since     1.0.0
+   * @return    array    Core post type capabilities
+   */
+  private function get_core_caps() {
+    $capabilities = array();
+
+    // TODO: see easy-digital-downloads plugin source codes for example implementation.
+
+    return $capabilities;
+  }
+
+  /**
+   * Add new custom capabilities.
+   *
+   * @since    1.0.0
+   */
+  public function add_caps() {
+    global $wp_roles;
+
+    // TODO: see easy-digital-downloads plugin source codes for example implementation.
+  }
+
+  /**
+   * Remove core custom capabilities (called on uninstall).
+   *
+   * @since    1.0.0
+   */
+  public function remove_caps() {
+    global $wp_roles;
+
+    // TODO: see easy-digital-downloads plugin source codes for example implementation.
   }
 
 }

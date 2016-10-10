@@ -42,6 +42,17 @@ function jpid_session_get( $key ) {
 }
 
 /**
+ * Check if a session variable has been set or not.
+ *
+ * @since     1.0.0
+ * @param     string     $key    Session variable key.
+ * @return    boolean            True if session variable has been set, otherwise false.
+ */
+function jpid_session_isset( $key ) {
+	return JPID()->session->get( $key ) !== null;
+}
+
+/**
  * Wrapper for set() function of JPID_Session class.
  *
  * Original function is located in includes/class-jpid-session.php.
@@ -53,4 +64,15 @@ function jpid_session_get( $key ) {
  */
 function jpid_session_set( $key, $value ) {
   return JPID()->session->set( $key, $value );
+}
+
+/**
+ * Unset a session variable.
+ *
+ * @since     1.0.0
+ * @param     string    $key    Session variable key.
+ * @return    null              Null value.
+ */
+function jpid_session_unset( $key ) {
+	return JPID()->session->set( $key, null );
 }

@@ -30,7 +30,7 @@
       <div id="major-publishing-actions">
         <?php if ( $this->customer->get_id() > 0 ) : ?>
           <div id="delete-action">
-            <a id="jpid_delete_customer" href="<?php echo add_query_arg('jpid_customer_action', 'delete'); ?>" class="submitdelete deletion"><?php esc_html_e( 'Delete Customer', 'jpid' ); ?></a>
+            <a id="jpid_delete_customer" href="<?php echo add_query_arg('jpid_customer_action', 'delete_customer'); ?>" class="submitdelete deletion"><?php esc_html_e( 'Delete Customer', 'jpid' ); ?></a>
           </div>
         <?php endif; ?>
         <div id="publishing-action">

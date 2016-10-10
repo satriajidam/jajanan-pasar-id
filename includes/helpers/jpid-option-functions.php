@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
  * @return    array    Collection of current plugin options' values.
  */
 function jpid_get_options() {
-  return JPID()->options->get_options();
+  return JPID()->option->get_options();
 }
 
 /**
@@ -39,7 +39,7 @@ function jpid_get_options() {
  * @return    mixed                     Option value.
  */
 function jpid_get_option( $option_name, $default = false ) {
-  return JPID()->options->get_option( $option_name, $default );
+  return JPID()->option->get_option( $option_name, $default );
 }
 
 /**
@@ -53,5 +53,5 @@ function jpid_get_option( $option_name, $default = false ) {
  * @return    boolean                    Wheter the update successfully performed or not.
  */
 function jpid_update_option( $option_name, $option_value ) {
-  return JPID()->options->update_option( $option_name, $option_value );
+  return JPID()->option->update_option( $option_name, $option_value );
 }

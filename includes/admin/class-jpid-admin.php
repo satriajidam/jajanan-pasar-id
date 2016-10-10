@@ -57,6 +57,9 @@ class JPID_Admin {
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-settings.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-customer-list.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-customer-edit.php';
+
+    // Helpers
+    require_once JPID_PLUGIN_DIR . 'includes/admin/helpers/jpid-admin-notice-functions.php';
   }
 
   /**

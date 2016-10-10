@@ -40,6 +40,10 @@ class JPID_Admin_Page_Customer_Edit {
    * @since    1.0.0
    */
   public function load_page() {
+    if ( ! ( current_action() === 'load-' . get_current_screen()->id ) ) {
+      _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'jpid' ), '4.6' );
+    }
+
     if ( empty( $_GET['customer'] ) ) {
       $this->customer = new JPID_Customer();
     } else {
