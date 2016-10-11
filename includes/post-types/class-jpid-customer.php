@@ -101,7 +101,7 @@ class JPID_Customer {
 	 *                                         customer database object.
 	 */
   public function __construct( $id_or_email = false, $by_user_id = false ) {
-    $this->db = new JPID_DB_Customers();
+    $this->db = JPID()->db_customers;
 
     if ( is_numeric( $id_or_email ) ) {
       $id_or_email = absint( $id_or_email );

@@ -133,7 +133,6 @@ final class JPID {
 		// Core files:
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-option.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-post-types.php';
-		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-post-actions.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-roles.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-scripts.php';
 		require_once JPID_PLUGIN_DIR . 'includes/class-jpid-session.php';
@@ -182,7 +181,6 @@ final class JPID {
 		$this->option       = new JPID_Option();
 		$this->roles        = new JPID_Roles();
 		$this->post_types   = new JPID_Post_Types();
-		$this->post_actions = new JPID_Post_Actions();
 		$this->scripts      = new JPID_Scripts();
 		$this->session      = new JPID_Session();
 

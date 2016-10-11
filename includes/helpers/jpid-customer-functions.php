@@ -74,6 +74,23 @@ function jpid_get_customer_by( $field, $value ) {
 	}
 }
 
+function jpid_get_customers( $args = array() ) {
+	$std_customers = JPID()->db_customers->get_all( $args );
+	$customers     = array();
+
+	if ( ! empty( $std_customers ) ) {
+		foreach ( $std_customers as $std_customer ) {
+			$customers[] = new JPID_Customer( $std_customer->customer_id );
+		}
+	}
+
+	return $customers;
+}
+
+function jpid_count_total_customers( $args = array() ) {
+	return JPID()->db_customers->count( $args );
+}
+
  /**
 	* Wrapper for get_next_id() function of JPID_DB_Customers class.
   *

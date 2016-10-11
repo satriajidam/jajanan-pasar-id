@@ -43,7 +43,7 @@ class JPID_Admin {
   private function includes() {
     // Core
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-actions.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-actions.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-ajax.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-notices.php';
 
@@ -70,7 +70,7 @@ class JPID_Admin {
   private function setup_admin() {
     // Core
     $this->post_types       = new JPID_Admin_Post_Types();
-    $this->post_actions     = new JPID_Admin_Post_Actions();
+    $this->actions          = new JPID_Admin_Actions();
     $this->ajax             = new JPID_Admin_Ajax();
 
     // Post Types

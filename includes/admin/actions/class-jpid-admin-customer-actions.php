@@ -8,7 +8,7 @@
  *
  * @since      1.0.0
  * @package    jajanan-pasar-id
- * @subpackage jajanan-pasar-id/includes/admin/post-actions
+ * @subpackage jajanan-pasar-id/includes/admin/actions
  * @author		 Agastyo Satriaji Idam <play.satriajidam@gmail.com>
  */
 
@@ -97,21 +97,7 @@ class JPID_Admin_Customer_Actions {
       return;
     }
 
-    if ( $customer_id > 0 ) {
-
-      $customer = new JPID_Customer( $customer_id );
-
-    } else {
-
-      if ( ! array_key_exists( 'customer_email', $customer_data ) ) {
-        jpid_add_notice( __( 'Customer\'s email address is required.', 'jpid' ), JPID_Admin_Notices::ERROR );
-
-        return;
-      }
-
-      $customer = new JPID_Customer();
-
-    }
+    $customer = $customer_id > 0 ? new JPID_Customer( $customer_id ) : new JPID_Customer();
 
     $saved_customer_id = $customer->save( $customer_data );
 
@@ -207,7 +193,7 @@ class JPID_Admin_Customer_Actions {
 
       $customer = jpid_get_customer_by( 'customer_email', $customer_email );
 
-      if ( $customer->get_id() !== $customer_id ) {
+      if ( ! empty( $customer ) && ( $customer->get_id() !== $customer_id ) ) {
         jpid_add_notice( __( 'Email\'s already used by a customer.', 'jpid' ), JPID_Admin_Notices::ERROR );
 
         $data_errors++;
@@ -216,6 +202,10 @@ class JPID_Admin_Customer_Actions {
       if ( $data_errors === 0 ) {
         $customer_data['customer_email'] = $customer_email;
       }
+    } else {
+      jpid_add_notice( __( 'Customer\'s email address is required.', 'jpid' ), JPID_Admin_Notices::ERROR );
+
+      $data_errors++;
     }
 
     // Customer user ID
@@ -228,7 +218,9 @@ class JPID_Admin_Customer_Actions {
 
         $data_errors++;
       } else {
-        if ( jpid_is_customer_exists( 'user_id', $user->ID ) ) {
+        $customer = jpid_get_customer_by( 'user_id', $user->ID );
+
+        if ( ! empty( $customer ) && ( $customer->get_id() !== $customer_id )  ) {
           jpid_add_notice( __( 'User ID\'s already attached to a customer.', 'jpid' ), JPID_Admin_Notices::ERROR );
 
           $data_errors++;

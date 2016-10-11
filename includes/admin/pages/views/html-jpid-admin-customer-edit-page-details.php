@@ -72,7 +72,7 @@
             </label>
           </div>
           <div class="jpid-field-wrapper">
-            <input type="number" id="jpid_customer_phone" name="jpid_customer_phone" class="jpid-field-wrapper__field" value="<?php esc_attr_e( $this->customer->get_phone() ); ?>" />
+            <input type="text" id="jpid_customer_phone" name="jpid_customer_phone" class="jpid-field-wrapper__field" value="<?php esc_attr_e( $this->customer->get_phone() ); ?>" />
           </div>
         </div>
         <div class="jpid-field-container">

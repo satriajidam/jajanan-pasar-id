@@ -184,7 +184,7 @@ class JPID_Activator {
       customer_province varchar(200),
       customer_city varchar(200),
       order_count int(20),
-      total_spendings decimal(10, 2),
+      order_value decimal(10, 2),
       PRIMARY KEY  (customer_id),
       KEY user_id (user_id),
       KEY date_created (date_created),

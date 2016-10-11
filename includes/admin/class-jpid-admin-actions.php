@@ -12,7 +12,7 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class JPID_Admin_Post_Actions {
+class JPID_Admin_Actions {
 
   /**
 	 * Class constructor.
@@ -30,8 +30,8 @@ class JPID_Admin_Post_Actions {
    * @since    1.0.0
    */
   private function includes() {
-    require_once JPID_PLUGIN_DIR . 'includes/admin/post-actions/class-jpid-admin-customer-actions.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/post-actions/class-jpid-admin-order-actions.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/actions/class-jpid-admin-customer-actions.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/actions/class-jpid-admin-order-actions.php';
   }
 
   /**
