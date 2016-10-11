@@ -85,7 +85,6 @@
   height: 20px;
 }
 
-
 /* --------------------------------------------------------------------------------
   Settings Page Styles
 --------------------------------------------------------------------------------- */
@@ -267,6 +266,14 @@
 
 #jpid_customer_details #jpid_order_count::before {
   content: "\f174";
+}
+
+#select2-jpid_user_id-container {
+  font-weight: bold;
+}
+
+#select2-jpid_user_id-container .select2-selection__placeholder {
+  font-weight: normal;
 }
 
 /* --------------------------------------------------------------------------------

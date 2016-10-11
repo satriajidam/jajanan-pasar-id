@@ -84,13 +84,14 @@ class JPID_Admin_Customer_Actions {
    * Save customer action.
    *
    * @since    1.0.0
+   * @param    int      $customer_id    Edited customer ID.
    */
   private function save_customer( $customer_id = 0 ) {
     if ( ! $this->can_save() ) {
       wp_die( __( 'You do not have permission to edit this customer.', 'jpid' ) );
     }
 
-    $customer_data = $this->sanitize_post_data();
+    $customer_data = $this->get_customer_data( $customer_id );
 
     if ( $customer_data === false ) {
       return;
@@ -157,13 +158,15 @@ class JPID_Admin_Customer_Actions {
   }
 
   /**
-   * Sanitize and check customer data validity before being saved.
+   * Run customer $_POST data through data sanitization and validation
+   * then return the results.
    *
    * @since     1.0.0
-   * @return    array    Sanitized customer data if no data error found. False if there's
-   *                     at least one data error.
+   * @param     int      $customer_id    Edited customer ID.
+   * @return    array                    Sanitized customer data if no data error found.
+   *                                     False if there's at least one data error.
    */
-  private function sanitize_post_data() {
+  private function get_customer_data( $customer_id ) {
     $customer_data = array();
     $data_errors   = 0;
 
@@ -202,6 +205,14 @@ class JPID_Admin_Customer_Actions {
         $data_errors++;
       }
 
+      $customer = jpid_get_customer_by( 'customer_email', $customer_email );
+
+      if ( $customer->get_id() !== $customer_id ) {
+        jpid_add_notice( __( 'Email\'s already used by a customer.', 'jpid' ), JPID_Admin_Notices::ERROR );
+
+        $data_errors++;
+      }
+
       if ( $data_errors === 0 ) {
         $customer_data['customer_email'] = $customer_email;
       }
@@ -217,9 +228,7 @@ class JPID_Admin_Customer_Actions {
 
         $data_errors++;
       } else {
-        $customer = jpid_get_customer_by( 'user_id', $user->ID );
-
-        if ( ! empty( $customer ) ) {
+        if ( jpid_is_customer_exists( 'user_id', $user->ID ) ) {
           jpid_add_notice( __( 'User ID\'s already attached to a customer.', 'jpid' ), JPID_Admin_Notices::ERROR );
 
           $data_errors++;
@@ -227,10 +236,14 @@ class JPID_Admin_Customer_Actions {
       }
 
       if ( $data_errors === 0 ) {
-        $customer_data['user_id']        = $user->ID;
-        $customer_data['customer_name']  = $user->first_name . ' ' . $user->last_name;
-        $customer_data['customer_email'] = $user->user_email;
+        $customer_data['user_id']         = $user->ID;
+        $customer_data['customer_name']   = $user->first_name . ' ' . $user->last_name;
+        $customer_data['customer_email']  = $user->user_email;
+        $customer_data['customer_status'] = JPID_Customer_Status::REGISTERED;
       }
+    } else {
+      $customer_data['user_id']         = 0;
+      $customer_data['customer_status'] = JPID_Customer_Status::GUEST;
     }
 
     if ( $data_errors > 0 ) {
@@ -254,11 +267,11 @@ class JPID_Admin_Customer_Actions {
     $deleted      = $customers_db->delete( $customer_id );
 
     if ( $deleted ) {
-      $customer_edit_page = admin_url() . 'admin.php?page=' . JPID_Admin_Page_Customer_List::SLUG;
+      $customer_list_page = admin_url() . 'admin.php?page=' . JPID_Admin_Page_Customer_List::SLUG;
 
-      jpid_add_notice( __( 'Customer deleted.', 'jpid' ), JPID_Admin_Notices::ERROR );
+      jpid_add_notice( __( 'Customer deleted.', 'jpid' ), JPID_Admin_Notices::SUCCESS );
 
-      wp_safe_redirect( $customer_edit_page );
+      wp_safe_redirect( $customer_list_page );
 
       exit;
     } else {

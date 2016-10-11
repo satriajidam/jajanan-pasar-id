@@ -23,9 +23,7 @@
           <?php else : ?>
             <h2>
               <?php
-                $customers_db = new JPID_DB_Customers();
-
-                $header = esc_html( 'Customer', 'jpid' ) . ' #' . $customers_db->get_next_id() . ' ' . esc_html( 'details', 'jpid' );
+                $header = esc_html( 'Customer', 'jpid' ) . ' #' . jpid_next_customer_id() . ' ' . esc_html( 'details', 'jpid' );
 
                 echo $header;
               ?>
@@ -39,8 +37,11 @@
             </label>
           </div>
           <div class="jpid-field-wrapper">
-            <select id="jpid_user_id" name="jpid_user_id" class="jpid-field-wrapper__field">
-              <option value="0"><?php esc_html_e( 'Guest', 'jpid' ); ?></option>
+            <select id="jpid_user_id" name="jpid_user_id" class="jpid-field-wrapper__field" style="width: 100%;">
+              <!-- Options are generated using JavaScript. -->
+              <?php if ( $this->customer->get_user_id() > 0 ) : ?>
+                <option value="<?php echo $this->customer->get_user_id(); ?>" selected>#<?php echo $this->customer->get_id(); ?> - <?php echo $this->customer->get_name(); ?> (<?php echo $this->customer->get_email(); ?>)</option>
+              <?php endif; ?>
             </select>
           </div>
         </div>

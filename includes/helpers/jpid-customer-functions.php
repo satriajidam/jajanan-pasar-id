@@ -73,3 +73,29 @@ function jpid_get_customer_by( $field, $value ) {
 		return null;
 	}
 }
+
+ /**
+	* Wrapper for get_next_id() function of JPID_DB_Customers class.
+  *
+  * Original function is located in includes/class-jpid-db-customers.php.
+	*
+	* @since     1.0.0
+	* @return    int      Next auto increment ID.
+	*/
+function jpid_next_customer_id() {
+	return JPID()->db_customers->get_next_id();
+}
+
+/**
+ * Wrapper for exists() function of JPID_DB_Customers class.
+ *
+ * Original function is located in includes/class-jpid-db-customers.php.
+ *
+ * @since     1.0.0
+ * @param     string     $search_field    The name of customer's field to check.
+ * @param     mixed      $search_value    The value of customer's field to check.
+ * @return    boolean                     True if customer exists, false if not.
+ */
+function jpid_is_customer_exists( $search_field, $search_value ) {
+	return JPID()->db_customers->exists( $search_value, $search_field );
+}

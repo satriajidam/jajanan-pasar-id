@@ -24,7 +24,6 @@
   <?php JPID_Admin_Notices::print_notices(); ?>
   <form id="jpid_edit_customer_form" method="post">
     <input type="hidden" id="jpid_customer_id" name="jpid_customer_id" value="<?php esc_attr_e( $this->customer->get_id() ); ?>" />
-    <input type="hidden" id="jpid_user_id" name="jpid_user_id" value="<?php esc_attr_e( $this->customer->get_user_id() ); ?>" />
     <div id="poststuff">
       <div id="post-body" class="metabox-holder columns-2">
         <div id="postbox-container-1" class="postbox-container">

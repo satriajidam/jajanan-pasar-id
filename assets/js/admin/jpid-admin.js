@@ -264,6 +264,46 @@
 		 */
 		customerEdit: function() {
 
+			$('#jpid_user_id').select2({
+				ajax: {
+					url: jpid_admin.ajax_url,
+					dataType: 'json',
+					delay: 250,
+					data: function (params) {
+						return {
+							term: params.term,
+							action: 'search_user_account',
+							security: jpid_admin.search_user_account_nonce
+						}
+					},
+					processResults: function (data, params) {
+						console.log(data);
+
+						let items = [];
+
+						if (data) {
+							$.each(data, function (id, text) {
+								items.push({
+									id: id,
+									text: text
+								});
+							});
+						}
+
+						return {
+							results: items
+						}
+					},
+					cache: true
+				},
+				escapeMarkup: function (markup) {
+					return markup;
+				},
+				allowClear: true,
+				placeholder: 'Guest',
+				minimumInputLength: 3
+			});
+
 			$('#jpid_customer_province').on('change', function (evt) {
 				let currentProvince = $(this).val();
 				let options = '<option value="">- ' + jpid_admin.select_city + ' -</option>';
@@ -302,6 +342,7 @@
 			$('#jpid_edit_customer_form').on('submit', function (evt) {
 				$('#publishing-action .spinner').addClass('is-active');
 			});
+
 		},
 
 		/**

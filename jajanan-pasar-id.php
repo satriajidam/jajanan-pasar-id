@@ -178,12 +178,19 @@ final class JPID {
    * @since    1.0.0
    */
 	private function setup_plugin() {
+		// Core
 		$this->option       = new JPID_Option();
 		$this->roles        = new JPID_Roles();
 		$this->post_types   = new JPID_Post_Types();
 		$this->post_actions = new JPID_Post_Actions();
 		$this->scripts      = new JPID_Scripts();
 		$this->session      = new JPID_Session();
+
+		// Database
+		$this->db_customers   = new JPID_DB_Customers();
+		$this->db_orders      = new JPID_DB_Orders();
+		$this->db_payments    = new JPID_DB_Payments();
+		$this->db_snack_boxes = new JPID_DB_Snack_Boxes();
 
 		if ( is_admin() ) {
 			$this->admin = new JPID_Admin();

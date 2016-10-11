@@ -44,13 +44,13 @@ class JPID_Admin {
     // Core
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-types.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-post-actions.php';
+    require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-ajax.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/class-jpid-admin-notices.php';
 
     // Post Types
     require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-category.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-list.php';
     require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-edit.php';
-    require_once JPID_PLUGIN_DIR . 'includes/admin/post-types/class-jpid-admin-product-ajax.php';
 
     // Custom Pages
     require_once JPID_PLUGIN_DIR . 'includes/admin/pages/class-jpid-admin-page-about.php';
@@ -71,13 +71,12 @@ class JPID_Admin {
     // Core
     $this->post_types       = new JPID_Admin_Post_Types();
     $this->post_actions     = new JPID_Admin_Post_Actions();
-    $this->notices          = new JPID_Admin_Notices();
+    $this->ajax             = new JPID_Admin_Ajax();
 
     // Post Types
     $this->product_category = new JPID_Admin_Product_Category();
     $this->product_list     = new JPID_Admin_Product_List();
     $this->product_edit     = new JPID_Admin_Product_Edit();
-    $this->product_ajax     = new JPID_Admin_Product_Ajax();
 
     // Custom Pages
     $this->about            = new JPID_Admin_Page_About();
@@ -222,9 +221,10 @@ class JPID_Admin {
     }
 
     if ( $current_screen->id === $this->screens['customer_edit'] ) {
-      $jpid_admin_args['locations']       = jpid_get_provinces();
-      $jpid_admin_args['select_city']     = __( 'Select City', 'jpid' );
-      $jpid_admin_args['delete_customer'] = __( 'Are you sure you want to delete this customer?', 'jpid' );
+      $jpid_admin_args['locations']                 = jpid_get_provinces();
+      $jpid_admin_args['select_city']               = __( 'Select City', 'jpid' );
+      $jpid_admin_args['delete_customer']           = __( 'Are you sure you want to delete this customer?', 'jpid' );
+      $jpid_admin_args['search_user_account_nonce'] = wp_create_nonce( 'search_user_account' );
     }
 
     wp_localize_script( 'jpid-admin', 'jpid_admin', $jpid_admin_args );
