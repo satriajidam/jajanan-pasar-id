@@ -36,12 +36,6 @@ class JPID_Table_Customers extends WP_List_Table {
    */
   private $total = 0;
 
-  /**
-   * @since    1.0.0
-   * @var      int      The arguments for data set.
-   */
-  private $args = array();
-
   public function __construct() {
     global $status, $page;
 
@@ -101,10 +95,10 @@ class JPID_Table_Customers extends WP_List_Table {
 
   public function column_customer_name( $item ) {
     $id        = $item['customer_id'];
-    $status    = $item['customer_status'];
+    $status    = ucfirst( $item['customer_status'] );
     $name      = $item['customer_name'];
     $email     = $item['customer_email'];
-    $avatar    = get_avatar( $email, 32 );
+    $avatar    = get_avatar( $email, 60 );
     $edit_link = 'admin.php?page=' . JPID_Admin_Page_Customer_Edit::SLUG . '&customer=' . $id;
 
     if ( empty( $name ) ) {
@@ -112,7 +106,7 @@ class JPID_Table_Customers extends WP_List_Table {
     }
 
     $customer_name  = '<a href="' . $edit_link . '">' . $avatar . '</a>';
-    $customer_name .= '<strong><a href="' . $edit_link . '">' . $name . '</a></strong>';
+    $customer_name .= '<strong><a href="' . $edit_link . '">' . $name . '</a></strong><br />';
     $customer_name .= '<small class="meta">' . $status . '</small>';
 
     return $customer_name;
@@ -125,7 +119,7 @@ class JPID_Table_Customers extends WP_List_Table {
     $customer_contacts  = '<a href="mailto:' . $email . '" title="' . esc_attr( sprintf( __( 'Email: %s' ), $email ) ) . '">';
     $customer_contacts .= $email;
     $customer_contacts .= '</a><br />';
-    $customer_contacts .= '<span class="">' . $phone . '</span>';
+    $customer_contacts .= '<span>' . $phone . '</span>';
 
     return $customer_contacts;
   }
@@ -145,8 +139,58 @@ class JPID_Table_Customers extends WP_List_Table {
   }
 
   public function column_customer_actions( $item ) {
-    // TODO: edit & delete actions
+		$actions = array();
+		$id      = $item['customer_id'];
+		$user_id = $item['user_id'];
+    $email   = $item['customer_email'];
+
+		$actions['edit'] = array(
+			'class' => 'edit',
+			'url' => 'admin.php?page=' . JPID_Admin_Page_Customer_Edit::SLUG . '&customer=' . $id,
+			'title' => __( 'Edit Customer', 'jpid' )
+		);
+
+		if ( $user_id > 0 ) {
+			$actions['user'] = array(
+				'class' => 'user',
+				'url' => 'user-edit.php?user_id=' . $user_id,
+				'title' => __( 'View User Account', 'jpid' )
+			);
+		}
+
+		$actions['delete'] = array(
+			'class' => 'delete',
+			'url' => 'admin.php?page=' . JPID_Admin_Page_Customer_Edit::SLUG . '&customer=' . $id . '&jpid_customer_action=delete_customer',
+			'title' => __( 'Delete Customer', 'jpid' )
+		);
+
+    $customer_actions = '';
+
+		foreach ( $actions as $action ) {
+			$customer_actions .= '<a href="' . esc_url( $action['url'] ) . '" class="button ' . esc_attr( $action['class'] ) . ' jpid-tooltip">';
+			$customer_actions .= '<span class="jpid-tooltip__text">' . esc_html( $action['title'] ) . '</span>';
+			$customer_actions .= '</a>';
+		}
+
+		return $customer_actions;
   }
+
+	public function get_bulk_actions() {
+		$actions = array(
+			'delete_customers' => __( 'Delete Permanently', 'jpid' )
+		);
+
+		return $actions;
+	}
+
+	public function process_bulk_action() {
+		$current_action = $this->current_action();
+
+		switch ( $current_action ) {
+			case 'delete_customers':
+				break;
+		}
+	}
 
   public function prepare_items() {
     $columns  = $this->get_columns();
@@ -155,11 +199,11 @@ class JPID_Table_Customers extends WP_List_Table {
 
     $this->_column_headers = array( $columns, $hidden, $sortable );
 
-    $this->args = $this->build_args();
+    $args = $this->get_args();
 
-    $this->items = $this->get_items( $this->args );
+    $this->items = $this->get_items( $args );
 
-    $this->total = jpid_count_total_customers( $this->args );
+    $this->total = jpid_count_total_customers( $args );
 
     $this->set_pagination_args( array(
       'total_items' => $this->total,
@@ -168,7 +212,7 @@ class JPID_Table_Customers extends WP_List_Table {
     ) );
   }
 
-  private function build_args() {
+  private function get_args() {
 		$paged   = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
 		$offset  = $this->per_page * ( $paged - 1 );
 		$search  = ! empty( $_GET['s'] ) ? urldecode( trim( $_GET['s'] ) ) : false;
@@ -201,7 +245,7 @@ class JPID_Table_Customers extends WP_List_Table {
 
     if ( ! empty( $customers ) ) {
       foreach ( $customers as $customer ) {
-				$items = array(
+				$items[] = array(
 					'customer_id'     => $customer->get_id(),
 					'user_id'         => $customer->get_user_id(),
           'date_created'    => $customer->get_created_date(),
@@ -218,9 +262,23 @@ class JPID_Table_Customers extends WP_List_Table {
     return $items;
   }
 
+	public function display_rows() {
+		global $thecustomer;
+
+		foreach ( $this->items as $item ){
+			$thecustomer = new JPID_Customer( $item['customer_id'] );
+
+			$this->single_row( $item );
+		}
+	}
+
+	public function views() {
+		
+	}
+
   public function extra_tablenav( $which ) {
     if ( $which === 'top' ) {
-      echo 'Hello, I\'m before the table';
+
     }
   }
 

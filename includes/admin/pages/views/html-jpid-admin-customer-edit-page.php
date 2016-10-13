@@ -10,19 +10,27 @@
 ?>
 <div class="wrap">
   <?php
-    if ( $this->customer->get_id() == 0 ) {
+    $is_update     = $this->customer->get_id() > 0 ? true : false;
+    $is_registered = $this->customer->get_user_id() > 0 ? true : false;
+
+    if ( ! $is_update ) {
       $title = __( 'Add New Customer', 'jpid' );
     } else {
       $title = __( 'Edit Customer', 'jpid' );
 
-      if ( $this->customer->get_user_id() == 0 ) {
+      if ( ! $is_registered ) {
         $title .= ' (' . __( 'Guest', 'jpid' ) . ')';
       }
     }
   ?>
-  <h1><?php esc_html_e( $title ); ?></h1>
-  <?php JPID_Admin_Notices::print_notices(); ?>
-  <form id="jpid_edit_customer_form" method="post">
+  <h1>
+    <?php esc_html_e( $title ); ?>
+    <?php if ( $is_update ) : ?>
+      <a href="<?php echo admin_url() . 'admin.php?page=' . JPID_Admin_Page_Customer_Edit::SLUG ?>" class="page-title-action"><?php esc_html_e( 'Add Customer', 'jpid' ); ?></a>
+    <?php endif; ?>
+  </h1>
+  <?php jpid_print_notices(); ?>
+  <form id="jpid_edit_customer_form" method="post" action="">
     <input type="hidden" id="jpid_customer_id" name="jpid_customer_id" value="<?php esc_attr_e( $this->customer->get_id() ); ?>" />
     <div id="poststuff">
       <div id="post-body" class="metabox-holder columns-2">
@@ -34,7 +42,7 @@
         <div id="postbox-container-2" class="postbox-container">
           <div id="normal-sortables" class="meta-box-sortables ui-sortable">
             <?php include_once JPID_PLUGIN_DIR . 'includes/admin/pages/views/html-jpid-admin-customer-edit-page-details.php'; ?>
-            <?php if ( $this->customer->get_id() > 0 ) : ?>
+            <?php if ( $is_update ) : ?>
               <?php include_once JPID_PLUGIN_DIR . 'includes/admin/pages/views/html-jpid-admin-customer-edit-page-orders.php'; ?>
             <?php endif; ?>
           </div>

@@ -20,15 +20,15 @@
       <div id="minor-publishing">
         <div id="minor-publishing-actions">
           <select id="jpid_customer_action" name="jpid_customer_action">
-            <option value="save_customer"><?php $this->customer->get_id() > 0 ? esc_html_e( 'Update Customer', 'jpid' ) : esc_html_e( 'Create Customer', 'jpid' ); ?></option>
-            <?php if ( $this->customer->get_id() > 0 ) : ?>
+            <option value="save_customer"><?php $is_update ? esc_html_e( 'Update Customer', 'jpid' ) : esc_html_e( 'Create Customer', 'jpid' ); ?></option>
+            <?php if ( $is_registered ) : ?>
             <?php endif; ?>
           </select>
           <div class="clear"></div>
         </div>
       </div>
       <div id="major-publishing-actions">
-        <?php if ( $this->customer->get_id() > 0 ) : ?>
+        <?php if ( $is_update ) : ?>
           <div id="delete-action">
             <a id="jpid_delete_customer" href="<?php echo add_query_arg('jpid_customer_action', 'delete_customer'); ?>" class="submitdelete deletion"><?php esc_html_e( 'Delete Customer', 'jpid' ); ?></a>
           </div>

@@ -260,64 +260,118 @@
 		},
 
 		/**
+		 * Module: Customer List.
+		 */
+		customerList : function() {
+
+			$('.column-customer_actions .delete').on('click', function (evt) {
+				return confirm(jpid_admin.delete_customer);
+			});
+
+		},
+
+		/**
 		 * Module: Customer Edit.
 		 */
 		customerEdit: function() {
 
-			$('#jpid_user_id').select2({
-				ajax: {
-					url: jpid_admin.ajax_url,
-					dataType: 'json',
-					delay: 250,
-					data: function (params) {
-						return {
-							term: params.term,
+			let selectUserIDs, selectUserID;
+
+			selectUserIDs = $('#jpid_user_id').selectize({
+				allowEmptyOption: true,
+				placeholder: 'Guest',
+				valueField: 'id',
+				labelField : 'info',
+				searchField: 'info',
+				options: [],
+				create: false,
+				render: {
+					option: function (item, escape) {
+						return '<div><span class="title">' + escape(item.info) + '</span></div>';
+					}
+				},
+				load: function (query, callback) {
+					$.ajax({
+            url: jpid_admin.ajax_url,
+            type: 'GET',
+						dataType: 'json',
+						data: {
+							term: query,
 							action: 'search_user_account',
 							security: jpid_admin.search_user_account_nonce
-						}
-					},
-					processResults: function (data, params) {
-						console.log(data);
+						},
+            error: function() {
+              callback();
+            },
+            success: function(result) {
+							// Check the composed request URI:
+							// console.log(this.url);
 
-						let items = [];
-
-						if (data) {
-							$.each(data, function (id, text) {
-								items.push({
-									id: id,
-									text: text
-								});
-							});
-						}
-
-						return {
-							results: items
-						}
-					},
-					cache: true
+              callback(result);
+            }
+        	});
 				},
-				escapeMarkup: function (markup) {
-					return markup;
-				},
-				allowClear: true,
-				placeholder: 'Guest',
-				minimumInputLength: 3
-			});
-
-			$('#jpid_customer_province').on('change', function (evt) {
-				let currentProvince = $(this).val();
-				let options = '<option value="">- ' + jpid_admin.select_city + ' -</option>';
-
-				if ( currentProvince !== '' ) {
-					let cities = jpid_admin.locations[ currentProvince ];
-
-					options = cities.map(function (city) {
-						return '<option value="' + city + '">' + city + '</option>';
-					}).join('');
+				plugins: {
+					'no_results': {
+						message: jpid_admin.no_users_found
+					}
 				}
-
-				$('#jpid_customer_city').html(options);
 			});
+
+			selectUserID = selectUserIDs[0].selectize;
+
+			let selectProvinces, selectProvince;
+			let selectCities, selectCity;
+
+			selectProvinces = $('#jpid_customer_province').selectize({
+				allowEmptyOption: true,
+				create: false,
+				sortField: {
+					field: 'text',
+					direction: 'asc'
+				},
+				onChange: function (province) {
+					let cities  = [];
+					let options = [];
+
+					if (province !== '') {
+						cities = jpid_admin.locations[ province ];
+
+						$.each(cities, function (index, city) {
+							options.push({
+								value: city,
+								text: city
+							});
+						});
+					} else {
+						options.push({
+							value: '',
+							text: '- ' + jpid_admin.select_city +  ' -'
+						});
+					}
+
+					selectCity.clearOptions();
+					selectCity.addOption(options);
+
+					if (province !== '') {
+						selectCity.setValue(cities[0]);
+					} else {
+						selectCity.setValue('');
+					}
+				}
+			});
+
+			selectCities = $('#jpid_customer_city').selectize({
+				allowEmptyOption: true,
+				create: false,
+				sortField: {
+					field: 'text',
+					direction: 'asc'
+				}
+			});
+
+			selectProvince = selectProvinces[0].selectize;
+			selectCity = selectCities[0].selectize;
 
 			$('#jpid_customer_phone').on('keypress', function (evt) {
 				let allowedCharCodes = evt.which === 43 || ( evt.which > 47 && evt.which < 58 );
@@ -387,6 +441,9 @@
 				break;
 			case jpid_admin.pages.settings:
 				JPIDAdmin.adminSettings();
+				break;
+			case jpid_admin.pages.customer_list:
+				JPIDAdmin.customerList();
 				break;
 			case jpid_admin.pages.customer_edit:
 				JPIDAdmin.customerEdit();

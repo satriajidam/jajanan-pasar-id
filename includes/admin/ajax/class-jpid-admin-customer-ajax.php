@@ -78,7 +78,10 @@ class JPID_Admin_Customer_Ajax {
 
         $account_info = '#' . $user->ID . ' - ' . $fullname . ' (' . $user->user_email .  ')';
 
-        $user_accounts[ $user->ID ] = $account_info;
+        $user_accounts[] = array(
+          'id' => $user->ID,
+          'info' => $account_info
+        );
       }
     }
 

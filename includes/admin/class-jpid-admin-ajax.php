@@ -22,6 +22,7 @@ class JPID_Admin_Ajax {
   public function __construct() {
     $this->includes();
     $this->setup_ajax();
+    $this->setup_hooks();
   }
 
   /**
@@ -42,6 +43,15 @@ class JPID_Admin_Ajax {
   private function setup_ajax() {
     $product_ajax  = new JPID_Admin_Product_Ajax();
     $customer_ajax = new JPID_Admin_Customer_Ajax();
+  }
+
+  /**
+   * Setup class hooks.
+   *
+   * @since    1.0.0
+   */
+  private function setup_hooks() {
+    // TODO: do something...
   }
 
 }

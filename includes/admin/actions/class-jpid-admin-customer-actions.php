@@ -49,7 +49,7 @@ class JPID_Admin_Customer_Actions {
   }
 
   /**
-   * Determine which customer edit action to call based on customer action request.
+   * Determine which customer edit screen action to call based on request sent.
    *
    * @since    1.0.0
    */
@@ -279,6 +279,29 @@ class JPID_Admin_Customer_Actions {
    */
   private function can_delete() {
     return is_admin() && current_user_can( 'delete_posts' ) && current_user_can( 'delete_users' );
+  }
+
+  /**
+   * Determine which customer list screen bulk action to call based on request sent.
+   *
+   * @since    1.0.0
+   */
+  public function customer_bulk_actions() {
+    if ( ! isset( $_GET['page'] ) || $_GET['page'] !== JPID_Admin_Page_Customer_List::SLUG ) {
+      return;
+    }
+
+    $wp_list_table  = new WP_List_Table;
+    $current_action = $wp_list_table->current_action();
+
+    if ( $current_action === false ) {
+      return;
+    }
+
+    switch ( $current_action ) {
+      case 'delete_customers':
+        break;
+    }
   }
 
   /**

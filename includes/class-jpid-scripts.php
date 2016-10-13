@@ -90,6 +90,13 @@ class JPID_Scripts {
       '1.0.0',
       true
     );
+    wp_register_script(
+      'selectize',
+      JPID_JS_URL . 'vendor/selectize/selectize' . JPID_SCRIPT_SUFFIX . '.js',
+      array( 'jquery' ),
+      '1.0.0',
+      true
+    );
   }
 
   /**
@@ -146,6 +153,18 @@ class JPID_Scripts {
       JPID_CSS_URL . 'vendor/select2/select2' . JPID_SCRIPT_SUFFIX . '.css',
       array(),
       '4.0.3'
+    );
+    wp_register_style(
+      'selectize',
+      JPID_CSS_URL . 'vendor/selectize/selectize' . JPID_SCRIPT_SUFFIX . '.css',
+      array(),
+      '1.0.0'
+    );
+    wp_register_style(
+      'selectize-bootstrap3',
+      JPID_CSS_URL . 'vendor/selectize/selectize.bootstrap3' . JPID_SCRIPT_SUFFIX . '.css',
+      array(),
+      '1.0.0'
     );
   }
 

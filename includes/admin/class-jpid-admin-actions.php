@@ -22,6 +22,7 @@ class JPID_Admin_Actions {
   public function __construct() {
     $this->includes();
     $this->setup_actions();
+    $this->setup_hooks();
   }
 
   /**
@@ -42,6 +43,15 @@ class JPID_Admin_Actions {
   private function setup_actions() {
     $customer_actions = new JPID_Admin_Customer_Actions();
     $order_actions    = new JPID_Admin_Order_Actions();
+  }
+
+  /**
+   * Setup class hooks.
+   *
+   * @since    1.0.0
+   */
+  private function setup_hooks() {
+    // TODO: do something...
   }
 
 }

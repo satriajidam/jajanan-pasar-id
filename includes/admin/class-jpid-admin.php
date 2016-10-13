@@ -183,6 +183,7 @@ class JPID_Admin {
     wp_enqueue_script( 'accounting' );
     wp_enqueue_script( 'select2' );
     wp_enqueue_script( 'stupidtable' );
+    wp_enqueue_script( 'selectize' );
     wp_enqueue_script( 'jquery-ui-timepicker' );
     wp_enqueue_script( 'jquery-blockUI' );
     wp_enqueue_script( 'jquery-ui-draggable' );
@@ -223,8 +224,12 @@ class JPID_Admin {
     if ( $current_screen->id === $this->screens['customer_edit'] ) {
       $jpid_admin_args['locations']                 = jpid_get_provinces();
       $jpid_admin_args['select_city']               = __( 'Select City', 'jpid' );
-      $jpid_admin_args['delete_customer']           = __( 'Are you sure you want to delete this customer?', 'jpid' );
       $jpid_admin_args['search_user_account_nonce'] = wp_create_nonce( 'search_user_account' );
+      $jpid_admin_args['no_users_found']            = __( 'No users found.', 'jpid ');
+    }
+
+    if ( in_array( $current_screen->id, array( $this->screens['customer_list'], $this->screens['customer_edit'] ) ) ) {
+      $jpid_admin_args['delete_customer'] = __( 'Are you sure you want to delete this customer?', 'jpid' );
     }
 
     wp_localize_script( 'jpid-admin', 'jpid_admin', $jpid_admin_args );
@@ -241,6 +246,8 @@ class JPID_Admin {
 
     // Vendor styles:
     wp_enqueue_style( 'select2' );
+    wp_enqueue_style( 'selectize' );
+    wp_enqueue_style( 'selectize-bootstrap3' );
     wp_enqueue_style( 'jquery-ui-timepicker' );
 
     // Plugin styles:

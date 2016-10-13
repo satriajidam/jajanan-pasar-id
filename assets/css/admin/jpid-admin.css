@@ -41,12 +41,14 @@
 }
 
 .jpid-field-wrapper__field {
+  border-radius: 4px;
   width: 100%;
 }
 
 .jpid-field-wrapper__field-short {
   width: 50%;
 }
+
 
 /* --------------------------------------------------------------------------------
   Independent Styles
@@ -83,6 +85,37 @@
   color: #f44336;
   width: 20px;
   height: 20px;
+}
+
+.jpid-tooltip .jpid-tooltip__text {
+  visibility: hidden;
+  font-size: 11px;
+  background-color: #212121;
+  color: #fff;
+  text-align: center;
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 4px 10px;
+  position: absolute;
+  z-index: 1;
+  top: 150%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.jpid-tooltip .jpid-tooltip__text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #212121 transparent;
+}
+
+.jpid-tooltip:hover .jpid-tooltip__text {
+  visibility: visible;
 }
 
 /* --------------------------------------------------------------------------------
@@ -215,7 +248,6 @@
   Customer Page Styles
 --------------------------------------------------------------------------------- */
 
-
 #jpid_customer_action {
   width: 100%;
   margin: 0 0 10px 0;
@@ -268,14 +300,96 @@
   content: "\f174";
 }
 
-#select2-jpid_user_id-container {
-  font-weight: bold;
+.selectize-control .selectize-input .item {
+  font-size: 14px;
 }
 
-#select2-jpid_user_id-container .select2-selection__placeholder {
-  font-weight: normal;
+
+/* --------------------------------------------------------------------------------
+  Customer List Page Styles
+--------------------------------------------------------------------------------- */
+
+table.customers thead #customer_value {
+  width: 15%;
+}
+
+table.customers thead #date_created {
+  width: 15%;
+}
+
+table.customers #the-list td {
+  padding: 8px 10px;
+  vertical-align: top;
+}
+
+table.customers #the-list td strong {
+  font-weight: 600;
+}
+
+table.customers #the-list td.column-customer_name img {
+  float: left;
+  margin: 0px;
+  margin-right: 10px;
+  margin-top: 1px;
+}
+
+table.customers #the-list td.column-customer_contacts span {
+  display: block;
+  margin: 3px 0;
+}
+
+table.customers #the-list td.column-customer_actions a.button {
+  cursor: pointer;
+  float: left;
+  height: auto;
+  margin: 0 4px 2px 0;
+  padding: 3px 4px;
+  display: block;
+  height: 2em !important;
+  padding: 0 !important;
+  position: relative;
+  /*text-indent: -9999px;*/
+  width: 2em;
+}
+
+table.customers #the-list td.column-customer_actions a.button::after {
+  font-variant: normal;
+  font-weight: 400;
+  height: 100%;
+  left: 0;
+  line-height: 1.85;
+  margin: 0;
+  position: absolute;
+  text-align: center;
+  text-indent: 0;
+  text-transform: none;
+  top: 0;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+table.customers #the-list td.column-customer_actions a.edit::after {
+  content: "\f464";
+  font-family: dashicons;
+}
+
+table.customers #the-list td.column-customer_actions a.delete::after {
+  content: "\f182";
+  font-family: dashicons;
+}
+
+table.customers #the-list td.column-customer_actions a.user::after {
+  content: "\f110";
+  font-family: dashicons;
 }
 
 /* --------------------------------------------------------------------------------
   WP Default Styles Modifier
 --------------------------------------------------------------------------------- */
+
+.widefat small.meta {
+  display: block;
+  color: #999;
+  font-size: inherit;
+  margin: 3px 0;
+}

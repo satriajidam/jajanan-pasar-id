@@ -14,7 +14,7 @@
     <div class="panel-wrap">
       <div class="jpid-panel panel">
         <div class="jpid-header-container">
-          <?php if ( $this->customer->get_id() > 0 ) : ?>
+          <?php if ( $is_update ) : ?>
             <?php echo get_avatar( $this->customer->get_email(), 60 ); ?>
             <?php $header = esc_html( 'Customer', 'jpid' ) . ' #' . $this->customer->get_id() . ' ' . esc_html( 'details', 'jpid' ); ?>
             <h2><?php echo $header; ?></h2>
@@ -38,11 +38,13 @@
           </div>
           <div class="jpid-field-wrapper">
             <select id="jpid_user_id" name="jpid_user_id" class="jpid-field-wrapper__field" style="width: 100%;">
-              <!-- Options are generated using JavaScript. -->
-              <?php if ( $this->customer->get_user_id() > 0 ) : ?>
+              <?php if ( $is_registered ) : ?>
                 <option value="<?php echo $this->customer->get_user_id(); ?>" selected>#<?php echo $this->customer->get_id(); ?> - <?php echo $this->customer->get_name(); ?> (<?php echo $this->customer->get_email(); ?>)</option>
               <?php endif; ?>
             </select>
+            <?php if ( $is_registered ) : ?>
+              <a href="user-edit.php?user_id=<?php esc_attr_e( $this->customer->get_user_id() ); ?>" class="" style="float: right; margin-top: 0.5em;"><?php esc_html_e( 'View User Profile', 'jpid' ); ?></a>
+            <?php endif; ?>
           </div>
         </div>
         <div class="jpid-field-container">
@@ -52,7 +54,7 @@
             </label>
           </div>
           <div class="jpid-field-wrapper">
-            <input type="text" id="jpid_customer_name" name="jpid_customer_name" class="jpid-field-wrapper__field" value="<?php esc_attr_e( $this->customer->get_name() ); ?>" <?php if ( $this->customer->get_user_id() > 0 ) echo 'readonly'; ?> />
+            <input type="text" id="jpid_customer_name" name="jpid_customer_name" class="jpid-field-wrapper__field <?php if ( $is_registered ) echo 'disabled'; ?>" value="<?php esc_attr_e( $this->customer->get_name() ); ?>" <?php if ( $is_registered ) echo 'readonly'; ?> />
           </div>
         </div>
         <div class="jpid-field-container">
@@ -62,7 +64,7 @@
             </label>
           </div>
           <div class="jpid-field-wrapper">
-            <input type="email" id="jpid_customer_email" name="jpid_customer_email" class="jpid-field-wrapper__field" value="<?php esc_attr_e( $this->customer->get_email() ); ?>" <?php if ( $this->customer->get_user_id() > 0 ) echo 'readonly'; ?> required="required" />
+            <input type="email" id="jpid_customer_email" name="jpid_customer_email" class="jpid-field-wrapper__field <?php if ( $is_registered ) echo 'disabled'; ?>" value="<?php esc_attr_e( $this->customer->get_email() ); ?>" <?php if ( $is_registered ) echo 'readonly'; ?> required="required" />
           </div>
         </div>
         <div class="jpid-field-container">
@@ -117,10 +119,13 @@
               $selected_city = $this->customer->get_city();
             ?>
             <select id="jpid_customer_city" name="jpid_customer_city" class="jpid-field-wrapper__field">
-              <option value="">- <?php esc_html_e( 'Select City', 'jpid' ); ?> -</option>
-              <?php foreach ( $cities as $city ) : ?>
-                <option value="<?php esc_attr_e( $city );  ?>" <?php selected( $selected_city, $city, true ); ?>><?php esc_html_e( $city ); ?></option>
-              <?php endforeach; ?>
+              <?php if ( $selected_province === '' ) : ?>
+                <option value="">- <?php esc_html_e( 'Select City', 'jpid' ); ?> -</option>
+              <?php else : ?>
+                <?php foreach ( $cities as $city ) : ?>
+                  <option value="<?php esc_attr_e( $city );  ?>" <?php selected( $selected_city, $city, true ); ?>><?php esc_html_e( $city ); ?></option>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </select>
           </div>
         </div>
