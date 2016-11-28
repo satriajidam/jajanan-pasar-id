@@ -273,7 +273,7 @@ class JPID_Table_Customers extends WP_List_Table {
 	}
 
 	public function views() {
-		
+
 	}
 
   public function extra_tablenav( $which ) {
